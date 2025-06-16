@@ -71,3 +71,24 @@ Pocketbase Typegen 可以为自己的pocketbase生成类型
 - pnpm i -D pocketbase-typegen
 - pnpm pocketbase-typegen --json ./pb_schema.json
 - pnpm pocketbase-typegen --db ./pb_data/data.db
+
+## build尝试
+```
+vite v6.3.5 building for production...
+✓ 3627 modules transformed.
+dist/index.html                   5.42 kB │ gzip:   1.90 kB
+dist/assets/logo-DYjrdBLf.png    34.60 kB
+dist/assets/index-CX7lFOKr.css   59.34 kB │ gzip:  10.76 kB
+dist/assets/index-D7fGMbKc.js   332.36 kB │ gzip: 105.39 kB
+✓ built in 1m 1s
+```
+
+## PocketBase类型生成
+https://github.com/patmood/pocketbase-typegen
+```
+pocketbase-typegen --json ../pocketbase/pb_schema.json
+```
+
+出现了sqlite3问题，pnpm approve-builds 并选中 sqlite3 之后就可以了
+
+## 登录页

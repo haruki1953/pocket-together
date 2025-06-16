@@ -23,8 +23,9 @@ export const useI18nStore = defineStore(
     const t = <MessageKey extends I18nMessagesKeyType>(
       messageKey: MessageKey
     ) => {
-      type MessageType = (typeof i18nMessages)[MessageKey][I18nLocaleType]
-      return i18nMessages[messageKey][locale.value] as MessageType
+      return i18nMessages[messageKey][
+        locale.value
+      ] as (typeof i18nMessages)[MessageKey][I18nLocaleType]
     }
 
     return {

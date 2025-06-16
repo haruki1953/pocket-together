@@ -39,3 +39,8 @@ pocketbase-typegen https://www.npmjs.com/package/pocketbase-typegen
 ## vue3 前端
 用 vscode 打开 vue3 目录进行开发。
 > 不要在项目根目录（此文件所在目录）开发，会让eslint报错
+
+生成pocketbase类型
+```
+pnpm pb-typegen-json
+```

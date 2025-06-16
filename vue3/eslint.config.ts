@@ -21,14 +21,20 @@ export default defineConfigWithVueTs(
     files: ['**/*.{ts,mts,tsx,vue}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores([
+    '**/dist/**',
+    '**/dist-ssr/**',
+    '**/coverage/**',
+    // 有报错但实际上无所谓，让eslint忽略即可
+    'postcss.config.js',
+    'tailwind.config.js',
+    'pocketbase-types.ts',
+  ]),
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
   skipFormatting,
   {
-    // 有报错但实际上无所谓，让eslint忽略即可
-    ignores: ['postcss.config.js', 'tailwind.config.js'],
     plugins: {
       prettier: eslintPluginPrettier,
       // '@typescript-eslint': eslintPluginTs

@@ -10,7 +10,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "pb-typegen-json": "pocketbase-typegen --json ../pocketbase/pb_schema.json"
   },
   "dependencies": {
     "@remixicon/vue": "^4.6.0",

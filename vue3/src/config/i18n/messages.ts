@@ -1,3 +1,4 @@
+import { appNameI18n } from './dependencies'
 import type { I18nLocaleType } from './locale'
 
 // 语言内容，写成函数有利于插入可变内容
@@ -6,6 +7,7 @@ import type { I18nLocaleType } from './locale'
 // satisfies 确保其每一项不会缺少
 // 还需要确保每组函数类型是一样的，这个只能自己注意了
 export const i18nMessages = {
+  appNameI18n,
   pageHome: {
     'en-US': () => 'home' as const,
     'zh-CN': () => '首页' as const,
