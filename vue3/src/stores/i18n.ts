@@ -18,7 +18,7 @@ export const useI18nStore = defineStore(
     }
 
     /**
-     * 好多i18n库都用t命名，来获取语言内容
+     * 好多i18n库都用t命名(translate)，来获取语言内容
      */
     const t = <MessageKey extends I18nMessagesKeyType>(
       messageKey: MessageKey

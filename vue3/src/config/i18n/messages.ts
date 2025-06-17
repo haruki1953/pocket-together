@@ -9,34 +9,70 @@ import type { I18nLocaleType } from './locale'
 export const i18nMessages = {
   appNameI18n,
   pageHome: {
-    'en-US': () => 'home' as const,
+    'en-US': () => 'Home' as const,
     'zh-CN': () => '首页' as const,
     'zh-TW': () => '首頁' as const,
   },
   pageChat: {
-    'en-US': () => 'chat' as const,
+    'en-US': () => 'Chat' as const,
     'zh-CN': () => '全局聊天' as const,
     'zh-TW': () => '全域聊天' as const,
   },
   pageFile: {
-    'en-US': () => 'file' as const,
+    'en-US': () => 'File' as const,
     'zh-CN': () => '文件' as const,
     'zh-TW': () => '文件' as const,
   },
   pageSetting: {
-    'en-US': () => 'setting' as const,
+    'en-US': () => 'Setting' as const,
     'zh-CN': () => '设置' as const,
     'zh-TW': () => '設定' as const,
   },
   pageNav: {
-    'en-US': () => 'navigation' as const,
+    'en-US': () => 'Navigation' as const,
     'zh-CN': () => '导航' as const,
     'zh-TW': () => '導航' as const,
   },
   pageLogin: {
-    'en-US': () => 'login' as const,
+    'en-US': () => 'Login' as const,
     'zh-CN': () => '登录' as const,
     'zh-TW': () => '登入' as const,
+  },
+  loginPlaceholderUsername: {
+    'en-US': () => 'Please enter username' as const,
+    'zh-CN': () => '请输入用户名' as const,
+    'zh-TW': () => '請輸入用戶名' as const,
+  },
+  loginPlaceholderPassword: {
+    'en-US': () => 'Please enter password' as const,
+    'zh-CN': () => '请输入密码' as const,
+    'zh-TW': () => '請輸入密碼' as const,
+  },
+  loginButtonText: {
+    'en-US': () => 'Login' as const,
+    'zh-CN': () => '登录' as const,
+    'zh-TW': () => '登入' as const,
+  },
+  loginRulesUsernameRequiredMessage: {
+    'en-US': () => 'Please enter username' as const,
+    'zh-CN': () => '请输入用户名' as const,
+    'zh-TW': () => '請輸入用戶名' as const,
+  },
+  loginRulesUsernamePatternMessage: {
+    'en-US': () =>
+      'The username must be 1 to 32 characters long and can only contain alphanumeric characters and underscores.' as const,
+    'zh-CN': () => '用户名需为1至32位的字符，且只能包含字母数字下划线' as const,
+    'zh-TW': () => '用戶名需為1至32位的字符，且只能包含字母數字底線' as const,
+  },
+  loginRulesPasswordRequiredMessage: {
+    'en-US': () => 'Please enter password' as const,
+    'zh-CN': () => '请输入密码' as const,
+    'zh-TW': () => '請輸入密碼' as const,
+  },
+  loginRulesPasswordPatternMessage: {
+    'en-US': () => 'Password must be at least 8 characters' as const,
+    'zh-CN': () => '密码必须至少包含 8 个字符' as const,
+    'zh-TW': () => '密碼必須至少包含 8 個字符' as const,
   },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
