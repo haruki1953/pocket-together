@@ -57,7 +57,7 @@ const isDark = useDark()
                       <span>
                         {{ i18nLocaleInfo[key].language }}
                       </span>
-                      <span class="ml-2 text-color-text-soft">
+                      <span class="ml-2 text-xs text-color-text-soft">
                         {{ i18nLocaleInfo[key].region }}
                       </span>
                     </div>
@@ -90,10 +90,11 @@ const isDark = useDark()
 }
 
 .gradient-text {
+  font-family: 'Nunito', sans-serif;
   background: linear-gradient(
     to right,
-    var(--color-text),
-    var(--el-color-primary)
+    var(--color-text) 20%,
+    var(--el-color-primary) 80%
   );
   background-clip: text;
   -webkit-background-clip: text;

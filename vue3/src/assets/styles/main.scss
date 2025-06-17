@@ -4,6 +4,7 @@
 @use './animation.scss';
 @use './control.scss';
 @use './element-plus.scss';
+@use './nunito.css';
 
 
 :root {
@@ -17,4 +18,3 @@
     --my-neutral-a#{$i}: rgba(140, 147, 157, #{$opacity});
   }
 }
-
