@@ -113,6 +113,26 @@ const submit = async () => {
       {{ i18nStore.t('loginButtonText')() }}
     </span>
   </ElButton>
+  <div class="relative h-1">
+    <div class="absolute top-2 flex w-full items-center justify-between">
+      <div class="flex flex-1 justify-start truncate">
+        <a
+          href="#"
+          class="mx-2 truncate text-xs text-el-primary hover:text-el-primary-light-3"
+        >
+          {{ i18nStore.t('loginForgetText')() }}
+        </a>
+      </div>
+      <div class="flex flex-1 justify-end truncate">
+        <a
+          href="#"
+          class="mx-2 truncate text-xs text-el-primary hover:text-el-primary-light-3"
+        >
+          {{ i18nStore.t('loginVisitorText')() }}
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>

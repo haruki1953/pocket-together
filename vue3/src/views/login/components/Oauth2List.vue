@@ -9,16 +9,19 @@ const oauth2List = ['google', 'microsoft', 'github', 'apple']
 
 <template>
   <!-- 左侧水平分割线 -->
-  <div class="border border-color-background"></div>
+  <div
+    v-if="oauth2List.length > 0"
+    class="border border-color-background"
+  ></div>
   <!-- 左侧下栏 -->
-  <div class="mx-auto max-w-96">
+  <div v-if="oauth2List.length > 0" class="mx-auto max-w-96">
     <div class="m-8">
       <button
         v-for="item in oauth2List"
         :key="item"
-        class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft px-5 py-2 transition-colors hover:bg-color-background hover:text-color-text"
+        class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft py-2 pl-5 pr-3 transition-colors hover:bg-color-background hover:text-color-text"
       >
-        <div>
+        <div class="mr-2">
           <img
             :src="
               urlJoinUtil(
@@ -29,8 +32,8 @@ const oauth2List = ['google', 'microsoft', 'github', 'apple']
             class="h-5 w-5"
           />
         </div>
-        <div class="flex flex-1 items-center justify-center">
-          <span>
+        <div class="flex flex-1 items-center justify-center truncate">
+          <span class="truncate">
             {{
               i18nStore.t('loginWithOauth2Text')(capitalizeFirstLetter(item))
             }}

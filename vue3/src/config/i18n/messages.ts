@@ -53,6 +53,16 @@ export const i18nMessages = {
     'zh-CN': () => '登录' as const,
     'zh-TW': () => '登入' as const,
   },
+  loginForgetText: {
+    'en-US': () => 'Forgot password' as const,
+    'zh-CN': () => '忘记密码' as const,
+    'zh-TW': () => '忘記密碼' as const,
+  },
+  loginVisitorText: {
+    'en-US': () => 'Visitor Mode' as const,
+    'zh-CN': () => '游客模式' as const,
+    'zh-TW': () => '遊客模式' as const,
+  },
   loginRulesUsernameRequiredMessage: {
     'en-US': () => 'Please enter username' as const,
     'zh-CN': () => '请输入用户名' as const,
