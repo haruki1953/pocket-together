@@ -34,7 +34,7 @@ export const i18nMessages = {
     'zh-TW': () => '導航' as const,
   },
   pageLogin: {
-    'en-US': () => 'Login' as const,
+    'en-US': () => 'Sign in' as const,
     'zh-CN': () => '登录' as const,
     'zh-TW': () => '登入' as const,
   },
@@ -49,7 +49,7 @@ export const i18nMessages = {
     'zh-TW': () => '請輸入密碼' as const,
   },
   loginButtonText: {
-    'en-US': () => 'Login' as const,
+    'en-US': () => 'Sign in' as const,
     'zh-CN': () => '登录' as const,
     'zh-TW': () => '登入' as const,
   },
@@ -73,6 +73,46 @@ export const i18nMessages = {
     'en-US': () => 'Password must be at least 8 characters' as const,
     'zh-CN': () => '密码必须至少包含 8 个字符' as const,
     'zh-TW': () => '密碼必須至少包含 8 個字符' as const,
+  },
+  loginWithOauth2Text: {
+    'en-US': (platform: string) => `Sign in with ${platform}` as const,
+    'zh-CN': (platform: string) => `使用 ${platform} 登录` as const,
+    'zh-TW': (platform: string) => `使用 ${platform} 登入` as const,
+  },
+  registerPlaceholderEmail: {
+    'en-US': () => 'Please enter email' as const,
+    'zh-CN': () => '请输入邮箱' as const,
+    'zh-TW': () => '請輸入信​​箱' as const,
+  },
+  registerButtonText: {
+    'en-US': () => 'Sign up' as const,
+    'zh-CN': () => '注册' as const,
+    'zh-TW': () => '註冊' as const,
+  },
+  registerPlaceholderPasswordConfirm: {
+    'en-US': () => 'Please confirm password' as const,
+    'zh-CN': () => '请确认密码' as const,
+    'zh-TW': () => '請確認密碼' as const,
+  },
+  registerRulesPasswordConfirmRequiredMessage: {
+    'en-US': () => 'Please confirm password' as const,
+    'zh-CN': () => '请确认密码' as const,
+    'zh-TW': () => '請確認密碼' as const,
+  },
+  registerRulesPasswordConfirmValidatorMessage: {
+    'en-US': () => 'The two passwords you entered do not match.' as const,
+    'zh-CN': () => '两次密码输入不一致' as const,
+    'zh-TW': () => '兩次密碼輸入不一致' as const,
+  },
+  registerRulesEmailRequiredMessage: {
+    'en-US': () => 'Please enter email' as const,
+    'zh-CN': () => '请输入邮箱' as const,
+    'zh-TW': () => '請輸入信​​箱' as const,
+  },
+  registerRulesEmailTypeMessage: {
+    'en-US': () => 'Incorrect email address' as const,
+    'zh-CN': () => '邮箱地址不正确' as const,
+    'zh-TW': () => '信​​箱地址不正確' as const,
   },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 

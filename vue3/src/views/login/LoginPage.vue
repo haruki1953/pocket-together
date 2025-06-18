@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import { useDark } from '@vueuse/core'
 import LoginForm from './components/LoginForm.vue'
 import LoginDarkI18n from './components/LoginDarkI18n.vue'
-import { RiGithubFill, RiGoogleFill, RiMicrosoftFill } from '@remixicon/vue'
+import RegisterForm from './components/RegisterForm.vue'
+import Oauth2List from './components/Oauth2List.vue'
+import { useLoginPageBoxLeftRightStyle } from './composables'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
   title: computed(() => i18nStore.t('pageLogin')()),
 })
+
+// 控制左右两栏的圆角样式
+const { refBoxLeft, refBoxRight, styleBoxLeftRight } =
+  useLoginPageBoxLeftRightStyle()
 </script>
 
 <template>
@@ -22,111 +27,34 @@ useSeoMeta({
             {{ i18nStore.t('appNameI18n')() }}
           </div>
           <div class="flex items-center justify-center">
+            <!-- 左栏 -->
             <div
-              :style="{
-                borderTopRightRadius: '0',
-                borderBottomRightRadius: '0',
-              }"
+              ref="refBoxLeft"
+              :style="styleBoxLeftRight.left"
               class="flex-1 rounded-3xl bg-color-background-soft"
             >
+              <!-- 左侧上栏 -->
               <div class="mx-auto max-w-96">
                 <div class="m-8">
                   <LoginForm></LoginForm>
                 </div>
               </div>
+              <!-- 左侧水平分割线 -->
+              <!-- 左侧下栏 -->
+              <!-- 都在Oauth2List -->
+              <Oauth2List></Oauth2List>
             </div>
+            <!-- 中间垂直分割线 -->
             <div class="w-0 border border-transparent"></div>
+            <!-- 右栏 -->
             <div
-              :style="{
-                borderTopLeftRadius: undefined,
-                borderBottomLeftRadius: undefined,
-              }"
+              ref="refBoxRight"
+              :style="styleBoxLeftRight.right"
               class="flex-1 rounded-3xl bg-color-background-soft"
             >
               <div class="mx-auto max-w-96">
                 <div class="m-8">
-                  <!-- <button
-                    class="my-4 flex w-full items-center rounded-full bg-[#ea4136] px-5 py-2 text-white"
-                  >
-                    <div>
-                      <RiGoogleFill size="20px"></RiGoogleFill>
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Google 登录 </span>
-                    </div>
-                  </button>
-                  <button
-                    class="my-4 flex w-full items-center rounded-full bg-[#0067b8] px-5 py-2 text-white"
-                  >
-                    <div>
-                      <RiMicrosoftFill size="20px"></RiMicrosoftFill>
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Microsoft 登录 </span>
-                    </div>
-                  </button>
-                  <button
-                    class="my-4 flex w-full items-center rounded-full bg-[#000000] px-5 py-2 text-white"
-                  >
-                    <div>
-                      <RiGithubFill size="20px"></RiGithubFill>
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Github 登录 </span>
-                    </div>
-                  </button> -->
-                  <button
-                    class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft px-5 py-2 transition-colors hover:bg-color-background hover:text-color-text"
-                  >
-                    <div>
-                      <img
-                        src="https://pocketbase.io/_/images/oauth2/google.svg"
-                        class="h-5 w-5"
-                      />
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Google 登录 </span>
-                    </div>
-                  </button>
-                  <button
-                    class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft px-5 py-2 transition-colors hover:bg-color-background hover:text-color-text"
-                  >
-                    <div>
-                      <img
-                        src="https://pocketbase.io/_/images/oauth2/microsoft.svg"
-                        class="h-5 w-5"
-                      />
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Microsoft 登录 </span>
-                    </div>
-                  </button>
-                  <button
-                    class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft px-5 py-2 transition-colors hover:bg-color-background hover:text-color-text"
-                  >
-                    <div>
-                      <img
-                        src="https://pocketbase.io/_/images/oauth2/github.svg"
-                        class="h-5 w-5"
-                      />
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Github 登录 </span>
-                    </div>
-                  </button>
-                  <button
-                    class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft px-5 py-2 transition-colors hover:bg-color-background hover:text-color-text"
-                  >
-                    <div>
-                      <img
-                        src="https://pocketbase.io/_/images/oauth2/apple.svg"
-                        class="h-5 w-5"
-                      />
-                    </div>
-                    <div class="flex flex-1 items-center justify-center">
-                      <span> 使用 Apple 登录 </span>
-                    </div>
-                  </button>
+                  <RegisterForm></RegisterForm>
                 </div>
               </div>
             </div>

@@ -63,9 +63,27 @@ export const formatFileSize = (bytes: number) => {
 
 // 拼接 url
 export const urlJoinUtil = (...segments: string[]): string => {
+  // 是否以斜杠开头，是则在最后加上斜杠
+  const isStartsWithSlash = (() => {
+    if (segments.length > 0 && segments[0].startsWith('/')) {
+      return true
+    }
+    return false
+  })()
+
   // 合并路径并确保正确的斜杠
-  return segments
+  const joinedStr = segments
     .map((segment) => segment.replace(/(^\/+|\/+$)/g, '')) // 去除前后多余的斜杠
     .filter(Boolean) // 删除空值
     .join('/') // 用单个斜杠连接
+
+  if (isStartsWithSlash) {
+    return '/' + joinedStr
+  }
+  return joinedStr
+}
+
+// 将字符串的首字母大写
+export const capitalizeFirstLetter = (str: string) => {
+  return str.replace(/^\S/, (char) => char.toUpperCase())
 }

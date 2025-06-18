@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import type { ElForm } from 'element-plus'
+import { RiLockUnlockLine, RiMailLine } from '@remixicon/vue'
+import type { ElForm, FormRules } from 'element-plus'
 
 const i18nStore = useI18nStore()
 
 const formModel = ref({
   username: '',
+  email: '',
   password: '',
+  passwordConfirm: '',
 })
 
 const form = ref<InstanceType<typeof ElForm> | null>(null)
@@ -15,7 +18,7 @@ const form = ref<InstanceType<typeof ElForm> | null>(null)
 // 提交前isPrepareToSubmit将设置为true，此时再应用非空校验
 const isPrepareToSubmit = ref(false)
 
-const rules = computed(() => {
+const rules = computed<FormRules<typeof formModel>>(() => {
   return {
     username: [
       ...(() => {
@@ -30,6 +33,7 @@ const rules = computed(() => {
         }
         return []
       })(),
+
       {
         pattern: /^[a-zA-Z0-9_]{1,32}$/,
         message: i18nStore.t('loginRulesUsernamePatternMessage')(),
@@ -49,9 +53,61 @@ const rules = computed(() => {
         }
         return []
       })(),
+
       {
         pattern: /^.{8,}$/,
         message: i18nStore.t('loginRulesPasswordPatternMessage')(),
+        trigger: 'blur',
+      },
+    ],
+    passwordConfirm: [
+      ...(() => {
+        if (isPrepareToSubmit.value) {
+          return [
+            {
+              required: true,
+              message: i18nStore.t(
+                'registerRulesPasswordConfirmRequiredMessage'
+              )(),
+              trigger: 'blur',
+            },
+          ]
+        }
+        return []
+      })(),
+
+      {
+        validator: (rule, value, callback) => {
+          if (value !== formModel.value.password) {
+            callback(
+              new Error(
+                i18nStore.t('registerRulesPasswordConfirmValidatorMessage')()
+              )
+            )
+          } else {
+            callback()
+          }
+        },
+        trigger: 'blur',
+      },
+    ],
+    email: [
+      ...(() => {
+        if (isPrepareToSubmit.value) {
+          return [
+            {
+              required: true,
+              message: i18nStore.t('registerRulesEmailRequiredMessage')(),
+              trigger: 'blur',
+            },
+          ]
+        }
+        return []
+      })(),
+
+      {
+        type: 'email',
+        message: i18nStore.t('registerRulesEmailTypeMessage')(),
         trigger: 'blur',
       },
     ],
@@ -79,7 +135,6 @@ const submit = async () => {
       <ElInput
         v-model="formModel.username"
         :placeholder="i18nStore.t('loginPlaceholderUsername')()"
-        name="username"
         class="poto-el-input-line"
       >
         <template #prefix>
@@ -87,12 +142,32 @@ const submit = async () => {
         </template>
       </ElInput>
     </ElFormItem>
+    <ElFormItem prop="email">
+      <ElInput
+        v-model="formModel.email"
+        :placeholder="i18nStore.t('registerPlaceholderEmail')()"
+        class="poto-el-input-line"
+      >
+        <template #prefix>
+          <RiMailLine size="16px"></RiMailLine>
+        </template>
+      </ElInput>
+    </ElFormItem>
     <ElFormItem prop="password">
       <ElInput
         v-model="formModel.password"
-        type="password"
         :placeholder="i18nStore.t('loginPlaceholderPassword')()"
-        name="password"
+        class="poto-el-input-line"
+      >
+        <template #prefix>
+          <RiLockUnlockLine size="16px"></RiLockUnlockLine>
+        </template>
+      </ElInput>
+    </ElFormItem>
+    <ElFormItem prop="passwordConfirm">
+      <ElInput
+        v-model="formModel.passwordConfirm"
+        :placeholder="i18nStore.t('registerPlaceholderPasswordConfirm')()"
         class="poto-el-input-line"
       >
         <template #prefix>
@@ -110,7 +185,7 @@ const submit = async () => {
     @click="submit"
   >
     <span class="font-bold">
-      {{ i18nStore.t('loginButtonText')() }}
+      {{ i18nStore.t('registerButtonText')() }}
     </span>
   </ElButton>
 </template>

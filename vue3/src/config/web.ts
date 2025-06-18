@@ -1,6 +1,5 @@
 // 开发时使用的
-const apiBaseUrl = 'http://localhost:8090/'
-const staticBaseUrl = 'http://localhost:8090/'
+const baseUrl = 'http://localhost:8090/'
 
 // // 这是为了在手机上测试，需要的话要改为自己电脑的ip
 // const apiBaseUrl = 'http://192.168.2.110:8090/'
@@ -11,10 +10,10 @@ const staticBaseUrl = 'http://localhost:8090/'
 // const staticBaseUrl = '/'
 
 export const axiosConfig = {
-  baseUrl: apiBaseUrl,
+  baseUrl,
   timeout: 20000,
 }
 
 export const pocketbaseConfig = {
-  baseUrl: apiBaseUrl,
+  baseUrl,
 }

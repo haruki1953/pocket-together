@@ -6,6 +6,11 @@ import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
 export enum Collections {
+	Authorigins = "_authOrigins",
+	Externalauths = "_externalAuths",
+	Mfas = "_mfas",
+	Otps = "_otps",
+	Superusers = "_superusers",
 	Config = "config",
 	Files = "files",
 	Messages = "messages",
@@ -39,6 +44,55 @@ export type AuthSystemFields<T = unknown> = {
 } & BaseSystemFields<T>
 
 // Record types for each collection
+
+export type AuthoriginsRecord = {
+	collectionRef: string
+	created?: IsoDateString
+	fingerprint: string
+	id: string
+	recordRef: string
+	updated?: IsoDateString
+}
+
+export type ExternalauthsRecord = {
+	collectionRef: string
+	created?: IsoDateString
+	id: string
+	provider: string
+	providerId: string
+	recordRef: string
+	updated?: IsoDateString
+}
+
+export type MfasRecord = {
+	collectionRef: string
+	created?: IsoDateString
+	id: string
+	method: string
+	recordRef: string
+	updated?: IsoDateString
+}
+
+export type OtpsRecord = {
+	collectionRef: string
+	created?: IsoDateString
+	id: string
+	password: string
+	recordRef: string
+	sentTo?: string
+	updated?: IsoDateString
+}
+
+export type SuperusersRecord = {
+	created?: IsoDateString
+	email: string
+	emailVisibility?: boolean
+	id: string
+	password: string
+	tokenKey: string
+	updated?: IsoDateString
+	verified?: boolean
+}
 
 export enum ConfigKeyOptions {
 	"allow-basic-users-upload" = "allow-basic-users-upload",
@@ -94,7 +148,7 @@ export enum UsersLevelOptions {
 export type UsersRecord<Tinfo = unknown> = {
 	avatar?: string
 	created?: IsoDateString
-	email?: string
+	email: string
 	emailVisibility?: boolean
 	id: string
 	info?: null | Tinfo
@@ -108,6 +162,11 @@ export type UsersRecord<Tinfo = unknown> = {
 }
 
 // Response types include system fields and match responses from the PocketBase API
+export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
+export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
+export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
+export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
+export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
 export type ConfigResponse<Tvalue = unknown, Texpand = unknown> = Required<ConfigRecord<Tvalue>> & BaseSystemFields<Texpand>
 export type FilesResponse<Texpand = unknown> = Required<FilesRecord> & BaseSystemFields<Texpand>
 export type MessagesResponse<Texpand = unknown> = Required<MessagesRecord> & BaseSystemFields<Texpand>
@@ -117,6 +176,11 @@ export type UsersResponse<Tinfo = unknown, Texpand = unknown> = Required<UsersRe
 // Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
+	_authOrigins: AuthoriginsRecord
+	_externalAuths: ExternalauthsRecord
+	_mfas: MfasRecord
+	_otps: OtpsRecord
+	_superusers: SuperusersRecord
 	config: ConfigRecord
 	files: FilesRecord
 	messages: MessagesRecord
@@ -125,6 +189,11 @@ export type CollectionRecords = {
 }
 
 export type CollectionResponses = {
+	_authOrigins: AuthoriginsResponse
+	_externalAuths: ExternalauthsResponse
+	_mfas: MfasResponse
+	_otps: OtpsResponse
+	_superusers: SuperusersResponse
 	config: ConfigResponse
 	files: FilesResponse
 	messages: MessagesResponse
@@ -136,6 +205,11 @@ export type CollectionResponses = {
 // https://github.com/pocketbase/js-sdk#specify-typescript-definitions
 
 export type TypedPocketBase = PocketBase & {
+	collection(idOrName: '_authOrigins'): RecordService<AuthoriginsResponse>
+	collection(idOrName: '_externalAuths'): RecordService<ExternalauthsResponse>
+	collection(idOrName: '_mfas'): RecordService<MfasResponse>
+	collection(idOrName: '_otps'): RecordService<OtpsResponse>
+	collection(idOrName: '_superusers'): RecordService<SuperusersResponse>
 	collection(idOrName: 'config'): RecordService<ConfigResponse>
 	collection(idOrName: 'files'): RecordService<FilesResponse>
 	collection(idOrName: 'messages'): RecordService<MessagesResponse>
