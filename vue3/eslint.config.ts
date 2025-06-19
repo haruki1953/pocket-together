@@ -28,7 +28,9 @@ export default defineConfigWithVueTs(
     // 有报错但实际上无所谓，让eslint忽略即可
     'postcss.config.js',
     'tailwind.config.js',
-    'pocketbase-types.ts',
+    // 自动生成的 pocketbase-types 就不用eslint了
+    // 'pocketbase-types.ts',
+    './src/lib/pocketbase/pocketbase-types.ts',
   ]),
 
   pluginVue.configs['flat/essential'],

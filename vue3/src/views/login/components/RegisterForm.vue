@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import {
+  Collections,
+  pb,
+  type UsersResponse,
+  UsersLevelOptions,
+  type UsersRecord,
+  type CreateAuth,
+  type UpdateAuth,
+  type UpdateBase,
+} from '@/lib'
 import { useI18nStore } from '@/stores'
 import { RiLockUnlockLine, RiMailLine } from '@remixicon/vue'
 import type { ElForm, FormRules } from 'element-plus'
@@ -122,7 +132,19 @@ const submit = async () => {
     // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
     await new Promise((resolve) => setTimeout(resolve, 100))
     await form.value?.validate()
-    console.log('通过')
+
+    // 准备数据
+    const createData: CreateAuth<UsersRecord> = {
+      username: formModel.value.username,
+      email: formModel.value.email,
+      password: formModel.value.password,
+      passwordConfirm: formModel.value.passwordConfirm,
+      // 默认等级为basic，如果擅自设置为premium则会被api规则阻止
+      level: UsersLevelOptions.basic,
+    }
+    // 通过 pocketbase SDK 请求
+    const pbRes = await pb.collection('users').create(createData)
+    console.log(pbRes)
   } finally {
     isSubmitting.value = false
   }
