@@ -30,7 +30,7 @@ instance.interceptors.response.use(
     // }
     // TODO 3. 处理业务失败
     // 处理业务失败, 给错误提示，抛出错误
-    // sakiMessage({
+    // potoMessage({
     //   type: 'error',
     //   message: res.data.message || '服务异常'
     // })
@@ -41,7 +41,7 @@ instance.interceptors.response.use(
     // 错误的特殊情况 => 401 权限不足 或 token 过期 => 拦截到登录
     if (err.response?.status === 401) {
       // const authStore = useAuthStore()
-      // sakiMessage({
+      // potoMessage({
       //   type: 'error',
       //   message: '请登录'
       // })
@@ -51,7 +51,7 @@ instance.interceptors.response.use(
     }
 
     // // 错误的默认情况 => 只要给提示
-    // sakiMessage({
+    // potoMessage({
     //   type: 'error',
     //   message: err.response?.data.message || '服务异常'
     // })

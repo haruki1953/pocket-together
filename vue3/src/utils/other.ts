@@ -1,6 +1,6 @@
 import type { useRouter } from 'vue-router'
 
-export const sakiGoBack = (router: ReturnType<typeof useRouter>) => {
+export const potoGoBack = (router: ReturnType<typeof useRouter>) => {
   if (window.history.length > 2) {
     router.back()
   } else {

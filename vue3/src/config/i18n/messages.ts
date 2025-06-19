@@ -124,6 +124,26 @@ export const i18nMessages = {
     'zh-CN': () => '邮箱地址不正确' as const,
     'zh-TW': () => '信​​箱地址不正確' as const,
   },
+  registerRulesUsernameValidatorNotUnique: {
+    'en-US': () => 'Username already exists' as const,
+    'zh-CN': () => '用户名已存在' as const,
+    'zh-TW': () => '用戶名已存在' as const,
+  },
+  registerRulesEmailValidatorNotUnique: {
+    'en-US': () => 'Email already exists' as const,
+    'zh-CN': () => '邮箱已存在' as const,
+    'zh-TW': () => '信​​箱已存在' as const,
+  },
+  registerFailedErrorUnknow: {
+    'en-US': () => 'Sign-up failed' as const,
+    'zh-CN': () => '注册失败' as const,
+    'zh-TW': () => '註冊失敗' as const,
+  },
+  registerSuccess: {
+    'en-US': () => 'Sign-up complete' as const,
+    'zh-CN': () => '注册成功' as const,
+    'zh-TW': () => '註冊成功' as const,
+  },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
 // 通过类型体操，获取i18nMessages键的类型
