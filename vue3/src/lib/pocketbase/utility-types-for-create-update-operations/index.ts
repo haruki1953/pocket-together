@@ -60,7 +60,7 @@ export type UpdateAuth<T> = Partial<Omit<T, keyof AuthSystemFields>> & {
   verified?: boolean
   // 这里自己做了修改
   // 加上 username 这样才能符合自己的 Update (users) Body Parameters
-  username: string
+  username?: string
 }
 
 // Update type for Base collections

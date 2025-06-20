@@ -7,6 +7,7 @@ import Oauth2List from './components/Oauth2List.vue'
 import { useLoginPageBoxLeftRightStyle } from './composables'
 import { useElementSize } from '@vueuse/core'
 import { layoutLoginPageConfig } from '@/config'
+import { Collections, pb } from '@/lib'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -24,6 +25,11 @@ const showCol2TrueCol1False = computed(() => {
     return true
   }
   return false
+})
+
+onMounted(async () => {
+  const result = await pb.collection(Collections.Users).listAuthMethods()
+  console.log(result)
 })
 </script>
 

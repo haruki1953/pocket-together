@@ -43,7 +43,7 @@ const { isSubmitting, submit } = useRegisterFormSubmit({
     <ElFormItem prop="username">
       <ElInput
         v-model="formModel.username"
-        :placeholder="i18nStore.t('loginPlaceholderUsername')()"
+        :placeholder="i18nStore.t('registerPlaceholderUsername')()"
         class="poto-el-input-line"
       >
         <template #prefix>
@@ -65,7 +65,7 @@ const { isSubmitting, submit } = useRegisterFormSubmit({
     <ElFormItem prop="password">
       <ElInput
         v-model="formModel.password"
-        :placeholder="i18nStore.t('loginPlaceholderPassword')()"
+        :placeholder="i18nStore.t('registerPlaceholderPassword')()"
         class="poto-el-input-line"
       >
         <template #prefix>

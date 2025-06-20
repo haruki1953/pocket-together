@@ -38,7 +38,7 @@ export const useRegisterFormRules = (data: {
             return [
               {
                 required: true,
-                message: i18nStore.t('loginRulesUsernameRequiredMessage')(),
+                message: i18nStore.t('registerRulesUsernameRequiredMessage')(),
                 trigger: 'blur',
               },
             ]
@@ -47,8 +47,15 @@ export const useRegisterFormRules = (data: {
         })(),
 
         {
-          pattern: /^[a-zA-Z0-9_]{1,32}$/,
-          message: i18nStore.t('loginRulesUsernamePatternMessage')(),
+          // 字符规则 Char
+          pattern: /^[a-zA-Z0-9_]*$/,
+          message: i18nStore.t('registerRulesUsernamePatternCharMessage')(),
+          trigger: 'blur',
+        },
+        {
+          // 长度规则 Length
+          pattern: /^.{1,32}$/,
+          message: i18nStore.t('registerRulesUsernamePatternLengthMessage')(),
           trigger: 'blur',
         },
 
@@ -77,7 +84,7 @@ export const useRegisterFormRules = (data: {
             return [
               {
                 required: true,
-                message: i18nStore.t('loginRulesPasswordRequiredMessage')(),
+                message: i18nStore.t('registerRulesPasswordRequiredMessage')(),
                 trigger: 'blur',
               },
             ]
@@ -87,7 +94,7 @@ export const useRegisterFormRules = (data: {
 
         {
           pattern: /^.{8,}$/,
-          message: i18nStore.t('loginRulesPasswordPatternMessage')(),
+          message: i18nStore.t('registerRulesPasswordPatternMessage')(),
           trigger: 'blur',
         },
       ],

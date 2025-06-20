@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { Collections, pb } from '@/lib'
 import { useI18nStore } from '@/stores'
+import { potoMessage } from '@/utils'
 import type { ElForm } from 'element-plus'
 
 const i18nStore = useI18nStore()
 
 const formModel = ref({
-  username: '',
+  usernameOrEmail: '',
   password: '',
 })
 
@@ -17,24 +19,40 @@ const isPrepareToSubmit = ref(false)
 
 const rules = computed(() => {
   return {
-    username: [
+    usernameOrEmail: [
       ...(() => {
         if (isPrepareToSubmit.value) {
           return [
             {
               required: true,
-              message: i18nStore.t('loginRulesUsernameRequiredMessage')(),
+              // message: i18nStore.t('loginRulesUsernameRequiredMessage')(),
+              message: i18nStore.t(
+                'loginRulesUsernameOrEmailRequiredMessage'
+              )(),
               trigger: 'blur',
             },
           ]
         }
         return []
       })(),
-      {
-        pattern: /^[a-zA-Z0-9_]{1,32}$/,
-        message: i18nStore.t('loginRulesUsernamePatternMessage')(),
-        trigger: 'blur',
-      },
+      // {
+      //   pattern: /^[a-zA-Z0-9_]{1,32}$/,
+      //   message: i18nStore.t('loginRulesUsernamePatternMessage')(),
+      //   trigger: 'blur',
+      // },
+      // 将上面的规则拆分为两个
+      // {
+      //   // 字符规则 Char
+      //   pattern: /^[a-zA-Z0-9_]*$/,
+      //   message: i18nStore.t('loginRulesUsernamePatternCharMessage')(),
+      //   trigger: 'blur',
+      // },
+      // {
+      //   // 长度规则 Length
+      //   pattern: /^.{1,32}$/,
+      //   message: i18nStore.t('loginRulesUsernamePatternLengthMessage')(),
+      //   trigger: 'blur',
+      // },
     ],
     password: [
       ...(() => {
@@ -64,9 +82,24 @@ const submit = async () => {
   try {
     isPrepareToSubmit.value = true
     // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 500))
     await form.value?.validate()
-    console.log('通过')
+
+    const pbRes = await pb
+      .collection(Collections.Users)
+      .authWithPassword(
+        formModel.value.usernameOrEmail,
+        formModel.value.password
+      )
+
+    console.log(pbRes)
+    // 一些收尾工作
+    // form.value?.resetFields()
+    // isPrepareToSubmit.value = false
+    potoMessage({
+      type: 'success',
+      message: i18nStore.t('loginSuccess')(),
+    })
   } finally {
     isSubmitting.value = false
   }
@@ -75,10 +108,10 @@ const submit = async () => {
 
 <template>
   <ElForm ref="form" :model="formModel" :rules="rules" size="large">
-    <ElFormItem prop="username">
+    <ElFormItem prop="usernameOrEmail">
       <ElInput
-        v-model="formModel.username"
-        :placeholder="i18nStore.t('loginPlaceholderUsername')()"
+        v-model="formModel.usernameOrEmail"
+        :placeholder="i18nStore.t('loginPlaceholderUsernameOrEmail')()"
         name="username"
         class="poto-el-input-line"
       >
