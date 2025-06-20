@@ -3,6 +3,8 @@ import { useI18nStore } from '@/stores'
 import { potoMessage } from '@/utils'
 import type { useLoginFormRules } from './rules'
 import type { LoginFormForm, LoginFormFormModel } from './dependencies'
+import { ClientResponseError } from 'pocketbase'
+import { PotoFormValidationError } from '@/classes'
 
 type LoginFormRules = ReturnType<typeof useLoginFormRules>
 
@@ -34,7 +36,7 @@ export const useLoginFormSubmit = (data: {
           formModel.value.password
         )
 
-      console.log(pbRes)
+      // console.log(pbRes)
       // 一些收尾工作
       // form.value?.resetFields()
       // isPrepareToSubmit.value = false
@@ -42,6 +44,35 @@ export const useLoginFormSubmit = (data: {
         type: 'success',
         message: i18nStore.t('loginSuccess')(),
       })
+    } catch (error) {
+      // 错误处理
+      if (error instanceof ClientResponseError) {
+        // 登录失败
+        // ClientResponseError 400: Failed to authenticate.
+        form.value?.resetFields()
+        potoMessage({
+          type: 'error',
+          message: i18nStore.t('loginFailed')(),
+        })
+      } else if (error instanceof PotoFormValidationError) {
+        // 这是表单校验抛出的错误，什么都不用做
+      } else {
+        // 未知错误
+        potoMessage({
+          type: 'error',
+          message: i18nStore.t('loginFailedErrorUnknow')(),
+        })
+      }
+      // console.log(error)
+      // ClientResponseError 400: Failed to authenticate.
+      // console.log((error as any).data)
+      /* 错误示例
+{
+  "data": {},
+  "message": "Failed to authenticate.",
+  "status": 400
+}
+      */
     } finally {
       isSubmitting.value = false
     }

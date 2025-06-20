@@ -50,7 +50,7 @@ export const useRegisterFormSubmit = (data: {
       }
       // 通过 pocketbase SDK 请求
       const pbRes = await pb.collection(Collections.Users).create(createData)
-      console.log(pbRes)
+      // console.log(pbRes)
 
       // 一些收尾工作
       form.value?.resetFields()
@@ -84,7 +84,7 @@ export const useRegisterFormSubmit = (data: {
         })
       }
       // ClientResponseError 400: Failed to create record.
-      console.log(error)
+      // console.log(error)
       // console.log((error as any).data)
       /* 错误示例
 {

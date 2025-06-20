@@ -108,6 +108,16 @@ export const i18nMessages = {
     'zh-CN': () => '登录成功' as const,
     'zh-TW': () => '登入成功' as const,
   },
+  loginFailed: {
+    'en-US': () => 'Sign-in failed' as const,
+    'zh-CN': () => '登录失败' as const,
+    'zh-TW': () => '登入失敗' as const,
+  },
+  loginFailedErrorUnknow: {
+    'en-US': () => 'Sign-in failed' as const,
+    'zh-CN': () => '登录失败' as const,
+    'zh-TW': () => '登入失敗' as const,
+  },
   registerRulesUsernameRequiredMessage: {
     'en-US': () => 'Please enter username' as const,
     'zh-CN': () => '请输入用户名' as const,
