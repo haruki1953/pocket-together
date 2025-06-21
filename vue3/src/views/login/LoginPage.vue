@@ -8,6 +8,7 @@ import { useLoginPageBoxLeftRightStyle } from './composables'
 import { useElementSize } from '@vueuse/core'
 import { layoutLoginPageConfig } from '@/config'
 import { Collections, pb } from '@/lib'
+import type { AuthMethodsList } from 'pocketbase'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -27,8 +28,11 @@ const showCol2TrueCol1False = computed(() => {
   return false
 })
 
+const listAuthMethodsResult = ref<AuthMethodsList | null>(null)
+
 onMounted(async () => {
   const result = await pb.collection(Collections.Users).listAuthMethods()
+  listAuthMethodsResult.value = result
   console.log(result)
 })
 </script>
@@ -72,7 +76,9 @@ onMounted(async () => {
               <!-- 左侧水平分割线 -->
               <!-- 左侧下栏 -->
               <!-- 都在Oauth2List -->
-              <Oauth2List></Oauth2List>
+              <Oauth2List
+                :listAuthMethodsResult="listAuthMethodsResult"
+              ></Oauth2List>
             </div>
             <!-- 中间垂直分割线 -->
             <div class="w-0 border border-transparent"></div>
@@ -99,7 +105,9 @@ onMounted(async () => {
                   <LoginForm></LoginForm>
                 </div>
               </div>
-              <Oauth2List></Oauth2List>
+              <Oauth2List
+                :listAuthMethodsResult="listAuthMethodsResult"
+              ></Oauth2List>
               <div class="border border-color-background"></div>
               <div class="mx-auto max-w-96">
                 <div class="m-8">

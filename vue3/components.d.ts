@@ -22,12 +22,10 @@ declare module 'vue' {
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
-    RiLockPasswordLine: typeof import('@remixicon/vue')['RiLockPasswordLine']
     RiMoonLine: typeof import('@remixicon/vue')['RiMoonLine']
     RiSunLine: typeof import('@remixicon/vue')['RiSunLine']
     RiTranslate2: typeof import('@remixicon/vue')['RiTranslate2']
     RiUser4Line: typeof import('@remixicon/vue')['RiUser4Line']
-    RiUserLine: typeof import('@remixicon/vue')['RiUserLine']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

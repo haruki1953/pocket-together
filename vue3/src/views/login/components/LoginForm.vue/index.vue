@@ -66,7 +66,7 @@ const { isSubmitting, submit } = useLoginFormSubmit({
       {{ i18nStore.t('loginButtonText')() }}
     </span>
   </ElButton>
-  <div class="relative h-1">
+  <div class="relative h-2">
     <div class="absolute top-2 flex w-full items-center justify-between">
       <div class="flex flex-1 justify-start truncate">
         <a
