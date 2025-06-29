@@ -46,6 +46,7 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
   <!-- 左侧下栏 -->
   <div v-if="oauth2List.length > 0" class="mx-auto max-w-96">
     <div class="m-8">
+      <!-- 各平台登录按钮 -->
       <button
         v-for="item in oauth2List"
         :key="item.name"
@@ -53,6 +54,7 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
         @click="authWithOAuth2(item.name)"
       >
         <div class="mr-2">
+          <!-- 利用pocketbase本身提供的各平台图标 -->
           <img
             :src="
               urlJoinUtil(
