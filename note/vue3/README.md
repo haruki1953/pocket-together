@@ -92,3 +92,17 @@ pocketbase-typegen --json ../pocketbase/pb_schema.json
 出现了sqlite3问题，pnpm approve-builds 并选中 sqlite3 之后就可以了
 
 ## 登录页
+
+## tanstack query
+```
+pnpm add @tanstack/vue-query
+pnpm add -D @tanstack/eslint-plugin-query
+```
+tanstack query 和 pocketbase 都没有超时时间的设置，需要自己来配置
+```ts
+// src\views\login\LoginPage.vue
+await pb.collection(Collections.Users).listAuthMethods({
+    // src\utils\fetch.ts
+    fetch: fetchWithTimeoutPreferred,
+})
+```

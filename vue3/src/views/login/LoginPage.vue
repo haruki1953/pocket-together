@@ -9,6 +9,7 @@ import { useElementSize } from '@vueuse/core'
 import { layoutLoginPageConfig } from '@/config'
 import { Collections, pb } from '@/lib'
 import type { AuthMethodsList } from 'pocketbase'
+import { fetchWithTimeoutPreferred } from '@/utils'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -31,7 +32,9 @@ const showCol2TrueCol1False = computed(() => {
 const listAuthMethodsResult = ref<AuthMethodsList | null>(null)
 
 onMounted(async () => {
-  const result = await pb.collection(Collections.Users).listAuthMethods()
+  const result = await pb.collection(Collections.Users).listAuthMethods({
+    fetch: fetchWithTimeoutPreferred,
+  })
   listAuthMethodsResult.value = result
   console.log(result)
 })
