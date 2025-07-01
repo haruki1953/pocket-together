@@ -74,11 +74,11 @@ const showNavTrueRithtFalseBottom = computed(() => {
 }
 .bottom-bar {
   // 背景色 --color-background
-  // 从底部60%渐变至90%，透明
+  // 渐变，透明
   background: linear-gradient(
     to top,
-    var(--color-background) 50%,
-    transparent 85%
+    var(--color-background) 60%,
+    transparent 100%
   );
 }
 </style>
