@@ -25,3 +25,18 @@ export const fetchConfig = {
   // baseUrl,
   timeoutPreferred: timeout,
 }
+
+export const queryConfig = {
+  /**
+   * 30 秒
+   */
+  staleTimeShort: 1000 * 30,
+  /**
+   * 5 分钟
+   */
+  staleTimeMedium: 1000 * 60 * 5,
+  /**
+   * 1 小时
+   */
+  staleTimeLong: 1000 * 60 * 60,
+}

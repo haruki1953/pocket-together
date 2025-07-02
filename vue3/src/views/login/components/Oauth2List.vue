@@ -1,26 +1,36 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import { urlJoinUtil } from '@/utils'
-import { pocketbaseConfig } from '@/config'
-import type { AuthMethodsList, AuthProviderInfo } from 'pocketbase'
+import { fetchWithTimeoutPreferred, urlJoinUtil } from '@/utils'
+import { pocketbaseConfig, queryConfig } from '@/config'
+import type { AuthProviderInfo } from 'pocketbase'
 import { Collections } from '@/lib'
 import { pb, UsersLevelOptions, type Create } from '@/lib'
-
-const props = defineProps<{
-  listAuthMethodsResult: AuthMethodsList | null
-}>()
+import { useQuery } from '@tanstack/vue-query'
+import { queryKeys } from '@/queries'
 
 const i18nStore = useI18nStore()
 // const oauth2List = ['google', 'microsoft', 'github', 'apple']
 
+const { data: listAuthMethodsResult } = useQuery({
+  queryKey: queryKeys.users.listAuthMethods(),
+  queryFn: async () => {
+    const result = await pb.collection(Collections.Users).listAuthMethods({
+      fetch: fetchWithTimeoutPreferred,
+    })
+    console.log(result)
+    return result
+  },
+  staleTime: queryConfig.staleTimeLong,
+})
+
 const oauth2List = computed(() => {
-  if (props.listAuthMethodsResult == null) {
+  if (listAuthMethodsResult.value == null) {
     return []
   }
-  if (props.listAuthMethodsResult.oauth2.enabled === false) {
+  if (listAuthMethodsResult.value.oauth2.enabled === false) {
     return []
   }
-  return props.listAuthMethodsResult.oauth2.providers
+  return listAuthMethodsResult.value.oauth2.providers
 })
 
 const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
