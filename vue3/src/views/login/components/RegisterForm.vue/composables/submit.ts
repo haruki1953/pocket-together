@@ -1,15 +1,16 @@
-import type { RegisterFormForm, RegisterFormFormModel } from './dependencise'
+import { useMutation } from '@tanstack/vue-query'
 import { PotoFormValidationError } from '@/classes'
 import { pb, UsersLevelOptions, Collections, type Create } from '@/lib'
 import { useI18nStore } from '@/stores'
-import { potoMessage } from '@/utils'
+import { fetchWithTimeoutPreferred, potoMessage } from '@/utils'
 import { ClientResponseError } from 'pocketbase'
 import type { useRegisterFormRules } from './rules'
+import type { RegisterFormForm, RegisterFormFormModel } from './dependencise'
 
 type RegisterFormRules = ReturnType<typeof useRegisterFormRules>
 
 /**
- * 封装了提交函数相关
+ * 封装了提交函数相关（使用 useMutation 管理状态与副作用）
  */
 export const useRegisterFormSubmit = (data: {
   formModel: RegisterFormFormModel
@@ -28,13 +29,16 @@ export const useRegisterFormSubmit = (data: {
 
   const i18nStore = useI18nStore()
 
-  const isSubmitting = ref(false)
-  const submit = async () => {
-    isSubmitting.value = true
-    try {
-      isPrepareToSubmit.value = true
-      // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
-      await new Promise((resolve) => setTimeout(resolve, 500))
+  const mutation = useMutation({
+    // 提交逻辑
+    mutationFn: async () => {
+      // 提交前，优化调整一些校验规则
+      if (isPrepareToSubmit.value === false) {
+        isPrepareToSubmit.value = true
+        // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+      // 表单校验
       await form.value?.validate().catch(() => {
         throw new PotoFormValidationError()
       })
@@ -48,19 +52,29 @@ export const useRegisterFormSubmit = (data: {
         // 默认等级为basic，如果擅自设置为premium则会被api规则阻止
         level: UsersLevelOptions.basic,
       }
-      // 通过 pocketbase SDK 请求
-      const pbRes = await pb.collection(Collections.Users).create(createData)
-      // console.log(pbRes)
 
-      // 一些收尾工作
+      // 通过 pocketbase SDK 请求
+      const pbRes = await pb.collection(Collections.Users).create(createData, {
+        // timeout为5000
+        fetch: fetchWithTimeoutPreferred,
+      })
+
+      console.log(pbRes)
+      return pbRes
+    },
+
+    // 一些收尾工作
+    onSuccess: () => {
       form.value?.resetFields()
       isPrepareToSubmit.value = false
       potoMessage({
         type: 'success',
         message: i18nStore.t('registerSuccess')(),
       })
-    } catch (error) {
-      // 错误处理
+    },
+
+    // 错误处理
+    onError: (error) => {
       if (error instanceof ClientResponseError) {
         if (error.data?.data?.username?.code === 'validation_not_unique') {
           // 用户名已存在
@@ -83,28 +97,20 @@ export const useRegisterFormSubmit = (data: {
           message: i18nStore.t('registerFailedErrorUnknow')(),
         })
       }
-      // ClientResponseError 400: Failed to create record.
-      // console.log(error)
-      // console.log((error as any).data)
-      /* 错误示例
-{
-  "data": {
-    "username": {
-      "code": "validation_not_unique",
-      "message": "Value must be unique."
-    }
-  },
-  "message": "Failed to create record.",
-  "status": 400
-}
-*/
-    } finally {
-      isSubmitting.value = false
-    }
-  }
+    },
+
+    // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
+    retry: (failureCount, error) => {
+      const isTimeout =
+        error instanceof ClientResponseError && error.isAbort === true
+      const hasAttemptsLeft = failureCount < 2
+      console.log(failureCount)
+      return isTimeout && hasAttemptsLeft
+    },
+  })
 
   return {
-    isSubmitting,
-    submit,
+    isSubmitting: mutation.isPending,
+    submit: mutation.mutateAsync,
   }
 }
