@@ -60,7 +60,7 @@ const { isSubmitting, submit } = useLoginFormSubmit({
     type="primary"
     round
     size="large"
-    @click="submit"
+    @click="submit()"
   >
     <span class="font-bold">
       {{ i18nStore.t('loginButtonText')() }}

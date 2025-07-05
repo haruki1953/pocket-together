@@ -1,15 +1,18 @@
-import { Collections, pb } from '@/lib'
+// src\views\login\components\LoginForm.vue\composables\submit.ts
+import { useMutation } from '@tanstack/vue-query'
+import { pb, Collections } from '@/lib'
 import { useI18nStore } from '@/stores'
-import { potoMessage } from '@/utils'
-import type { useLoginFormRules } from './rules'
-import type { LoginFormForm, LoginFormFormModel } from './dependencies'
+import { fetchWithTimeoutPreferred, potoMessage } from '@/utils'
 import { ClientResponseError } from 'pocketbase'
 import { PotoFormValidationError } from '@/classes'
+import type { LoginFormForm, LoginFormFormModel } from './dependencies'
+import type { useLoginFormRules } from './rules'
+import { queryRetryPbFetchTimeout } from '@/queries'
 
 type LoginFormRules = ReturnType<typeof useLoginFormRules>
 
 /**
- * 封装了提交函数相关
+ * 封装了提交函数相关（使用 useMutation 管理状态与副作用）
  */
 export const useLoginFormSubmit = (data: {
   formModel: LoginFormFormModel
@@ -17,35 +20,48 @@ export const useLoginFormSubmit = (data: {
   isPrepareToSubmit: LoginFormRules['isPrepareToSubmit']
 }) => {
   const { formModel, form, isPrepareToSubmit } = data
-
   const i18nStore = useI18nStore()
 
-  const isSubmitting = ref(false)
-  const submit = async () => {
-    isSubmitting.value = true
-    try {
-      isPrepareToSubmit.value = true
-      // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      await form.value?.validate()
+  const mutation = useMutation({
+    // 提交逻辑
+    mutationFn: async () => {
+      if (isPrepareToSubmit.value === false) {
+        isPrepareToSubmit.value = true
+        // 设置 isPrepareToSubmit 后，最好等待一会以免计算属性未更新
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
 
+      // 表单校验
+      await form.value?.validate().catch(() => {
+        throw new PotoFormValidationError()
+      })
+
+      // PocketBase 登录
       const pbRes = await pb
         .collection(Collections.Users)
         .authWithPassword(
           formModel.value.usernameOrEmail,
-          formModel.value.password
+          formModel.value.password,
+          {
+            // timeout为5000
+            fetch: fetchWithTimeoutPreferred,
+          }
         )
 
       // console.log(pbRes)
-      // 一些收尾工作
-      // form.value?.resetFields()
-      // isPrepareToSubmit.value = false
+      return pbRes
+    },
+
+    // 成功回调
+    onSuccess: () => {
       potoMessage({
         type: 'success',
         message: i18nStore.t('loginSuccess')(),
       })
-    } catch (error) {
-      // 错误处理
+    },
+
+    // 错误处理
+    onError: (error) => {
       if (error instanceof ClientResponseError) {
         // 登录失败
         // ClientResponseError 400: Failed to authenticate.
@@ -63,23 +79,14 @@ export const useLoginFormSubmit = (data: {
           message: i18nStore.t('loginFailedErrorUnknow')(),
         })
       }
-      // console.log(error)
-      // ClientResponseError 400: Failed to authenticate.
-      // console.log((error as any).data)
-      /* 错误示例
-{
-  "data": {},
-  "message": "Failed to authenticate.",
-  "status": 400
-}
-      */
-    } finally {
-      isSubmitting.value = false
-    }
-  }
+    },
+
+    // ✅ 仅当 PocketBase 请求超时（Abort）时重试（最多重试 2 次）
+    retry: queryRetryPbFetchTimeout,
+  })
 
   return {
-    isSubmitting,
-    submit,
+    isSubmitting: mutation.isPending,
+    submit: mutation.mutateAsync,
   }
 }

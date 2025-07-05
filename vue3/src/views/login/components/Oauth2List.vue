@@ -7,6 +7,7 @@ import { Collections } from '@/lib'
 import { pb, UsersLevelOptions, type Create } from '@/lib'
 import { useQuery } from '@tanstack/vue-query'
 import { queryKeys } from '@/queries'
+import { queryRetryPbFetchTimeout } from '@/queries'
 
 const i18nStore = useI18nStore()
 // const oauth2List = ['google', 'microsoft', 'github', 'apple']
@@ -17,10 +18,11 @@ const { data: listAuthMethodsResult } = useQuery({
     const result = await pb.collection(Collections.Users).listAuthMethods({
       fetch: fetchWithTimeoutPreferred,
     })
-    console.log(result)
+    // console.log(result)
     return result
   },
   staleTime: queryConfig.staleTimeLong,
+  retry: queryRetryPbFetchTimeout,
 })
 
 const oauth2List = computed(() => {
@@ -39,6 +41,8 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
   } = {
     level: UsersLevelOptions.basic,
   }
+
+  // authWithOAuth2 比较复杂，暂不使用useMutation与fetchWithTimeoutPreferred
   const res = await pb
     .collection(Collections.Users)
     .authWithOAuth2({ provider: providerName, createData })
