@@ -8,6 +8,7 @@ import type { I18nLocaleType } from './locale'
 // 还需要确保每组函数类型是一样的，这个只能自己注意了
 export const i18nMessages = {
   appNameI18n,
+  // 路由
   pageHome: {
     'en-US': () => 'Home' as const,
     'zh-CN': () => '首页' as const,
@@ -38,6 +39,12 @@ export const i18nMessages = {
     'zh-CN': () => '登录' as const,
     'zh-TW': () => '登入' as const,
   },
+  pageSettingProfile: {
+    'en-US': () => 'Profile' as const,
+    'zh-CN': () => '个人信息' as const,
+    'zh-TW': () => '個人資訊' as const,
+  },
+  // 登录相关
   // loginPlaceholderUsername: {
   //   'en-US': () => 'Please enter username' as const,
   //   'zh-CN': () => '请输入用户名' as const,

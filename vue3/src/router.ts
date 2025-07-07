@@ -14,7 +14,9 @@ import {
   RiHomeFill,
   RiMessage3Fill,
   RiSettingsFill,
+  RiUserLine,
 } from '@remixicon/vue'
+import SettingProfile from './views/setting/views/SettingProfile.vue'
 
 interface RouterInfo {
   path: string
@@ -62,6 +64,19 @@ export const routerNavInfo = {
   navPage: RouterInfo
 }
 
+// 显示在设置页的路由
+export const routerSettingList = [
+  {
+    path: '/setting/profile',
+    name: 'SettingProfile',
+    titleI18nMessageKey: 'pageSettingProfile',
+    icon: RiUserLine,
+  },
+] as const satisfies (RouterInfo & {
+  icon: Component
+})[]
+
+// 路由
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -90,6 +105,14 @@ const router = createRouter({
           path: '/setting',
           name: 'SettingPage',
           component: SettingPage,
+          redirect: '/setting/profile',
+          children: [
+            {
+              path: '/setting/profile',
+              name: 'SettingProfile',
+              component: SettingProfile,
+            },
+          ],
         },
         {
           path: '/nav',
