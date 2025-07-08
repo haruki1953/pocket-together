@@ -21,7 +21,10 @@ const isNavItemActive = (item: { path: string }) => {
   <div>
     <ContainerCol2 col1Position="right" col1Twcss="flex-1" col2Twcss="w-24">
       <template #col1>
-        <RouterView></RouterView>
+        <div class="my-6">
+          <RouterView></RouterView>
+        </div>
+
         <!-- <div class="h-[3000px] bg-red-950"></div> -->
       </template>
       <template #col2>
