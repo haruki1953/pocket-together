@@ -5,7 +5,7 @@ import LoginDarkI18n from './components/LoginDarkI18n.vue'
 import RegisterForm from './components/RegisterForm.vue'
 import Oauth2List from './components/Oauth2List.vue'
 import { useLoginPageBoxLeftRightStyle } from './composables'
-import { useElementSize } from '@vueuse/core'
+import { useElementSize, useWindowSize } from '@vueuse/core'
 import { layoutLoginPageConfig } from '@/config'
 
 const i18nStore = useI18nStore()
@@ -17,8 +17,9 @@ useSeoMeta({
 const { refBoxLeft, refBoxRight, styleBoxLeftRight } =
   useLoginPageBoxLeftRightStyle()
 
-const refDiv = ref<HTMLElement | null>(null)
-const { width: refDivWidth } = useElementSize(refDiv)
+// const refDiv = ref<HTMLElement | null>(null)
+// const { width: refDivWidth } = useElementSize(refDiv)
+const { width: refDivWidth } = useWindowSize()
 const showCol2TrueCol1False = computed(() => {
   if (refDivWidth.value >= layoutLoginPageConfig.breakpointCol2ToCol1) {
     return true
@@ -29,7 +30,7 @@ const showCol2TrueCol1False = computed(() => {
 
 <template>
   <div>
-    <div ref="refDiv" class="flex min-h-screen items-center justify-center">
+    <div class="flex min-h-screen items-center justify-center">
       <div class="w-full max-w-[1000px]">
         <div
           :class="{

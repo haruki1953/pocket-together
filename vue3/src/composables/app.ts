@@ -1,5 +1,5 @@
 import { onMounted } from 'vue'
-import { getScrollbarWidth } from './utils'
+import { getScrollbarWidth } from '@/utils'
 
 // 组合式的意义就是封装和复用有状态逻辑
 // https://cn.vuejs.org/guide/reusability/composables.html

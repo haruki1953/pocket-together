@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { layoutLayoutNavConfig } from '@/config'
-import { useElementSize } from '@vueuse/core'
+import { useElementSize, useWindowSize } from '@vueuse/core'
 import NavList from './components/NavList.vue'
 
-const refDiv = ref<HTMLElement | null>(null)
-const { width: refDivWidth } = useElementSize(refDiv)
+// const refDiv = ref<HTMLElement | null>(null)
+// const { width: refDivWidth } = useElementSize(refDiv)
+const { width: refDivWidth } = useWindowSize()
 /**
  * 大于等于768将显示右侧导航栏，小于768将显示底部导航栏
  */
