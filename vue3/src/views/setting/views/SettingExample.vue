@@ -28,19 +28,23 @@ const showContentTrueCol2FalseCol1 = computed(() => {
     <div v-if="showContentTrueCol2FalseCol1" class="flex gap-x-6">
       <div class="flex-1">
         <div class="mb-6 flow-root rounded-3xl bg-color-background-soft">
-          <div class="m-4">
-            <div></div>
-          </div>
+          <div class="m-4 h-80 bg-red-950"></div>
+          <div class="border border-color-background"></div>
+          <div class="m-4 h-96 bg-red-950"></div>
         </div>
       </div>
-      <div class="flex-1"></div>
-    </div>
-    <div v-else>
-      <div class="mb-6 flow-root rounded-3xl bg-color-background-soft">
-        <div class="m-4"></div>
-        <div class="border border-color-background"></div>
-        <div class="m-4"></div>
+      <div class="flex-1">
+        <div class="mb-6 flow-root rounded-3xl bg-color-background-soft">
+          <div class="m-4 h-96 bg-red-950"></div>
+          <div class="border border-color-background"></div>
+          <div class="m-4 h-96 bg-red-950"></div>
+        </div>
       </div>
+    </div>
+    <div v-else class="mb-6 flow-root rounded-3xl bg-color-background-soft">
+      <div class="m-4 h-96 bg-red-950"></div>
+      <div class="border border-color-background"></div>
+      <div class="m-4 h-96 bg-red-950"></div>
     </div>
   </div>
 </template>

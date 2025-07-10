@@ -147,6 +147,7 @@ export enum UsersLevelOptions {
 }
 export type UsersRecord<Tinfo = unknown> = {
 	avatar?: string
+	bio?: string
 	created?: IsoDateString
 	email: string
 	emailVisibility?: boolean

@@ -258,7 +258,7 @@
         "max": 32,
         "min": 1,
         "name": "username",
-        "pattern": "^[a-zA-Z0-9]+$",
+        "pattern": "^[a-zA-Z0-9_]+$",
         "presentable": false,
         "primaryKey": false,
         "required": true,
@@ -269,9 +269,23 @@
         "autogeneratePattern": "",
         "hidden": false,
         "id": "text1579384326",
-        "max": 255,
+        "max": 0,
         "min": 0,
         "name": "name",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3709889147",
+        "max": 0,
+        "min": 0,
+        "name": "bio",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
@@ -379,7 +393,7 @@
       "rule": ""
     },
     "otp": {
-      "enabled": false,
+      "enabled": true,
       "duration": 180,
       "length": 8,
       "emailTemplate": {
