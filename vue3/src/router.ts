@@ -72,42 +72,6 @@ export const routerSettingList = [
     titleI18nMessageKey: 'pageSettingProfile',
     icon: markRaw(RiUserLine),
   },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
-  {
-    path: '/setting/profile1',
-    name: 'SettingProfile1',
-    titleI18nMessageKey: 'pageSettingProfile',
-    icon: markRaw(RiUserLine),
-  },
 ] as const satisfies (RouterInfo & {
   icon: Component
 })[]

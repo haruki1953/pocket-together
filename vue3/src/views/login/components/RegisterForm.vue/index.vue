@@ -39,7 +39,13 @@ const { isSubmitting, submit } = useRegisterFormSubmit({
 </script>
 
 <template>
-  <ElForm ref="form" :model="formModel" :rules="rules" size="large">
+  <ElForm
+    ref="form"
+    :model="formModel"
+    :rules="rules"
+    size="large"
+    class="poto-el-form-line"
+  >
     <ElFormItem prop="username">
       <ElInput
         v-model="formModel.username"

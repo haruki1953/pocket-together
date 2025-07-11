@@ -27,7 +27,13 @@ const { isSubmitting, submit } = useLoginFormSubmit({
 </script>
 
 <template>
-  <ElForm ref="form" :model="formModel" :rules="rules" size="large">
+  <ElForm
+    ref="form"
+    :model="formModel"
+    :rules="rules"
+    size="large"
+    class="poto-el-form-line"
+  >
     <ElFormItem prop="usernameOrEmail">
       <ElInput
         v-model="formModel.usernameOrEmail"

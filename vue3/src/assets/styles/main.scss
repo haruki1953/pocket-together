@@ -2,7 +2,6 @@
 @use './tailwind.css';
 @use './transition.scss';
 @use './animation.scss';
-@use './control.scss';
 @use './element-plus.scss';
 @use './nunito.css';
 
@@ -21,18 +20,22 @@
 
 // 下面是一些自定义的样式类，poto意为PocketTogether
 
-.el-form-item.is-error .el-input__wrapper.el-input__wrapper {
-  box-shadow: 0 0 0 2px var(--el-color-danger) inset;
-
-  &:hover {
+// 自定义的el表单的错误提示样式
+.poto-el-form-line.poto-el-form-line {
+  .el-form-item.is-error .el-input__wrapper.el-input__wrapper {
     box-shadow: 0 0 0 2px var(--el-color-danger) inset;
-  }
 
-  &.is-focus {
-    box-shadow: 0 0 0 2px var(--el-color-danger) inset;
+    &:hover {
+      box-shadow: 0 0 0 2px var(--el-color-danger) inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px var(--el-color-danger) inset;
+    }
   }
 }
 
+// 自定义的el输入框样式，带有2px的线框
 .poto-el-input-line.poto-el-input-line {
   display: flex;
   width: 100%;
@@ -44,8 +47,7 @@
     border-radius: 9999px;
     // background-color: var(--color-background);
     background-color: var(--color-background-soft);
-    transition: all 0.5s;
-    overflow: hidden;
+    // overflow: hidden;
     box-shadow: 0 0 0 2px var(--color-text-soft) inset;
     transition: all 150ms;
 
@@ -62,6 +64,7 @@
     .el-input__inner {
       margin-left: 5px;
       color: var(--color-text);
+
       &::placeholder {
         color: var(--color-text-soft);
       }
@@ -99,5 +102,66 @@
     transition: background-color 0s 600000s !important;
   }
 
+  .el-textarea__inner {
+    padding: 10px 20px;
+    border-radius: 20px;
+    // background-color: var(--color-background);
+    background-color: var(--color-background-soft);
+    box-shadow: 0 0 0 2px var(--color-text-soft) inset;
+    transition:
+      background-color 150ms,
+      box-shadow 150ms;
+    color: var(--color-text);
+
+    &::placeholder {
+      color: var(--color-text-soft);
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 2px var(--color-text) inset;
+      background-color: var(--color-background);
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px var(--el-color-primary) inset;
+      background-color: var(--color-background);
+    }
+  }
+
   // }
+}
+
+// 设置页中的按钮盒子样式
+.poto-setting-button-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 500px) {
+    justify-content: center;
+
+    &.not-center {
+      justify-content: flex-end;
+    }
+  }
+
+  .el-button {
+    margin-top: 4px;
+
+    span,
+    .el-icon {
+      // color: var(--color-background);
+      font-weight: bold;
+    }
+
+    &.el-button--small {
+
+      span,
+      .el-icon {
+        // color: var(--color-background);
+        font-weight: normal;
+      }
+    }
+  }
 }

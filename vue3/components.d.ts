@@ -27,7 +27,9 @@ declare module 'vue' {
     RiSunLine: typeof import('@remixicon/vue')['RiSunLine']
     RiTranslate2: typeof import('@remixicon/vue')['RiTranslate2']
     RiUser4Line: typeof import('@remixicon/vue')['RiUser4Line']
+    RiUserLine: typeof import('@remixicon/vue')['RiUserLine']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingProfileForm: typeof import('./src/components/setting/SettingProfileForm.vue')['default']
   }
 }

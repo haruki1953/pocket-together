@@ -215,6 +215,42 @@ export const i18nMessages = {
     'zh-CN': () => '注册成功' as const,
     'zh-TW': () => '註冊成功' as const,
   },
+  // 设置页 个人信息 修改名称与简介
+  settingProfileNameBioContentTitle: {
+    'en-US': () => 'Edit Name and Bio' as const,
+    'zh-CN': () => '修改名称与简介' as const,
+    'zh-TW': () => '修改名稱與簡介' as const,
+  },
+  settingProfileNameLabel: {
+    'en-US': () => 'Name' as const,
+    'zh-CN': () => '名称' as const,
+    'zh-TW': () => '名稱' as const,
+  },
+  settingProfileNamePlaceholder: {
+    'en-US': () => 'Please enter name' as const,
+    'zh-CN': () => '请输入名称' as const,
+    'zh-TW': () => '請輸入名稱' as const,
+  },
+  settingProfileBioLabel: {
+    'en-US': () => 'Bio' as const,
+    'zh-CN': () => '简介' as const,
+    'zh-TW': () => '簡介' as const,
+  },
+  settingProfileBioPlaceholder: {
+    'en-US': () => 'Please enter bio' as const,
+    'zh-CN': () => '请输入简介' as const,
+    'zh-TW': () => '請輸入簡介' as const,
+  },
+  settingProfileSaveButton: {
+    'en-US': () => 'Save' as const,
+    'zh-CN': () => '保存' as const,
+    'zh-TW': () => '保存' as const,
+  },
+  settingProfileCancelButton: {
+    'en-US': () => 'Cancel' as const,
+    'zh-CN': () => '取消' as const,
+    'zh-TW': () => '取消' as const,
+  },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
 // 通过类型体操，获取i18nMessages键的类型
