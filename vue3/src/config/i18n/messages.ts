@@ -251,6 +251,17 @@ export const i18nMessages = {
     'zh-CN': () => '取消' as const,
     'zh-TW': () => '取消' as const,
   },
+  // 一些提示的信息
+  messageUpdateSuccess: {
+    'en-US': () => 'Updated successfully' as const,
+    'zh-CN': () => '修改成功' as const,
+    'zh-TW': () => '修改成功' as const,
+  },
+  messageUpdateFailure: {
+    'en-US': () => 'Update failed' as const,
+    'zh-CN': () => '修改失败' as const,
+    'zh-TW': () => '修改失败' as const,
+  },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
 // 通过类型体操，获取i18nMessages键的类型
