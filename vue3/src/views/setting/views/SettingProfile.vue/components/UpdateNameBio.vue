@@ -1,15 +1,47 @@
 <script setup lang="ts">
 import { Collections, pb, type Update } from '@/lib'
-import { queryRetryPbFetchTimeout } from '@/queries'
+import { queryKeys, queryRetryPbFetchTimeout } from '@/queries'
 import { useI18nStore } from '@/stores'
-import { potoMessage } from '@/utils'
-import { useMutation } from '@tanstack/vue-query'
+import {
+  compareDatesSafe,
+  fetchWithTimeoutPreferred,
+  potoMessage,
+} from '@/utils'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 
 const i18nStore = useI18nStore()
 
+// 当前表单数据
 const name = ref('')
 const bio = ref('')
 
+// 当前表单是否已编，已编辑则不再跟随profileData变化
+const isEdited = ref(false)
+const setEdited = (val: boolean) => {
+  isEdited.value = val
+}
+
+// 初始化表单数据
+const initData = () => {
+  if (isEdited.value) {
+    return
+  }
+  if (profileData.value == null) {
+    return
+  }
+  name.value = profileData.value.name
+  bio.value = profileData.value.bio
+}
+
+// 取消按钮函数
+const cancelFn = () => {
+  setEdited(false)
+  initData()
+}
+
+const queryClient = useQueryClient()
+
+// 修改名称与简介mutation
 const mutation = useMutation({
   // mutation函数
   mutationFn: async () => {
@@ -34,13 +66,28 @@ const mutation = useMutation({
   },
   // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
   retry: queryRetryPbFetchTimeout,
-  // 成功与失败之后的处理
-  onSuccess: () => {
+  // 成功之后的处理
+  onSuccess: (data) => {
+    // 更新query缓存
+    // 更新前，应确认data.update时间为最新的，以此方式避免两次很近的请求导致问题
+    if (
+      profileData.value != null &&
+      // data.updated > profileData.value.updated
+      compareDatesSafe(data.updated, profileData.value.updated) === 1
+    ) {
+      // 更新query缓存
+      queryClient.setQueryData(
+        queryKeys.users.getOne(pb.authStore.record?.id ?? ''),
+        // 确保类型正确
+        data satisfies NonNullable<typeof profileData.value>
+      )
+    }
     potoMessage({
       type: 'success',
       message: i18nStore.t('messageUpdateSuccess')(),
     })
   },
+  // 失败之后的处理
   onError: (error) => {
     potoMessage({
       type: 'error',
@@ -48,9 +95,48 @@ const mutation = useMutation({
     })
   },
 })
-
 const isSubmitting = mutation.isPending
 const submit = mutation.mutateAsync
+
+// 个人信息查询
+const query = useQuery({
+  // 查询依赖，需登录（待完善为响应式）
+  enabled: pb.authStore.record?.id != null,
+  // 查询键
+  queryKey: computed(() =>
+    //（待完善为响应式）
+    queryKeys.users.getOne(pb.authStore.record?.id ?? '')
+  ),
+  // 查询函数
+  queryFn: async () => {
+    // 未登录，抛出错误
+    if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+      throw new Error(
+        '!pb.authStore.isValid || pb.authStore.record?.id == null'
+      )
+    }
+    // pb请求
+    const pbRes = await pb
+      .collection(Collections.Users)
+      .getOne(pb.authStore.record.id, {
+        fetch: fetchWithTimeoutPreferred,
+      })
+    console.log(pbRes)
+    return pbRes
+  },
+  // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
+  retry: queryRetryPbFetchTimeout,
+})
+const profileData = query.data
+
+// 监听profileData，改变时赋值给当前表单数据。组件setup时也会立即执行
+watch(
+  profileData,
+  () => {
+    initData()
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <template>
@@ -102,7 +188,7 @@ const submit = mutation.mutateAsync
       <ElButton :loading="isSubmitting" type="primary" round @click="submit()">
         {{ i18nStore.t('settingProfileSaveButton')() }}
       </ElButton>
-      <ElButton type="info" round @click="() => {}">
+      <ElButton type="info" round @click="cancelFn()">
         {{ i18nStore.t('settingProfileCancelButton')() }}
       </ElButton>
     </div>
