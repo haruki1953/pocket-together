@@ -8,6 +8,7 @@ import { PotoFormValidationError } from '@/classes'
 import type { LoginFormForm, LoginFormFormModel } from './dependencies'
 import type { useLoginFormRules } from './rules'
 import { queryRetryPbFetchTimeout } from '@/queries'
+import { useRouter } from 'vue-router'
 
 type LoginFormRules = ReturnType<typeof useLoginFormRules>
 
@@ -85,8 +86,15 @@ export const useLoginFormSubmit = (data: {
     retry: queryRetryPbFetchTimeout,
   })
 
+  const router = useRouter()
+
+  const submit = async () => {
+    await mutation.mutateAsync()
+    router.push('/')
+  }
+
   return {
     isSubmitting: mutation.isPending,
-    submit: mutation.mutateAsync,
+    submit,
   }
 }

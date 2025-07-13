@@ -8,6 +8,7 @@ import { pb, UsersLevelOptions, type Create } from '@/lib'
 import { useQuery } from '@tanstack/vue-query'
 import { queryKeys } from '@/queries'
 import { queryRetryPbFetchTimeout } from '@/queries'
+import { useRouter } from 'vue-router'
 
 const i18nStore = useI18nStore()
 // const oauth2List = ['google', 'microsoft', 'github', 'apple']
@@ -16,12 +17,14 @@ const { data: listAuthMethodsResult } = useQuery({
   queryKey: queryKeys.users.listAuthMethods(),
   queryFn: async () => {
     const result = await pb.collection(Collections.Users).listAuthMethods({
+      // timeout为5000
       fetch: fetchWithTimeoutPreferred,
     })
     // console.log(result)
     return result
   },
   staleTime: queryConfig.staleTimeLong,
+  // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
   retry: queryRetryPbFetchTimeout,
 })
 
@@ -34,6 +37,8 @@ const oauth2List = computed(() => {
   }
   return listAuthMethodsResult.value.oauth2.providers
 })
+
+const router = useRouter()
 
 const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
   const createData: {
@@ -48,6 +53,8 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
     .authWithOAuth2({ provider: providerName, createData })
 
   console.log(res)
+
+  router.push('/')
 }
 </script>
 

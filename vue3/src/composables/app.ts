@@ -1,17 +1,23 @@
 import { onMounted } from 'vue'
 import { getScrollbarWidth } from '@/utils'
+import { Collections, pb } from '@/lib'
+import { useAuthStore } from '@/stores'
+import { useMutation } from '@tanstack/vue-query'
+import { fetchWithTimeoutPreferred } from '@/utils'
+import { queryRetryPbFetchTimeout } from '@/queries'
 
 // 组合式的意义就是封装和复用有状态逻辑
 // https://cn.vuejs.org/guide/reusability/composables.html
 
 // 控制首次数据的加载，以及加载动画遮罩的关闭
-export const useFirstDataLoadingAndAnimationMaskClose = () => {
-  // 检查登录，等待加载数据，之后取消在 index.html 中的加载遮罩
+export const useFirstDataLoadingAndAnimationMaskClose = (data: {
+  dataFirstLoadService: () => Promise<void>
+}) => {
+  const { dataFirstLoadService } = data
+
+  // 等待加载数据，之后取消在 index.html 中的加载遮罩
   onMounted(async () => {
-    // const isLogin = dataConfirmLoginService()
-    // if (isLogin) {
     await dataFirstLoadAwait()
-    // }
     indexMaskClose()
   })
 
@@ -20,12 +26,11 @@ export const useFirstDataLoadingAndAnimationMaskClose = () => {
   // 等待加载数据，最多等待3秒或10秒（第一次加载），最少等待1秒
   const dataFirstLoadAwait = async () => {
     // const maxTimeout = statesStore.isFirstLoadFirstData ? 10000 : 3000
-    // const maxTimeout = 3000
-    const maxTimeout = 1000
+    const maxTimeout = 3000
     const minTimeout = 1000
     await Promise.all([
       Promise.race([
-        // dataFirstLoadService().catch(() => {}),
+        dataFirstLoadService().catch(() => {}),
         new Promise((resolve) => setTimeout(resolve, maxTimeout)),
       ]),
       new Promise((resolve) => setTimeout(resolve, minTimeout)),
@@ -44,4 +49,39 @@ export const useFirstDataLoadingAndAnimationMaskClose = () => {
       maskElement.style.display = 'none'
     }
   }
+}
+
+// 在程序初始化时，进行关于pocketbase身份验证的一些操作
+export const useInitPbAuth = () => {
+  const authStore = useAuthStore()
+  // 将pb.authStore响应式，onChange时赋值给本地的authStore
+  pb.authStore.onChange(
+    () => {
+      authStore.setAuth(pb.authStore)
+    },
+    // 立即执行
+    true
+  )
+
+  // 每次启动时，刷新auth
+  const mutation = useMutation({
+    mutationFn: async () => {
+      // 未登录，返回
+      if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+        return
+      }
+
+      const pbRes = await pb.collection(Collections.Users).authRefresh({
+        // timeout为5000
+        fetch: fetchWithTimeoutPreferred,
+      })
+
+      return pbRes
+    },
+    // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
+    retry: queryRetryPbFetchTimeout,
+  })
+  onMounted(async () => {
+    await mutation.mutateAsync()
+  })
 }

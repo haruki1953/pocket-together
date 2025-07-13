@@ -4,7 +4,10 @@ import { useI18nStore } from './stores'
 import { useDark } from '@vueuse/core'
 import { computed } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
-import { useFirstDataLoadingAndAnimationMaskClose } from './composables'
+import {
+  useFirstDataLoadingAndAnimationMaskClose,
+  useInitPbAuth,
+} from './composables'
 
 const i18nStore = useI18nStore()
 
@@ -19,7 +22,12 @@ useSeoMeta({
 })
 
 // 控制首次数据的加载，以及加载动画遮罩的关闭
-useFirstDataLoadingAndAnimationMaskClose()
+useFirstDataLoadingAndAnimationMaskClose({
+  dataFirstLoadService: async () => {},
+})
+
+// 在程序初始化时，进行关于pocketbase身份验证的一些操作
+useInitPbAuth()
 
 const isDark = useDark()
 </script>

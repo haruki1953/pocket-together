@@ -8,7 +8,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useI18nStore = defineStore(
-  'vue-starter-250611-i18n',
+  'pocket-together-i18n',
   () => {
     // type I18nLocaleType = "en-US" | "zh-CN" | "zh-TW" ……
     const locale = ref<I18nLocaleType>(i18nDefaultLocale)

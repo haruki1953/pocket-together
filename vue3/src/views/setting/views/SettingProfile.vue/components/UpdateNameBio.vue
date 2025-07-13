@@ -4,6 +4,7 @@ import { queryKeys, queryRetryPbFetchTimeout, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
 import { compareDatesSafe, potoMessage } from '@/utils'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { fetchWithTimeoutPreferred } from '@/utils'
 
 const i18nStore = useI18nStore()
 
@@ -55,7 +56,10 @@ const mutation = useMutation({
 
     const pbRes = await pb
       .collection(Collections.Users)
-      .update(pb.authStore.record.id, updateData)
+      .update(pb.authStore.record.id, updateData, {
+        // timeout为5000
+        fetch: fetchWithTimeoutPreferred,
+      })
 
     console.log(pbRes)
     return pbRes

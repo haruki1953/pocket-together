@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useTestStore = defineStore(
-  'tweblog-public-test',
+  'pocket-together-test',
   () => {
     const testVal = ref(0)
 

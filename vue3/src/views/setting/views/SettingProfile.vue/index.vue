@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { layoutSettingPageConfig } from '@/config'
-import { useI18nStore } from '@/stores'
+import { useAuthStore, useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import UpdateNameBio from './components/UpdateNameBio.vue'
 
@@ -22,6 +22,8 @@ const showContentTrueCol2FalseCol1 = computed(() => {
   }
   return false
 })
+
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -30,11 +32,15 @@ const showContentTrueCol2FalseCol1 = computed(() => {
     <div v-if="showContentTrueCol2FalseCol1" class="flex gap-x-6">
       <!-- 第一列 -->
       <div class="flex-1">
+        <!-- 需登录 修改昵称简介 -->
         <!-- 圆角盒子 -->
-        <div class="mb-6 flow-root rounded-3xl bg-color-background-soft">
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
           <!-- 内容盒子 -->
           <div class="m-4">
-            <!-- 修改昵称简介盒子 -->
+            <!-- 修改昵称简介组件 -->
             <UpdateNameBio></UpdateNameBio>
           </div>
           <!-- 分割线 -->
@@ -46,7 +52,11 @@ const showContentTrueCol2FalseCol1 = computed(() => {
     </div>
     <!-- 小屏 单列 -->
     <div v-else>
-      <div class="mb-6 flow-root rounded-3xl bg-color-background-soft">
+      <!-- 需登录 修改昵称简介 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
         <div class="m-4">
           <UpdateNameBio></UpdateNameBio>
         </div>

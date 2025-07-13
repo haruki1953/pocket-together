@@ -1,18 +1,20 @@
 import { queryConfig } from '@/config'
 import { Collections, pb } from '@/lib'
 import { queryKeys, queryRetryPbFetchTimeout } from '@/queries'
+import { useAuthStore } from '@/stores'
 import { fetchWithTimeoutPreferred } from '@/utils'
 import { useQuery } from '@tanstack/vue-query'
 
 // 个人信息查询
 export const useProfileQuery = () => {
+  const authStore = useAuthStore()
+
   const query = useQuery({
-    // 查询依赖，需登录（待完善为响应式）
-    enabled: pb.authStore.record?.id != null,
-    // 查询键
+    // 查询依赖，需登录（响应式）
+    enabled: computed(() => authStore.isValid && authStore.record?.id != null),
+    // 查询键（响应式）
     queryKey: computed(() =>
-      //（待完善为响应式）
-      queryKeys.users.getOne(pb.authStore.record?.id ?? '')
+      queryKeys.users.getOne(authStore.record?.id ?? '')
     ),
     // 查询函数
     queryFn: async () => {
@@ -26,6 +28,7 @@ export const useProfileQuery = () => {
       const pbRes = await pb
         .collection(Collections.Users)
         .getOne(pb.authStore.record.id, {
+          // timeout为5000
           fetch: fetchWithTimeoutPreferred,
         })
       console.log(pbRes)
