@@ -9,6 +9,7 @@ import type { LoginFormForm, LoginFormFormModel } from './dependencies'
 import type { useLoginFormRules } from './rules'
 import { queryRetryPbFetchTimeout } from '@/queries'
 import { useRouter } from 'vue-router'
+import { routerDict } from '@/config'
 
 type LoginFormRules = ReturnType<typeof useLoginFormRules>
 
@@ -90,7 +91,7 @@ export const useLoginFormSubmit = (data: {
 
   const submit = async () => {
     await mutation.mutateAsync()
-    router.push('/')
+    router.push(routerDict.HomePage.path)
   }
 
   return {

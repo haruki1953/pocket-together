@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBalancedGrid } from '@/composables'
 import { layoutSettingPageConfig } from '@/config'
-import { routerSettingList } from '@/router'
+import { routerSettingList } from '@/config'
 import { useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'

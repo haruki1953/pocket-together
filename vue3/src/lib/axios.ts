@@ -46,7 +46,7 @@ instance.interceptors.response.use(
       //   message: '请登录'
       // })
       // authStore.removeToken()
-      // router.push({ name: 'login' })
+      // router.push('/login')
       return Promise.reject(err)
     }
 

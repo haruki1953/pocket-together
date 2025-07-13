@@ -5,7 +5,7 @@ export const potoGoBack = (router: ReturnType<typeof useRouter>) => {
     router.back()
   } else {
     // 如果没有历史记录，则导航到首页
-    router.push({ name: 'home' })
+    router.push('/')
   }
 }
 

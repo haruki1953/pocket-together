@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { appIcon } from '@/config'
-import { routerNavInfo } from '@/router'
+import { routerNavInfo } from '@/config'
 import { useI18nStore } from '@/stores'
 import { useRoute } from 'vue-router'
 

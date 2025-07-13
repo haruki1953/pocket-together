@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { queryKeys } from '@/queries'
 import { queryRetryPbFetchTimeout } from '@/queries'
 import { useRouter } from 'vue-router'
+import { routerDict } from '@/config'
 
 const i18nStore = useI18nStore()
 // const oauth2List = ['google', 'microsoft', 'github', 'apple']
@@ -54,7 +55,7 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
 
   console.log(res)
 
-  router.push('/')
+  router.push(routerDict.HomePage.path)
 }
 </script>
 
