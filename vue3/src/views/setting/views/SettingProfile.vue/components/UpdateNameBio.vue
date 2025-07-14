@@ -30,6 +30,18 @@ const initData = () => {
   bio.value = profileQuery.data.value.bio
 }
 
+// 监听profileQuery.data，改变时赋值给当前表单数据。组件setup时也会立即执行
+watch(
+  profileQuery.data,
+  () => {
+    if (isEdited.value) {
+      return
+    }
+    initData()
+  },
+  { deep: true, immediate: true }
+)
+
 // 取消按钮函数
 const cancelFn = () => {
   setEdited(false)
@@ -54,6 +66,7 @@ const mutation = useMutation({
       bio: bio.value,
     }
 
+    // 通过 pocketbase SDK 请求
     const pbRes = await pb
       .collection(Collections.Users)
       .update(pb.authStore.record.id, updateData, {
@@ -100,26 +113,14 @@ const mutation = useMutation({
 })
 const isSubmitting = mutation.isPending
 const submit = mutation.mutateAsync
-
-// 监听profileQuery.data，改变时赋值给当前表单数据。组件setup时也会立即执行
-watch(
-  profileQuery.data,
-  () => {
-    if (isEdited.value) {
-      return
-    }
-    initData()
-  },
-  { deep: true, immediate: true }
-)
 </script>
 
 <template>
-  <!-- 修改昵称简介盒子 -->
+  <!-- 修改昵称简介组件 -->
   <div>
     <!-- 内容标题 -->
     <div class="mb-3 ml-3 text-sm font-bold text-color-text-soft">
-      {{ i18nStore.t('settingProfileNameBioContentTitle')() }}
+      {{ i18nStore.t('settingProfileUpdateNameBioContentTitle')() }}
     </div>
     <!-- 表单盒子 -->
     <div class="mx-auto max-w-[500px]">
@@ -127,12 +128,11 @@ watch(
       <div class="mb-3">
         <!-- 输入框标题 -->
         <div class="mb-[2px] ml-[25px] text-[12px] leading-[12px]">
-          {{ i18nStore.t('settingProfileNameLabel')() }}
+          {{ i18nStore.t('settingProfileUpdateNameBioNameLabel')() }}
         </div>
         <!-- 输入框 -->
         <ElInput
           v-model="name"
-          :placeholder="i18nStore.t('settingProfileNamePlaceholder')()"
           size="large"
           class="poto-el-input-line"
           @focus="
@@ -149,12 +149,11 @@ watch(
       <div class="mb-3">
         <!-- 输入框标题 -->
         <div class="mb-[2px] ml-[25px] text-[12px] leading-[12px]">
-          {{ i18nStore.t('settingProfileBioLabel')() }}
+          {{ i18nStore.t('settingProfileUpdateNameBioBioLabel')() }}
         </div>
         <!-- 输入框 -->
         <ElInput
           v-model="bio"
-          :placeholder="i18nStore.t('settingProfileBioPlaceholder')()"
           type="textarea"
           :autosize="{ minRows: 3, maxRows: 20 }"
           resize="none"
@@ -169,10 +168,10 @@ watch(
     <!-- 按钮盒子 -->
     <div class="poto-setting-button-box">
       <ElButton :loading="isSubmitting" type="primary" round @click="submit()">
-        {{ i18nStore.t('settingProfileSaveButton')() }}
+        {{ i18nStore.t('settingButtonSave')() }}
       </ElButton>
       <ElButton type="info" round @click="cancelFn()">
-        {{ i18nStore.t('settingProfileCancelButton')() }}
+        {{ i18nStore.t('settingButtonCancel')() }}
       </ElButton>
     </div>
   </div>

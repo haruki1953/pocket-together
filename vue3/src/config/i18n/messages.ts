@@ -125,6 +125,7 @@ export const i18nMessages = {
     'zh-CN': () => '登录失败' as const,
     'zh-TW': () => '登入失敗' as const,
   },
+  // 注册相关
   registerRulesUsernameRequiredMessage: {
     'en-US': () => 'Please enter username' as const,
     'zh-CN': () => '请输入用户名' as const,
@@ -215,42 +216,6 @@ export const i18nMessages = {
     'zh-CN': () => '注册成功' as const,
     'zh-TW': () => '註冊成功' as const,
   },
-  // 设置页 个人信息 修改名称与简介
-  settingProfileNameBioContentTitle: {
-    'en-US': () => 'Edit Name and Bio' as const,
-    'zh-CN': () => '修改名称与简介' as const,
-    'zh-TW': () => '修改名稱與簡介' as const,
-  },
-  settingProfileNameLabel: {
-    'en-US': () => 'Name' as const,
-    'zh-CN': () => '名称' as const,
-    'zh-TW': () => '名稱' as const,
-  },
-  settingProfileNamePlaceholder: {
-    'en-US': () => 'Please enter name' as const,
-    'zh-CN': () => '请输入名称' as const,
-    'zh-TW': () => '請輸入名稱' as const,
-  },
-  settingProfileBioLabel: {
-    'en-US': () => 'Bio' as const,
-    'zh-CN': () => '简介' as const,
-    'zh-TW': () => '簡介' as const,
-  },
-  settingProfileBioPlaceholder: {
-    'en-US': () => 'Please enter bio' as const,
-    'zh-CN': () => '请输入简介' as const,
-    'zh-TW': () => '請輸入簡介' as const,
-  },
-  settingProfileSaveButton: {
-    'en-US': () => 'Save' as const,
-    'zh-CN': () => '保存' as const,
-    'zh-TW': () => '保存' as const,
-  },
-  settingProfileCancelButton: {
-    'en-US': () => 'Cancel' as const,
-    'zh-CN': () => '取消' as const,
-    'zh-TW': () => '取消' as const,
-  },
   // 一些提示的信息
   messageUpdateSuccess: {
     'en-US': () => 'Updated successfully' as const,
@@ -261,6 +226,44 @@ export const i18nMessages = {
     'en-US': () => 'Update failed' as const,
     'zh-CN': () => '修改失败' as const,
     'zh-TW': () => '修改失败' as const,
+  },
+  // 设置页 按钮
+  settingButtonSave: {
+    'en-US': () => 'Save' as const,
+    'zh-CN': () => '保存' as const,
+    'zh-TW': () => '保存' as const,
+  },
+  settingButtonCancel: {
+    'en-US': () => 'Cancel' as const,
+    'zh-CN': () => '取消' as const,
+    'zh-TW': () => '取消' as const,
+  },
+  // 设置页 个人信息 修改名称与简介
+  settingProfileUpdateNameBioContentTitle: {
+    'en-US': () => 'Edit Name and Bio' as const,
+    'zh-CN': () => '修改名称与简介' as const,
+    'zh-TW': () => '修改名稱與簡介' as const,
+  },
+  settingProfileUpdateNameBioNameLabel: {
+    'en-US': () => 'Name' as const,
+    'zh-CN': () => '名称' as const,
+    'zh-TW': () => '名稱' as const,
+  },
+  settingProfileUpdateNameBioBioLabel: {
+    'en-US': () => 'Bio' as const,
+    'zh-CN': () => '简介' as const,
+    'zh-TW': () => '簡介' as const,
+  },
+  // 设置页 个人信息 修改用户名
+  settingProfileUpdateUsernameContentTitle: {
+    'en-US': () => 'Modify Username' as const,
+    'zh-CN': () => '修改用户名' as const,
+    'zh-TW': () => '修改用戶名' as const,
+  },
+  settingProfileUpdateUsernameUsernameLable: {
+    'en-US': () => 'Username' as const,
+    'zh-CN': () => '用户名' as const,
+    'zh-TW': () => '用戶名' as const,
   },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 

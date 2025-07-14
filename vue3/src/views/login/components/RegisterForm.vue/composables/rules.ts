@@ -1,3 +1,4 @@
+import { rulesPassword, rulesUsername } from '@/config'
 import type { RegisterFormFormModel } from './dependencise'
 import { useI18nStore } from '@/stores'
 import type { FormRules } from 'element-plus'
@@ -44,18 +45,18 @@ export const useRegisterFormRules = (data: {
 
         {
           // 字符规则 Char
-          pattern: /^[a-zA-Z0-9_]*$/,
+          pattern: rulesUsername.patternChar,
           message: i18nStore.t('registerRulesUsernamePatternCharMessage')(),
           trigger: 'blur',
         },
         {
           // 长度规则 Length
-          pattern: /^.{1,32}$/,
+          pattern: rulesUsername.patternLength,
           message: i18nStore.t('registerRulesUsernamePatternLengthMessage')(),
           trigger: 'blur',
         },
-
         {
+          // 已存在的用户名记录数组中如果有当前值，则表示此用户名已存在
           validator: (rule, value, callback) => {
             if (
               errorUsernameList_validation_not_unique.value.includes(
@@ -89,7 +90,7 @@ export const useRegisterFormRules = (data: {
         })(),
 
         {
-          pattern: /^.{8,}$/,
+          pattern: rulesPassword.patternMinLength,
           message: i18nStore.t('registerRulesPasswordPatternMessage')(),
           trigger: 'blur',
         },

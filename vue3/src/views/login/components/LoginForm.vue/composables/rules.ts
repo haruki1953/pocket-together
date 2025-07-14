@@ -1,5 +1,6 @@
 import { useI18nStore } from '@/stores'
 import type { LoginFormFormModel } from './dependencies'
+import { rulesPassword } from '@/config'
 
 /**
  * 封装了表单规则相关
@@ -66,7 +67,7 @@ export const useLoginFormRules = (data: {
           return []
         })(),
         {
-          pattern: /^.{8,}$/,
+          pattern: rulesPassword.patternMinLength,
           message: i18nStore.t('loginRulesPasswordPatternMessage')(),
           trigger: 'blur',
         },

@@ -3,6 +3,7 @@ import { layoutSettingPageConfig } from '@/config'
 import { useAuthStore, useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import UpdateNameBio from './components/UpdateNameBio.vue'
+import UpdateUsername from './components/UpdateUsername.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -43,8 +44,18 @@ const authStore = useAuthStore()
             <!-- 修改昵称简介组件 -->
             <UpdateNameBio></UpdateNameBio>
           </div>
-          <!-- 分割线 -->
-          <!-- <div class="border border-color-background"></div> -->
+        </div>
+        <!-- 需登录 修改用户名 -->
+        <!-- 圆角盒子 -->
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
+          <!-- 内容盒子 -->
+          <div class="m-4">
+            <!-- 修改用户名组件 -->
+            <UpdateUsername></UpdateUsername>
+          </div>
         </div>
       </div>
       <!-- 第二列 -->
@@ -59,6 +70,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <UpdateNameBio></UpdateNameBio>
+        </div>
+      </div>
+      <!-- 需登录 修改用户名 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <UpdateUsername></UpdateUsername>
         </div>
       </div>
     </div>
