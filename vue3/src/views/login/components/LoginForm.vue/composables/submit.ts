@@ -7,7 +7,7 @@ import { ClientResponseError } from 'pocketbase'
 import { PotoFormValidationError } from '@/classes'
 import type { LoginFormForm, LoginFormFormModel } from './dependencies'
 import type { useLoginFormRules } from './rules'
-import { queryRetryPbFetchTimeout } from '@/queries'
+import { queryRetryPbNetworkError } from '@/queries'
 import { useRouter } from 'vue-router'
 import { routerDict } from '@/config'
 
@@ -83,8 +83,8 @@ export const useLoginFormSubmit = (data: {
       }
     },
 
-    // ✅ 仅当 PocketBase 请求超时（Abort）时重试（最多重试 2 次）
-    retry: queryRetryPbFetchTimeout,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
   })
 
   const router = useRouter()

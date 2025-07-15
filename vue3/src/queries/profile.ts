@@ -1,6 +1,6 @@
 import { queryConfig } from '@/config'
 import { Collections, pb } from '@/lib'
-import { queryKeys, queryRetryPbFetchTimeout } from '@/queries'
+import { queryKeys, queryRetryPbNetworkError } from '@/queries'
 import { useAuthStore } from '@/stores'
 import { fetchWithTimeoutPreferred } from '@/utils'
 import { useQuery } from '@tanstack/vue-query'
@@ -36,8 +36,8 @@ export const useProfileQuery = () => {
     },
     // 缓存时间
     staleTime: queryConfig.staleTimeLong,
-    // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
-    retry: queryRetryPbFetchTimeout,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
   })
 
   return {

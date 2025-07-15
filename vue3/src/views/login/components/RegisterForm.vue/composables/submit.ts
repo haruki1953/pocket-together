@@ -6,7 +6,7 @@ import { fetchWithTimeoutPreferred, potoMessage } from '@/utils'
 import { ClientResponseError } from 'pocketbase'
 import type { useRegisterFormRules } from './rules'
 import type { RegisterFormForm, RegisterFormFormModel } from './dependencise'
-import { queryRetryPbFetchTimeout } from '@/queries'
+import { queryRetryPbNetworkError } from '@/queries'
 
 type RegisterFormRules = ReturnType<typeof useRegisterFormRules>
 
@@ -100,8 +100,8 @@ export const useRegisterFormSubmit = (data: {
       }
     },
 
-    // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
-    retry: queryRetryPbFetchTimeout,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
   })
 
   return {

@@ -4,7 +4,7 @@ import { Collections, pb } from '@/lib'
 import { useAuthStore } from '@/stores'
 import { useMutation } from '@tanstack/vue-query'
 import { fetchWithTimeoutPreferred } from '@/utils'
-import { queryRetryPbFetchTimeout } from '@/queries'
+import { queryRetryPbNetworkError } from '@/queries'
 
 // 组合式的意义就是封装和复用有状态逻辑
 // https://cn.vuejs.org/guide/reusability/composables.html
@@ -78,8 +78,8 @@ export const useInitPbAuth = () => {
 
       return pbRes
     },
-    // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
-    retry: queryRetryPbFetchTimeout,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
   })
   onMounted(async () => {
     await mutation.mutateAsync()

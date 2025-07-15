@@ -7,7 +7,7 @@ import { Collections } from '@/lib'
 import { pb, UsersLevelOptions, type Create } from '@/lib'
 import { useQuery } from '@tanstack/vue-query'
 import { queryKeys } from '@/queries'
-import { queryRetryPbFetchTimeout } from '@/queries'
+import { queryRetryPbNetworkError } from '@/queries'
 import { useRouter } from 'vue-router'
 import { routerDict } from '@/config'
 
@@ -25,8 +25,8 @@ const { data: listAuthMethodsResult } = useQuery({
     return result
   },
   staleTime: queryConfig.staleTimeLong,
-  // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
-  retry: queryRetryPbFetchTimeout,
+  // ✅ 在网络错误时重试
+  retry: queryRetryPbNetworkError,
 })
 
 const oauth2List = computed(() => {

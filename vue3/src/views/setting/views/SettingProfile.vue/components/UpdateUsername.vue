@@ -2,7 +2,7 @@
 import { PotoFormValidationError } from '@/classes'
 import { rulesUsername } from '@/config'
 import { Collections, pb, type Update } from '@/lib'
-import { queryKeys, queryRetryPbFetchTimeout, useProfileQuery } from '@/queries'
+import { queryKeys, queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
 import {
   compareDatesSafe,
@@ -178,8 +178,8 @@ const mutation = useMutation({
       })
     }
   },
-  // ✅ 仅在 fetch 被 AbortController 中断（超时）时进行重试（最多重试 2 次）(请求三次)
-  retry: queryRetryPbFetchTimeout,
+  // ✅ 在网络错误时重试
+  retry: queryRetryPbNetworkError,
 })
 const isSubmitting = mutation.isPending
 const submit = mutation.mutateAsync
