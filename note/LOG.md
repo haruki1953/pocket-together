@@ -27,6 +27,12 @@
 修改用户名
 > 优化，表单校验规则统一管理
 
+### 250715
+优化， queryRetryPbFetchTimeout 不止在超时时重试，在所有网络错误时也重试，重命名为 queryRetryPbNetworkError
+
+### 250716
+修改头像
+
 ## TODO
 - 修改用户名
 - 修改头像

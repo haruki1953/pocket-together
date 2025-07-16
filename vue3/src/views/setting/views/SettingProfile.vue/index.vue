@@ -4,6 +4,7 @@ import { useAuthStore, useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import UpdateNameBio from './components/UpdateNameBio.vue'
 import UpdateUsername from './components/UpdateUsername.vue'
+import UpdateAvatar from './components/UpdateAvatar.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -57,6 +58,18 @@ const authStore = useAuthStore()
             <UpdateUsername></UpdateUsername>
           </div>
         </div>
+        <!-- 需登录 修改头像 -->
+        <!-- 圆角盒子 -->
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
+          <!-- 内容盒子 -->
+          <div class="m-4">
+            <!-- 修改头像组件 -->
+            <UpdateAvatar></UpdateAvatar>
+          </div>
+        </div>
       </div>
       <!-- 第二列 -->
       <div class="flex-1"></div>
@@ -79,6 +92,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <UpdateUsername></UpdateUsername>
+        </div>
+      </div>
+      <!-- 需登录 修改头像 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <UpdateAvatar></UpdateAvatar>
         </div>
       </div>
     </div>

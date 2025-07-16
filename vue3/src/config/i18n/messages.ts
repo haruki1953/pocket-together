@@ -265,6 +265,12 @@ export const i18nMessages = {
     'zh-CN': () => '用户名' as const,
     'zh-TW': () => '用戶名' as const,
   },
+  // 设置页 个人信息 修改头像
+  settingProfileUpdateAvatarContentTitle: {
+    'en-US': () => 'Update Avatar' as const,
+    'zh-CN': () => '修改头像' as const,
+    'zh-TW': () => '修改頭像' as const,
+  },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
 // 通过类型体操，获取i18nMessages键的类型

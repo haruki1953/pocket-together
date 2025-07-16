@@ -38,8 +38,8 @@ export const queryConfig = {
   /**
    * 1 小时
    */
-  // staleTimeLong: 1000 * 60 * 60,
-  staleTimeLong: 1000,
+  staleTimeLong: 1000 * 60 * 60,
+  // staleTimeLong: 1000,
   /**
    * 重试2次（共请求3次）
    */
