@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appIcon } from '@/config'
+import { appLogo } from '@/config'
 import { routerNavInfo } from '@/config'
 import { useI18nStore } from '@/stores'
 import { useRoute } from 'vue-router'
@@ -45,7 +45,7 @@ const i18nStore = useI18nStore()
   <RouterLink
     :to="routerNavInfo.navPage.path"
     :style="{
-      backgroundImage: `url('${appIcon}')`,
+      backgroundImage: `url('${appLogo}')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }"

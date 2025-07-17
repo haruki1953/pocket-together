@@ -144,6 +144,9 @@
     &.not-center {
       justify-content: flex-end;
     }
+    &.center-mt-3 {
+      margin-top: 12px;
+    }
   }
 
   .el-button {

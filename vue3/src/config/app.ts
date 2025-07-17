@@ -1,8 +1,11 @@
-import appIcon from '@/assets/logo.png'
-import type { I18nLocaleType } from './i18n'
-// import appIcon from '@/assets/tweet.png'
+import appLogo from '@/assets/logo.png'
+import appUserDefaultAvatar from '@/assets/logo.png'
 
-export { appIcon }
+import type { I18nLocaleType } from './i18n'
+// import appLogo from '@/assets/tweet.png'
+
+// 应用logo，用户默认头像
+export { appLogo, appUserDefaultAvatar }
 
 // 应用名
 export const appName = 'PocketTogether'
