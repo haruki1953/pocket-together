@@ -3,6 +3,7 @@ import { appLogo } from '@/config'
 import { pb } from '@/lib'
 import { useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
+import type { UploadFile, UploadFiles } from 'element-plus'
 
 const i18nStore = useI18nStore()
 
@@ -26,6 +27,10 @@ const cancelFn = () => {}
 
 const isSubmitting = false
 const submit = () => {}
+
+const onImageSelect = (uploadFile: UploadFile) => {
+  console.log(uploadFile)
+}
 </script>
 
 <template>
@@ -40,20 +45,33 @@ const submit = () => {}
       <!-- 居中 -->
       <div class="flex justify-center">
         <!-- ElUpload -->
-        <div>
-          <div
-            class="cursor-pointer rounded-full border-2 border-dashed border-color-text-soft transition-colors hover:border-el-primary"
+        <!--
+        将这个div换为ElUpload
+        单个文件，只允许 png jpg webp
+        用户点击这个后不是会选择文件吗，选择文件后打印文件信息
+        -->
+        <div class="upload-box">
+          <ElUpload
+            :autoUpload="false"
+            :showFileList="false"
+            :onChange="onImageSelect"
+            accept="image/png,image/jpeg,image/webp"
+            drag
           >
             <div
-              class="m-[1px] h-[100px] w-[100px] overflow-hidden rounded-full"
+              class="cursor-pointer rounded-full border-2 border-dashed border-color-text-soft transition-colors hover:border-el-primary"
             >
-              <img
-                :src="profileAvatarUrl"
-                alt="App Icon"
-                class="h-full w-full object-cover"
-              />
+              <div
+                class="m-[1px] h-[100px] w-[100px] overflow-hidden rounded-full"
+              >
+                <img
+                  :src="profileAvatarUrl"
+                  alt="App Icon"
+                  class="h-full w-full object-cover"
+                />
+              </div>
             </div>
-          </div>
+          </ElUpload>
         </div>
       </div>
     </div>
@@ -69,4 +87,16 @@ const submit = () => {}
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.upload-box {
+  :deep() {
+    .el-upload {
+      .el-upload-dragger {
+        background-color: unset;
+        border: none;
+        padding: 0;
+      }
+    }
+  }
+}
+</style>

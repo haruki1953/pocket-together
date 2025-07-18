@@ -21,6 +21,7 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
     RiMoonLine: typeof import('@remixicon/vue')['RiMoonLine']
