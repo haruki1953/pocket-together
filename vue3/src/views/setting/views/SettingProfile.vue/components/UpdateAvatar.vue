@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appLogo } from '@/config'
+import { appLogo, fileUserAvatarConfig } from '@/config'
 import { Collections, pb, type Update } from '@/lib'
 import { queryKeys, queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
@@ -7,14 +7,13 @@ import {
   blobToFile,
   compareDatesSafe,
   fetchWithTimeoutPreferred,
-  getExtensionFromMime,
   imageCropToRatioService,
   imageLoadImageFromFileService,
   imageResizeImageService,
   potoMessage,
 } from '@/utils'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { UploadFile, UploadFiles } from 'element-plus'
+import type { UploadFile } from 'element-plus'
 
 const i18nStore = useI18nStore()
 
@@ -30,7 +29,7 @@ const profileAvatarUrl = computed(() => {
   return pb.files.getURL(
     profileQuery.data.value,
     profileQuery.data.value.avatar,
-    { thumb: '200x200f' }
+    { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
 
@@ -64,7 +63,11 @@ const onImageSelect = async (uploadFile: UploadFile) => {
     // 将图片裁剪为1比1
     const imageCropTo11 = imageCropToRatioService(imageEl, 1, 1)
     // 将图片改变大小
-    const imageResize = imageResizeImageService(imageCropTo11, 400, 400)
+    const imageResize = imageResizeImageService(
+      imageCropTo11,
+      fileUserAvatarConfig.imageResizeNumber,
+      fileUserAvatarConfig.imageResizeNumber
+    )
     // 将图片转为Blob
     const imageBlob = await new Promise<Blob>((resolve) => {
       imageResize.toBlob(
@@ -74,8 +77,8 @@ const onImageSelect = async (uploadFile: UploadFile) => {
           }
           resolve(blob)
         },
-        'image/jpeg',
-        0.9
+        fileUserAvatarConfig.toBlobType,
+        fileUserAvatarConfig.toBlobQuality
       )
     })
     return imageBlob
@@ -83,7 +86,7 @@ const onImageSelect = async (uploadFile: UploadFile) => {
 
   // 大小确认
   ;(() => {
-    if (imageBlob.size >= 100000) {
+    if (imageBlob.size >= fileUserAvatarConfig.imageBlobSizeNotGte) {
       throw new Error('imageBlob.size >= 100000')
     }
   })()
