@@ -5,6 +5,7 @@ import { useWindowSize } from '@vueuse/core'
 import UpdateNameBio from './components/UpdateNameBio.vue'
 import UpdateUsername from './components/UpdateUsername.vue'
 import UpdateAvatar from './components/UpdateAvatar.vue'
+import UpdateEmail from './components/UpdateEmail.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -47,33 +48,37 @@ const authStore = useAuthStore()
           </div>
         </div>
         <!-- 需登录 修改用户名 -->
-        <!-- 圆角盒子 -->
         <div
           v-if="authStore.isValid"
           class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
-          <!-- 内容盒子 -->
           <div class="m-4">
-            <!-- 修改用户名组件 -->
             <UpdateUsername></UpdateUsername>
           </div>
         </div>
         <!-- 需登录 修改头像 -->
-        <!-- 圆角盒子 -->
         <div
           v-if="authStore.isValid"
           class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
-          <!-- 内容盒子 -->
           <div class="m-4">
-            <!-- 修改头像组件 -->
             <UpdateAvatar></UpdateAvatar>
+          </div>
+        </div>
+        <!-- 需登录 修改邮箱 -->
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
+          <div class="m-4">
+            <UpdateEmail></UpdateEmail>
           </div>
         </div>
       </div>
       <!-- 第二列 -->
       <div class="flex-1"></div>
     </div>
+
     <!-- 小屏 单列 -->
     <div v-else>
       <!-- 需登录 修改昵称简介 -->
@@ -101,6 +106,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <UpdateAvatar></UpdateAvatar>
+        </div>
+      </div>
+      <!-- 需登录 修改邮箱 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <UpdateEmail></UpdateEmail>
         </div>
       </div>
     </div>
