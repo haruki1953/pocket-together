@@ -4,5 +4,6 @@
   "tabSize": 2,
   "newLinkFormat": "relative",
   "useMarkdownLinks": true,
-  "attachmentFolderPath": "./assets"
+  "attachmentFolderPath": "./assets",
+  "useTab": false
 }
