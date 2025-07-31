@@ -8,12 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "1280bf8d4e2144d0",
+            "id": "890f2b62c8447207",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "笔记/250722-邮箱验证码相关解决方案.md",
+                "file": "250711-前端.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "笔记/250722-邮箱验证码相关解决方案.md",
+                "file": "250711-前端.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "笔记/250722-邮箱验证码相关解决方案.md",
+                "file": "250711-前端.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,16 +125,28 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "笔记/250722-邮箱验证码相关解决方案.md"
+                "file": "250711-前端.md"
+              }
+            }
+          },
+          {
+            "id": "1280bf8d4e2144d0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "LOG.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 395.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -146,14 +158,14 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "5a6da80bec417f9e",
+  "active": "890f2b62c8447207",
   "lastOpenFiles": [
     "LOG.md",
+    "250711-前端.md",
+    "笔记/250722-邮箱验证码相关解决方案.md",
     "README.md",
     "vue3/README.md",
     "temp.md",
-    "笔记/250722-邮箱验证码相关解决方案.md",
-    "250711-前端.md",
     "笔记/250722-250727-mailserver.env.md",
     "笔记/250726-使用1panel申请证书与自动续签.md",
     "笔记/250709-Vue响应式警告笔记：组件对象被转为响应式的陷阱.md",

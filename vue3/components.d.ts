@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ConfirmContainer: typeof import('./src/components/tool/ConfirmContainer.vue')['default']
     ContainerBar: typeof import('./src/components/container/ContainerBar.vue')['default']
     ContainerCol1: typeof import('./src/components/container/ContainerCol1.vue')['default']
     ContainerCol2: typeof import('./src/components/container/ContainerCol2.vue')['default']

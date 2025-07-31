@@ -238,6 +238,11 @@ export const i18nMessages = {
     'zh-CN': () => '取消' as const,
     'zh-TW': () => '取消' as const,
   },
+  settingButtonConfirm: {
+    'en-US': () => 'Confirm' as const,
+    'zh-CN': () => '确认' as const,
+    'zh-TW': () => '確認' as const,
+  },
   // 设置页 个人信息 修改名称与简介
   settingProfileUpdateNameBioContentTitle: {
     'en-US': () => 'Edit Name and Bio' as const,
@@ -270,6 +275,22 @@ export const i18nMessages = {
     'en-US': () => 'Update Avatar' as const,
     'zh-CN': () => '修改头像' as const,
     'zh-TW': () => '修改頭像' as const,
+  },
+  // 设置页 个人信息 修改邮箱
+  settingProfileUpdateEmailContentTitle: {
+    'en-US': () => '' as const,
+    'zh-CN': () => '修改邮箱' as const,
+    'zh-TW': () => '' as const,
+  },
+  settingProfileUpdateEmailButtonText: {
+    'en-US': () => '' as const,
+    'zh-CN': () => '修改邮箱' as const,
+    'zh-TW': () => '' as const,
+  },
+  settingProfileUpdateEmailConfirmContainerTitle: {
+    'en-US': () => '' as const,
+    'zh-CN': (email: string) => `将向 ${email} 发送邮箱修改邮件` as const,
+    'zh-TW': () => '' as const,
   },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 
