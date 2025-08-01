@@ -180,6 +180,7 @@ defineExpose({
     font-weight: bold;
     color: var(--color-text-soft);
     margin-bottom: 10px;
+    text-align: center;
   }
   &.small {
     .title-box {

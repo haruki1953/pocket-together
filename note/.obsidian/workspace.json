@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "250711-前端.md",
+                "file": "LOG.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "250711-前端.md",
+                "file": "LOG.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "250711-前端.md"
+                "file": "LOG.md"
               }
             }
           },
@@ -158,10 +158,10 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "890f2b62c8447207",
+  "active": "1280bf8d4e2144d0",
   "lastOpenFiles": [
-    "LOG.md",
     "250711-前端.md",
+    "LOG.md",
     "笔记/250722-邮箱验证码相关解决方案.md",
     "README.md",
     "vue3/README.md",

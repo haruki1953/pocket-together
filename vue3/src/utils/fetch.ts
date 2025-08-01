@@ -35,6 +35,15 @@ export const fetchWithTimeoutPreferred = createFetchWithTimeout(
   fetchConfig.timeoutPreferred
 )
 
+/**
+ * 为了 pocketbase SDK 的 requestEmailChange 而设置的 fetchWithTimeout
+ *
+ * timeout为30秒
+ */
+export const fetchWithTimeoutForPbRequestEmailChange = createFetchWithTimeout(
+  fetchConfig.timeoutForPbRequestEmailChange
+)
+
 // export const fetchWithTimeout = (
 //   url: RequestInfo | URL,
 //   options: RequestInit = {},

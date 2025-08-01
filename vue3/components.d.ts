@@ -25,6 +25,7 @@ declare module 'vue' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
+    RiMailLine: typeof import('@remixicon/vue')['RiMailLine']
     RiMoonLine: typeof import('@remixicon/vue')['RiMoonLine']
     RiSunLine: typeof import('@remixicon/vue')['RiSunLine']
     RiTranslate2: typeof import('@remixicon/vue')['RiTranslate2']

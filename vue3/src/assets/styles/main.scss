@@ -41,6 +41,24 @@
   width: 100%;
   color: var(--color-text);
 
+  &.is-disabled {
+    .el-input__wrapper {
+      background-color: var(--color-background-mute);
+      box-shadow: 0 0 0 2px var(--color-text-soft) inset;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: var(--color-background-mute);
+        box-shadow: 0 0 0 2px var(--color-text-soft) inset;
+      }
+
+      &.is-focus {
+        background-color: var(--color-background-mute);
+        box-shadow: 0 0 0 2px var(--color-text-soft) inset;
+      }
+    }
+  }
+
   // :deep() {
   .el-input__wrapper {
     padding: 1px 20px;
@@ -144,6 +162,7 @@
     &.not-center {
       justify-content: flex-end;
     }
+
     &.center-mt-3 {
       margin-top: 12px;
     }

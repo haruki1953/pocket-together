@@ -192,9 +192,9 @@ export const i18nMessages = {
     'zh-TW': () => '請輸入信​​箱' as const,
   },
   registerRulesEmailTypeMessage: {
-    'en-US': () => 'Incorrect email address' as const,
-    'zh-CN': () => '邮箱地址不正确' as const,
-    'zh-TW': () => '信​​箱地址不正確' as const,
+    'en-US': () => 'Incorrect email format' as const,
+    'zh-CN': () => '邮箱格式不正确' as const,
+    'zh-TW': () => '信​​箱格式不正確' as const,
   },
   registerRulesUsernameValidatorNotUnique: {
     'en-US': () => 'Username already exists' as const,
@@ -278,19 +278,20 @@ export const i18nMessages = {
   },
   // 设置页 个人信息 修改邮箱
   settingProfileUpdateEmailContentTitle: {
-    'en-US': () => '' as const,
+    'en-US': () => 'Update Email' as const,
     'zh-CN': () => '修改邮箱' as const,
-    'zh-TW': () => '' as const,
-  },
-  settingProfileUpdateEmailButtonText: {
-    'en-US': () => '' as const,
-    'zh-CN': () => '修改邮箱' as const,
-    'zh-TW': () => '' as const,
+    'zh-TW': () => '修改信箱' as const,
   },
   settingProfileUpdateEmailConfirmContainerTitle: {
-    'en-US': () => '' as const,
-    'zh-CN': (email: string) => `将向 ${email} 发送邮箱修改邮件` as const,
-    'zh-TW': () => '' as const,
+    'en-US': (email: string) =>
+      `A verification email will be sent to ${email}` as const,
+    'zh-CN': (email: string) => `将向 ${email} 发送邮箱修改验证邮件` as const,
+    'zh-TW': (email: string) => `將向 ${email} 發送信箱修改驗證信` as const,
+  },
+  settingProfileUpdateEmailEmailLable: {
+    'en-US': () => 'Email' as const,
+    'zh-CN': () => '邮箱' as const,
+    'zh-TW': () => '信箱' as const,
   },
 } as const satisfies Record<string, Record<I18nLocaleType, unknown>>
 

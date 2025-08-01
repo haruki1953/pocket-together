@@ -24,22 +24,27 @@ export const pocketbaseConfig = {
 export const fetchConfig = {
   // baseUrl,
   timeoutPreferred: timeout,
-}
+  /**
+   * 为了 pocketbase SDK 的 requestEmailChange 而设置的超时时间
+   *
+   * 30秒
+   */
+  timeoutForPbRequestEmailChange: 30000,
+} as const
 
 export const queryConfig = {
   /**
-   * 30 秒
+   * 30秒
    */
-  staleTimeShort: 1000 * 30,
+  staleTimeShort: 30000,
   /**
-   * 5 分钟
+   * 5分钟 1000 * 60 * 5
    */
-  staleTimeMedium: 1000 * 60 * 5,
+  staleTimeMedium: 300000,
   /**
-   * 1 小时
+   * 1小时 1000 * 60 * 60
    */
-  staleTimeLong: 1000 * 60 * 60,
-  // staleTimeLong: 1000,
+  staleTimeLong: 3600000,
   /**
    * 重试2次（共请求3次）
    */
