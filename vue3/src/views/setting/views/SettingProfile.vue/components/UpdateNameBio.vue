@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { Collections, pb, type Update } from '@/lib'
+import {
+  Collections,
+  onPbResErrorStatus401AuthClear,
+  pb,
+  type Update,
+} from '@/lib'
 import { queryKeys, queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
 import { compareDatesSafe, potoMessage } from '@/utils'
@@ -105,6 +110,9 @@ const mutation = useMutation({
   },
   // 失败之后的处理
   onError: (error) => {
+    // 出现鉴权失败则清除authStore
+    onPbResErrorStatus401AuthClear(error)
+
     potoMessage({
       type: 'error',
       message: i18nStore.t('messageUpdateFailure')(),

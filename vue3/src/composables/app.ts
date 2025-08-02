@@ -1,6 +1,6 @@
 import { onMounted } from 'vue'
 import { getScrollbarWidth } from '@/utils'
-import { Collections, pb } from '@/lib'
+import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { useAuthStore } from '@/stores'
 import { useMutation } from '@tanstack/vue-query'
 import { fetchWithTimeoutPreferred } from '@/utils'
@@ -82,9 +82,7 @@ export const useInitPbAuth = () => {
     // 错误处理
     onError: (error) => {
       // 出现鉴权失败则清除authStore
-      if (error instanceof ClientResponseError && error.status === 401) {
-        pb.authStore.clear()
-      }
+      onPbResErrorStatus401AuthClear(error)
     },
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,

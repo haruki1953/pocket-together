@@ -1,5 +1,5 @@
 import { queryConfig } from '@/config'
-import { Collections, pb } from '@/lib'
+import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryKeys, queryRetryPbNetworkError } from '@/queries'
 import { useAuthStore } from '@/stores'
 import { fetchWithTimeoutPreferred } from '@/utils'
@@ -30,6 +30,11 @@ export const useProfileQuery = () => {
         .getOne(pb.authStore.record.id, {
           // timeout为5000
           fetch: fetchWithTimeoutPreferred,
+        })
+        .catch((error) => {
+          // 出现鉴权失败则清除authStore
+          onPbResErrorStatus401AuthClear(error)
+          throw error
         })
       console.log(pbRes)
       return pbRes

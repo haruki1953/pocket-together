@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { PotoFormValidationError } from '@/classes'
 import { rulesUsername } from '@/config'
-import { Collections, pb, type Update } from '@/lib'
+import {
+  Collections,
+  onPbResErrorStatus401AuthClear,
+  pb,
+  type Update,
+} from '@/lib'
 import { queryKeys, queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
 import {
@@ -159,7 +164,11 @@ const mutation = useMutation({
   },
   // 错误处理
   onError: (error) => {
+    // 出现鉴权失败则清除authStore
+    onPbResErrorStatus401AuthClear(error)
+
     if (error instanceof ClientResponseError) {
+      // pb相关错误
       if (error.data?.data?.username?.code === 'validation_not_unique') {
         // 用户名已存在
         errorUsernameList_validation_not_unique.value.push(

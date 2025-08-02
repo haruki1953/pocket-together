@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PotoFormValidationError } from '@/classes'
 import type ConfirmContainer from '@/components/tool/ConfirmContainer.vue'
-import { Collections, pb } from '@/lib'
+import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
 import {
@@ -139,8 +139,11 @@ const mutation = useMutation({
   retry: queryRetryPbNetworkError,
   // 错误处理
   onError: (error) => {
+    // 出现鉴权失败则清除authStore
+    onPbResErrorStatus401AuthClear(error)
+
     if (error instanceof ClientResponseError) {
-      console.log(error.data)
+      // pb相关错误
       if (error.data?.data?.newEmail?.code === 'validation_invalid_new_email') {
         // 邮箱已存在
         errorEmailList_validation_not_unique.value.push(formModel.value.email)
