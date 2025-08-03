@@ -3,13 +3,15 @@ import { PotoFormValidationError } from '@/classes'
 import type ConfirmContainer from '@/components/tool/ConfirmContainer.vue'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
-import { useI18nStore } from '@/stores'
+import { useI18nStore, useSettingStateStore } from '@/stores'
 import {
   fetchWithTimeoutForPbRequestEmailChange,
   fetchWithTimeoutPreferred,
+  parseISODate,
   potoMessage,
 } from '@/utils'
 import { useMutation } from '@tanstack/vue-query'
+import { useNow } from '@vueuse/core'
 import type { ElForm, FormRules } from 'element-plus'
 import { ClientResponseError } from 'pocketbase'
 
@@ -182,11 +184,48 @@ const submit = async () => {
     // 修改邮箱请求mutation.mutateAsync
     await mutation.mutateAsync()
 
+    // 设置速率限制
+    settingStateStore.emailUpdateRateLimitSet({
+      emailUpdatePendingVerificationEmail: formModel.value.email,
+    })
+
     // } catch (error) {
   } finally {
     submitRunning.value = false
   }
 }
+
+/* 速率限制 */
+const settingStateStore = useSettingStateStore()
+// 响应式的当前时间，每秒更新一次
+const nowRef = useNow({ interval: 1000 })
+// 邮箱提交最短秒数（速率限制时间，单位秒，一会要记得封装到config，最终还要实现由pb config控制）
+const emailUpdateRateLimitSec = 30
+// 距离下次可以提交的时间帮 单位秒
+const secondsUntilNextEmailSubmit = computed(() => {
+  const lastSubmitDateObj = parseISODate(
+    settingStateStore.emailUpdateLastSubmitDate
+  )
+  if (lastSubmitDateObj == null) return 0
+
+  const diffMs =
+    lastSubmitDateObj.getTime() +
+    emailUpdateRateLimitSec * 1000 -
+    nowRef.value.getTime()
+  return Math.max(Math.ceil(diffMs / 1000), 0)
+})
+// 最终的信息汇总，将使用此对象渲染
+const emailUpdateRateLimitInfo = computed(() => {
+  if (secondsUntilNextEmailSubmit.value > 0) {
+    return {
+      secondsUntilNextEmailSubmit: secondsUntilNextEmailSubmit.value,
+      emailUpdatePendingVerificationEmail:
+        settingStateStore.emailUpdatePendingVerificationEmail,
+    }
+  } else {
+    return null
+  }
+})
 </script>
 
 <template>
@@ -220,7 +259,22 @@ const submit = async () => {
             <div class="mb-[2px] ml-[25px] text-[12px] leading-[12px]">
               {{ i18nStore.t('settingProfileUpdateEmailEmailLable')() }}
             </div>
+            <!-- 待验证时，显示禁用的ElInput -->
             <ElInput
+              v-if="emailUpdateRateLimitInfo != null"
+              :modelValue="
+                emailUpdateRateLimitInfo.emailUpdatePendingVerificationEmail
+              "
+              class="poto-el-input-line"
+              disabled
+            >
+              <template #prefix>
+                <RiMailLine size="16px"></RiMailLine>
+              </template>
+            </ElInput>
+            <!-- 正常的ElInput -->
+            <ElInput
+              v-else
               v-model="formModel.email"
               class="poto-el-input-line"
               :disabled="submitRunning"
@@ -236,20 +290,33 @@ const submit = async () => {
       <div class="poto-setting-button-box not-center">
         <ElButton
           :loading="submitRunning"
-          :disabled="isDataUnchanged"
+          :disabled="isDataUnchanged || emailUpdateRateLimitInfo != null"
           type="primary"
           round
           @click="submit()"
         >
-          {{ i18nStore.t('settingButtonSave')() }}
+          <template v-if="emailUpdateRateLimitInfo != null">
+            {{
+              i18nStore.t('settingProfileUpdateEmailPendingVerificationText')()
+            }}
+          </template>
+          <template v-else>
+            {{ i18nStore.t('settingButtonSave')() }}
+          </template>
         </ElButton>
         <ElButton
           type="info"
           round
-          :disabled="submitRunning"
+          :disabled="submitRunning || emailUpdateRateLimitInfo != null"
           @click="cancelFn()"
         >
-          {{ i18nStore.t('settingButtonCancel')() }}
+          <template v-if="emailUpdateRateLimitInfo != null">
+            <!-- 【TODO】 文字描述 i18n -->
+            {{ emailUpdateRateLimitInfo.secondsUntilNextEmailSubmit }}
+          </template>
+          <template v-else>
+            {{ i18nStore.t('settingButtonCancel')() }}
+          </template>
         </ElButton>
       </div>
     </ConfirmContainer>
