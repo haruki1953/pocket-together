@@ -118,13 +118,13 @@ const cancelFn = () => {
   imageUrlRef.value = null
 }
 
-// 何时禁用取消按钮
-const isDisableCancel = computed(() => {
-  if (imageBlobRef.value == null) {
-    return true
-  }
-  return false
-})
+// // 何时禁用取消按钮
+// const isDisableCancel = computed(() => {
+//   if (imageBlobRef.value == null) {
+//     return true
+//   }
+//   return false
+// })
 // 何时禁用提交按钮
 const isDisableSubmit = computed(() => {
   if (imageBlobRef.value == null) {
@@ -269,12 +269,7 @@ const submit = mutation.mutateAsync
       >
         {{ i18nStore.t('settingButtonSave')() }}
       </ElButton>
-      <ElButton
-        type="info"
-        round
-        :disabled="isDisableCancel"
-        @click="cancelFn()"
-      >
+      <ElButton type="info" round @click="cancelFn()">
         {{ i18nStore.t('settingButtonCancel')() }}
       </ElButton>
     </div>

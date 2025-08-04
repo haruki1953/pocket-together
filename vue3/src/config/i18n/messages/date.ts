@@ -36,10 +36,4 @@ export const i18nMessagesDatePart = {
       } as const satisfies ConvertSecondsToTimeDurationMessages
     },
   },
-  // 【TODO】
-  afterDurationMessageTemplate: {
-    'en-US': (duration: string) => `${duration} later`,
-    'zh-CN': (duration: string) => `${duration} 后`,
-    'zh-TW': (duration: string) => `${duration} 後`,
-  },
 } as const satisfies I18nMessagesSatisfiesType

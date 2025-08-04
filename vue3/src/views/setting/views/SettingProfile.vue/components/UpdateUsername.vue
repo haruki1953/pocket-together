@@ -34,6 +34,22 @@ const setEdited = (val: boolean) => {
   isEdited.value = val
 }
 
+/**
+ * 表示当前表单中的字段是否与远程用户资料中的相同。
+ * 当两者一致时，说明未被修改，用于禁用“保存”按钮
+ */
+const isDataUnchanged = computed(() => {
+  // 暂未得到profileQuery响应时，保持禁用比较好
+  if (profileQuery.data.value == null) {
+    return true
+  }
+
+  if (profileQuery.data.value.username !== formModel.value.username) {
+    return false
+  }
+  return true
+})
+
 // 初始化表单数据
 const initData = () => {
   if (profileQuery.data.value == null) {
@@ -225,7 +241,13 @@ const submit = mutation.mutateAsync
     </div>
     <!-- 按钮盒子 -->
     <div class="poto-setting-button-box">
-      <ElButton :loading="isSubmitting" type="primary" round @click="submit()">
+      <ElButton
+        :loading="isSubmitting"
+        type="primary"
+        round
+        :disabled="isDataUnchanged"
+        @click="submit()"
+      >
         {{ i18nStore.t('settingButtonSave')() }}
       </ElButton>
       <ElButton type="info" round @click="cancelFn()">

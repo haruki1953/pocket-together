@@ -1,3 +1,4 @@
+import { i18nMessages } from '@/config'
 import type { useI18nStore } from '@/stores'
 import type { ConvertSecondsToTimeDurationMessages } from '@/types'
 
@@ -72,18 +73,24 @@ export const parseISODate = (
  * 将秒数转换为易读的时间长度字符串，例如"2 小时 15 分钟"。
  *
  * @param data.seconds - 输入的时间长度（以秒为单位）。
- * @param data.unitLength - 可选，控制返回字符串中的时间单位数量。
+ * @param data.unitLength - 可选，控制返回字符串中的时间单位数量。默认值为 2。
  *  例如传入 2 返回 "2 小时 15 分钟"。
  *  如果为 0 或未传入，则显示所有单位。
- * @param data.messages - 用于 i18n 的本地化消息定义。
+ * @param data.messages - 可选，用于 i18n 的本地化消息定义，默认为 en-US （国际单位符号）。
  * @returns 格式化后的时间长度字符串。
  */
 export const convertSecondsToTimeDuration = (data: {
   seconds: number
-  unitLength: number
-  messages: ConvertSecondsToTimeDurationMessages
+  unitLength?: number
+  messages?: ConvertSecondsToTimeDurationMessages
 }) => {
-  const { seconds, unitLength, messages } = data
+  const {
+    seconds,
+    unitLength = 2 satisfies number,
+    messages = i18nMessages.convertSecondsToTimeDurationMessages[
+      'en-US'
+    ]() satisfies ConvertSecondsToTimeDurationMessages,
+  } = data
 
   // 秒数转换常数
   const unitsConst = [
@@ -115,7 +122,7 @@ export const convertSecondsToTimeDuration = (data: {
     remainingSeconds %= unitSeconds
 
     if (value > 0) {
-      result.push(`${value}${label}`)
+      result.push(`${value} ${label}`)
       addedUnits++
     }
 

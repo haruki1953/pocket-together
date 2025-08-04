@@ -5,6 +5,7 @@ import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore, useSettingStateStore } from '@/stores'
 import {
+  convertSecondsToTimeDuration,
   fetchWithTimeoutForPbRequestEmailChange,
   fetchWithTimeoutPreferred,
   parseISODate,
@@ -35,7 +36,12 @@ const setEdited = (val: boolean) => {
  * 当两者一致时，说明未被修改，用于禁用“保存”按钮
  */
 const isDataUnchanged = computed(() => {
-  if (profileQuery.data.value?.email !== formModel.value.email) {
+  // 暂未得到profileQuery响应时，保持禁用比较好
+  if (profileQuery.data.value == null) {
+    return true
+  }
+
+  if (profileQuery.data.value.email !== formModel.value.email) {
     return false
   }
   return true
@@ -200,7 +206,7 @@ const settingStateStore = useSettingStateStore()
 // 响应式的当前时间，每秒更新一次
 const nowRef = useNow({ interval: 1000 })
 // 邮箱提交最短秒数（速率限制时间，单位秒，一会要记得封装到config，最终还要实现由pb config控制）
-const emailUpdateRateLimitSec = 30
+const emailUpdateRateLimitSec = 300
 // 距离下次可以提交的时间帮 单位秒
 const secondsUntilNextEmailSubmit = computed(() => {
   const lastSubmitDateObj = parseISODate(
@@ -312,7 +318,17 @@ const emailUpdateRateLimitInfo = computed(() => {
         >
           <template v-if="emailUpdateRateLimitInfo != null">
             <!-- 【TODO】 文字描述 i18n -->
-            {{ emailUpdateRateLimitInfo.secondsUntilNextEmailSubmit }}
+            {{
+              i18nStore.t('settingProfileUpdateEmailRetryAfterDuration')(
+                convertSecondsToTimeDuration({
+                  seconds: emailUpdateRateLimitInfo.secondsUntilNextEmailSubmit,
+                  unitLength: 1,
+                  messages: i18nStore.t(
+                    'convertSecondsToTimeDurationMessages'
+                  )(),
+                })
+              )
+            }}
           </template>
           <template v-else>
             {{ i18nStore.t('settingButtonCancel')() }}

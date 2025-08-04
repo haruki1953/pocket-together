@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "250711-前端.md",
+                "file": "LOG.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "250711-前端.md",
+                "file": "LOG.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "250711-前端.md"
+                "file": "LOG.md"
               }
             }
           },
@@ -158,10 +158,10 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "4477348630ae8058",
+  "active": "1280bf8d4e2144d0",
   "lastOpenFiles": [
-    "LOG.md",
     "250711-前端.md",
+    "LOG.md",
     "笔记/250802-碎碎念.md",
     "vue3/README.md",
     "vue3/skill.md",
