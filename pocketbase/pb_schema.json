@@ -307,7 +307,8 @@
         "required": false,
         "system": false,
         "thumbs": [
-          "100x100f"
+          "100x100f",
+          "200x200f"
         ],
         "type": "file"
       },
@@ -827,8 +828,8 @@
   },
   {
     "id": "pbc_3818476082",
-    "listRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\"",
-    "viewRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\"",
+    "listRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\" ||\nkey = \"email-update-rate-limit-second\"",
+    "viewRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\" ||\nkey = \"email-update-rate-limit-second\"",
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
@@ -850,17 +851,18 @@
         "type": "text"
       },
       {
+        "autogeneratePattern": "",
         "hidden": false,
-        "id": "select2324736937",
-        "maxSelect": 1,
+        "id": "text2324736937",
+        "max": 0,
+        "min": 0,
         "name": "key",
+        "pattern": "",
         "presentable": false,
-        "required": true,
+        "primaryKey": false,
+        "required": false,
         "system": false,
-        "type": "select",
-        "values": [
-          "allow-basic-users-upload"
-        ]
+        "type": "text"
       },
       {
         "hidden": false,
@@ -871,20 +873,6 @@
         "required": false,
         "system": false,
         "type": "json"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text3485334036",
-        "max": 0,
-        "min": 0,
-        "name": "note",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
       },
       {
         "hidden": false,

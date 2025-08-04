@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { PotoFormValidationError } from '@/classes'
 import type ConfirmContainer from '@/components/tool/ConfirmContainer.vue'
+import { pbCollectionConfigDefaultGetFn } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
-import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
+import {
+  queryRetryPbNetworkError,
+  usePbCollectionConfigQuery,
+  useProfileQuery,
+} from '@/queries'
 import { useI18nStore, useSettingStateStore } from '@/stores'
 import {
   convertSecondsToTimeDuration,
@@ -202,11 +207,16 @@ const submit = async () => {
 }
 
 /* 速率限制 */
+const pbCollectionConfigQuery = usePbCollectionConfigQuery()
 const settingStateStore = useSettingStateStore()
 // 响应式的当前时间，每秒更新一次
 const nowRef = useNow({ interval: 1000 })
-// 邮箱提交最短秒数（速率限制时间，单位秒，一会要记得封装到config，最终还要实现由pb config控制）
-const emailUpdateRateLimitSec = 300
+// 邮箱提交最短秒数（速率限制时间，单位秒，由pocketbase的config集合控制）
+const emailUpdateRateLimitSec = computed(
+  () =>
+    pbCollectionConfigQuery.data.value?.['email-update-rate-limit-second'] ??
+    pbCollectionConfigDefaultGetFn()['email-update-rate-limit-second']
+)
 // 距离下次可以提交的时间帮 单位秒
 const secondsUntilNextEmailSubmit = computed(() => {
   const lastSubmitDateObj = parseISODate(
@@ -216,7 +226,7 @@ const secondsUntilNextEmailSubmit = computed(() => {
 
   const diffMs =
     lastSubmitDateObj.getTime() +
-    emailUpdateRateLimitSec * 1000 -
+    emailUpdateRateLimitSec.value * 1000 -
     nowRef.value.getTime()
   return Math.max(Math.ceil(diffMs / 1000), 0)
 })

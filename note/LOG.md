@@ -45,6 +45,9 @@
 ### 250801
 修改邮箱差不多完成了
 
+### 250804
+pocketbase 集合 config 的 useQuery 完成，已实现由pocketbase的config集合控制邮箱提交最短秒数
+
 ## TODO
 - 修改邮箱
 - 修改密码

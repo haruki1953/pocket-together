@@ -94,14 +94,10 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
-export enum ConfigKeyOptions {
-	"allow-basic-users-upload" = "allow-basic-users-upload",
-}
 export type ConfigRecord<Tvalue = unknown> = {
 	created?: IsoDateString
 	id: string
-	key: ConfigKeyOptions
-	note?: string
+	key?: string
 	updated?: IsoDateString
 	value?: null | Tvalue
 }

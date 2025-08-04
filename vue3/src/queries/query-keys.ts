@@ -4,4 +4,5 @@ export const queryKeys = {
     listAuthMethods: () => ['users', 'listAuthMethods'] as const,
     getOne: (id: string) => ['users', 'getOne', id] as const,
   },
+  pbCollectionConfig: () => ['pbCollectionConfig'] as const,
 }
