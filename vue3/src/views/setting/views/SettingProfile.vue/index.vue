@@ -6,6 +6,7 @@ import UpdateNameBio from './components/UpdateNameBio.vue'
 import UpdateUsername from './components/UpdateUsername.vue'
 import UpdateAvatar from './components/UpdateAvatar.vue'
 import UpdateEmail from './components/UpdateEmail.vue'
+import VerifyEmail from './components/VerifyEmail.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -74,6 +75,15 @@ const authStore = useAuthStore()
             <UpdateEmail></UpdateEmail>
           </div>
         </div>
+        <!-- 需登录 验证邮箱 -->
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
+          <div class="m-4">
+            <VerifyEmail></VerifyEmail>
+          </div>
+        </div>
       </div>
       <!-- 第二列 -->
       <div class="flex-1"></div>
@@ -115,6 +125,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <UpdateEmail></UpdateEmail>
+        </div>
+      </div>
+      <!-- 需登录 验证邮箱 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <VerifyEmail></VerifyEmail>
         </div>
       </div>
     </div>

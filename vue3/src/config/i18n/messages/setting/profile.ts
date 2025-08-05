@@ -58,6 +58,11 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': () => '待验证' as const,
     'zh-TW': () => '待驗證' as const,
   },
+  settingProfileUpdateEmailVerifiedText: {
+    'en-US': () => 'Verified' as const,
+    'zh-CN': () => '已验证' as const,
+    'zh-TW': () => '已驗證' as const,
+  },
   settingProfileUpdateEmailRetryAfterDuration: {
     'en-US': (duration: string) => `Retry after ${duration}` as const,
     'zh-CN': (duration: string) => `${duration}后可重试` as const,

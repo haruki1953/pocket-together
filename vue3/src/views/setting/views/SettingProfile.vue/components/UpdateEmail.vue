@@ -237,6 +237,10 @@ const emailUpdateRateLimitInfo = computed(() => {
       secondsUntilNextEmailSubmit: secondsUntilNextEmailSubmit.value,
       emailUpdatePendingVerificationEmail:
         settingStateStore.emailUpdatePendingVerificationEmail,
+      // 是否已修改（已验证），即是否和当前profile email相等
+      isEmailUpdateVerified:
+        settingStateStore.emailUpdatePendingVerificationEmail ===
+        profileQuery.data.value?.email,
     }
   } else {
     return null
@@ -304,6 +308,7 @@ const emailUpdateRateLimitInfo = computed(() => {
       </div>
       <!-- 按钮盒子 -->
       <div class="poto-setting-button-box not-center">
+        <!-- 保存按钮 -->
         <ElButton
           :loading="submitRunning"
           :disabled="isDataUnchanged || emailUpdateRateLimitInfo != null"
@@ -311,23 +316,37 @@ const emailUpdateRateLimitInfo = computed(() => {
           round
           @click="submit()"
         >
+          <!-- 显示：已验证 or 待验证 -->
           <template v-if="emailUpdateRateLimitInfo != null">
-            {{
-              i18nStore.t('settingProfileUpdateEmailPendingVerificationText')()
-            }}
+            <!-- 已验证 -->
+            <template
+              v-if="emailUpdateRateLimitInfo.isEmailUpdateVerified === true"
+            >
+              {{ i18nStore.t('settingProfileUpdateEmailVerifiedText')() }}
+            </template>
+            <!-- 待验证 -->
+            <template v-else>
+              {{
+                i18nStore.t(
+                  'settingProfileUpdateEmailPendingVerificationText'
+                )()
+              }}
+            </template>
           </template>
+          <!-- 显示：保存 -->
           <template v-else>
             {{ i18nStore.t('settingButtonSave')() }}
           </template>
         </ElButton>
+        <!-- 取消按钮 -->
         <ElButton
           type="info"
           round
           :disabled="submitRunning || emailUpdateRateLimitInfo != null"
           @click="cancelFn()"
         >
+          <!-- 显示：xx 秒后可重试 -->
           <template v-if="emailUpdateRateLimitInfo != null">
-            <!-- 【TODO】 文字描述 i18n -->
             {{
               i18nStore.t('settingProfileUpdateEmailRetryAfterDuration')(
                 convertSecondsToTimeDuration({
@@ -340,6 +359,7 @@ const emailUpdateRateLimitInfo = computed(() => {
               )
             }}
           </template>
+          <!-- 显示：取消 -->
           <template v-else>
             {{ i18nStore.t('settingButtonCancel')() }}
           </template>

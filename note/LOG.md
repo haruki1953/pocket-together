@@ -52,7 +52,7 @@ pocketbase 集合 config 的 useQuery 完成，已实现由pocketbase的config�
 - 占位数据实现，代码优化
 
 ## TODO
-- 修改邮箱
+- 验证邮箱
 - 修改密码
 - 忘记密码
 - 退出登录
