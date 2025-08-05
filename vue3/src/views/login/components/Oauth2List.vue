@@ -1,33 +1,19 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import { fetchWithTimeoutPreferred, urlJoinUtil } from '@/utils'
-import { pocketbaseConfig, queryConfig } from '@/config'
+import { urlJoinUtil } from '@/utils'
+import { pocketbaseConfig } from '@/config'
 import type { AuthProviderInfo } from 'pocketbase'
 import { Collections } from '@/lib'
 import { pb, UsersLevelOptions, type Create } from '@/lib'
-import { useQuery } from '@tanstack/vue-query'
-import { queryKeys } from '@/queries'
-import { queryRetryPbNetworkError } from '@/queries'
+import { useListAuthMethodsQuery } from '@/queries'
 import { useRouter } from 'vue-router'
 import { routerDict } from '@/config'
 
 const i18nStore = useI18nStore()
 // const oauth2List = ['google', 'microsoft', 'github', 'apple']
 
-const { data: listAuthMethodsResult } = useQuery({
-  queryKey: queryKeys.users.listAuthMethods(),
-  queryFn: async () => {
-    const result = await pb.collection(Collections.Users).listAuthMethods({
-      // timeout为5000
-      fetch: fetchWithTimeoutPreferred,
-    })
-    // console.log(result)
-    return result
-  },
-  staleTime: queryConfig.staleTimeLong,
-  // ✅ 在网络错误时重试
-  retry: queryRetryPbNetworkError,
-})
+const listAuthMethodsQuery = useListAuthMethodsQuery()
+const listAuthMethodsResult = listAuthMethodsQuery.data
 
 const oauth2List = computed(() => {
   if (listAuthMethodsResult.value == null) {

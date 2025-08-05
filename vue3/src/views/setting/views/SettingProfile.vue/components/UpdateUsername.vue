@@ -165,7 +165,7 @@ const mutation = useMutation({
     ) {
       // 更新query缓存
       queryClient.setQueryData(
-        queryKeys.users.getOne(pb.authStore.record?.id ?? ''),
+        queryKeys.profile(pb.authStore.record?.id ?? ''),
         // 确保类型正确
         data satisfies NonNullable<typeof profileQuery.data.value>
       )

@@ -5,6 +5,7 @@ import {
 } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryKeys, queryRetryPbNetworkError } from '@/queries'
+import { usePlaceholderDataPbCollectionConfigStore } from '@/stores'
 import { fetchWithTimeoutPreferred } from '@/utils'
 import { useQuery } from '@tanstack/vue-query'
 
@@ -14,6 +15,8 @@ import { useQuery } from '@tanstack/vue-query'
  * 会将 config集合 的数组式数据转为对象，类型即为PbCollectionConfigType `src\config\pb-collection-config.ts`
  */
 export const usePbCollectionConfigQuery = () => {
+  const placeholderDataStore = usePlaceholderDataPbCollectionConfigStore()
+
   const query = useQuery({
     // 查询键
     queryKey: queryKeys.pbCollectionConfig(),
@@ -41,16 +44,28 @@ export const usePbCollectionConfigQuery = () => {
       queryDataKeys.forEach((key) => {
         // 在 pbRes 查找 key
         const findKeyItem = pbRes.find((i) => i.key === key)
-        // 没找到则跳过
+        // 没找到则跳过（将使用默认值）
         if (findKeyItem == null) {
+          console.error(
+            'src\\queries\\pb-collection-config.ts\n' +
+              'usePbCollectionConfigQuery\n' +
+              'findKeyItem == null\n' +
+              `key: ${key}`
+          )
           return
         }
         // 找到，进行类型校验
         const findKeyItemParseResult = pbCollectionConfigSchema[key].safeParse(
           findKeyItem.value
         )
-        // 校验不成功则跳过
+        // 校验不成功则跳过（将使用默认值）
         if (findKeyItemParseResult.success === false) {
+          console.error(
+            'src\\queries\\pb-collection-config.ts\n' +
+              'usePbCollectionConfigQuery\n' +
+              'findKeyItemParseResult.success === false\n' +
+              `key: ${key}`
+          )
           return
         }
         // 校验成功，赋值给 queryData[key]
@@ -69,13 +84,16 @@ export const usePbCollectionConfigQuery = () => {
       })
       console.log(queryData)
 
-      // 【TODO 将完成的queryData持久化，以用于placeholderData】
+      // 将完成的queryData持久化，以用于placeholderData
+      placeholderDataStore.set(queryData)
 
       return queryData
     },
     // 占位数据
     placeholderData: computed(() => {
-      // 【TODO 将完成的queryData持久化，以用于placeholderData】
+      if (placeholderDataStore.data != null) {
+        return placeholderDataStore.data
+      }
       return pbCollectionConfigDefaultGetFn()
     }),
     // 缓存时间
