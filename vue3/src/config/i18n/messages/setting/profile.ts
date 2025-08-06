@@ -36,6 +36,12 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': () => '修改头像' as const,
     'zh-TW': () => '修改頭像' as const,
   },
+  // 设置页 个人信息 修改密码
+  settingProfileUpdatePasswordContentTitle: {
+    'en-US': () => 'Modify Password' as const,
+    'zh-CN': () => '修改密码' as const,
+    'zh-TW': () => '修改密碼' as const,
+  },
   // 设置页 个人信息 修改邮箱
   settingProfileUpdateEmailContentTitle: {
     'en-US': () => 'Update Email' as const,
@@ -104,5 +110,11 @@ export const i18nMessagesSettingPartProfilePart = {
     'en-US': (duration: string) => `Retry after ${duration}` as const,
     'zh-CN': (duration: string) => `${duration}后可重试` as const,
     'zh-TW': (duration: string) => `${duration}後可重試` as const,
+  },
+  // 设置页 个人信息 修改密码确认框
+  settingProfilePasswordConfirmContainerTitle: {
+    'en-US': (email: string) => `A password reset link will be sent to ${email}` as const,
+    'zh-CN': (email: string) => `密码重置链接将发送至 ${email}` as const,
+    'zh-TW': (email: string) => `密碼重置連結將發送至 ${email}` as const,
   },
 } as const satisfies I18nMessagesSatisfiesType
