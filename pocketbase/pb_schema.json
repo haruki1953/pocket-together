@@ -828,8 +828,8 @@
   },
   {
     "id": "pbc_3818476082",
-    "listRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\" ||\nkey = \"email-update-rate-limit-second\"",
-    "viewRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\" ||\nkey = \"email-update-rate-limit-second\"",
+    "listRule": "",
+    "viewRule": "",
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,

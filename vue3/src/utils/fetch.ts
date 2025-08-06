@@ -36,12 +36,18 @@ export const fetchWithTimeoutPreferred = createFetchWithTimeout(
 )
 
 /**
- * 为了 pocketbase SDK 的 requestEmailChange 而设置的 fetchWithTimeout
+ * 为了 pocketbase SDK 的
+ * requestEmailChange
+ * requestVerification
+ * requestPasswordReset
+ * 而设置的 fetchWithTimeout
+ *
+ * 服务端pocketbase将发送邮件，用时比较长
  *
  * timeout为30秒
  */
-export const fetchWithTimeoutForPbRequestEmailChange = createFetchWithTimeout(
-  fetchConfig.timeoutForPbRequestEmailChange
+export const fetchWithTimeoutForPbRequestWillEmail = createFetchWithTimeout(
+  fetchConfig.timeoutForPbRequestWillEmail
 )
 
 // export const fetchWithTimeout = (

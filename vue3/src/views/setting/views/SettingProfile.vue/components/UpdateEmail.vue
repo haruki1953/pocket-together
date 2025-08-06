@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { PotoFormValidationError } from '@/classes'
-import type ConfirmContainer from '@/components/tool/ConfirmContainer.vue'
+// import type ConfirmContainer from '@/components/tool/ConfirmContainer.vue'
+// 改为使用 GlobalComponents ，即 components.d.ts 中的内容
+import type { GlobalComponents } from 'vue'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import {
@@ -11,7 +13,7 @@ import {
 import { useI18nStore, useSettingStateStore } from '@/stores'
 import {
   convertSecondsToTimeDuration,
-  fetchWithTimeoutForPbRequestEmailChange,
+  fetchWithTimeoutForPbRequestWillEmail,
   fetchWithTimeoutPreferred,
   parseISODate,
   potoMessage,
@@ -118,9 +120,9 @@ const rules: FormRules<typeof formModel> = {
 }
 
 // 遮罩确认框
-const refConfirmContainer = ref<InstanceType<typeof ConfirmContainer> | null>(
-  null
-)
+const refConfirmContainer = ref<InstanceType<
+  GlobalComponents['ConfirmContainer']
+> | null>(null)
 
 // 修改邮箱请求mutation
 const mutation = useMutation({
@@ -143,7 +145,7 @@ const mutation = useMutation({
       .requestEmailChange(formModel.value.email, {
         // requestEmailChange 服务端pocketbase将发送邮件，用时比较长
         // timeout为30秒
-        fetch: fetchWithTimeoutForPbRequestEmailChange,
+        fetch: fetchWithTimeoutForPbRequestWillEmail,
       })
     console.log(pbRes)
     return pbRes
@@ -178,7 +180,7 @@ const mutation = useMutation({
 })
 
 const submitRunning = ref(false)
-// 修改邮件
+// 修改邮箱
 const submit = async () => {
   submitRunning.value = true
   try {
@@ -193,7 +195,8 @@ const submit = async () => {
     await refConfirmContainer.value?.confirm()
 
     // 修改邮箱请求mutation.mutateAsync
-    await mutation.mutateAsync()
+    await mutation.mutateAsync().catch(() => {})
+    // catch错误，意在不成功也要设置速率限制
 
     // 设置速率限制
     settingStateStore.emailUpdateRateLimitSet({

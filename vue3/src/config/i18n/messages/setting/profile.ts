@@ -45,8 +45,8 @@ export const i18nMessagesSettingPartProfilePart = {
   settingProfileUpdateEmailConfirmContainerTitle: {
     'en-US': (email: string) =>
       `A verification email will be sent to ${email}` as const,
-    'zh-CN': (email: string) => `将向 ${email} 发送邮箱修改验证邮件` as const,
-    'zh-TW': (email: string) => `將向 ${email} 發送信箱修改驗證信` as const,
+    'zh-CN': (email: string) => `将向 ${email} 发送验证邮件` as const,
+    'zh-TW': (email: string) => `將向 ${email} 發送驗證信` as const,
   },
   settingProfileUpdateEmailEmailLable: {
     'en-US': () => 'Email' as const,
@@ -64,6 +64,43 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-TW': () => '已驗證' as const,
   },
   settingProfileUpdateEmailRetryAfterDuration: {
+    'en-US': (duration: string) => `Retry after ${duration}` as const,
+    'zh-CN': (duration: string) => `${duration}后可重试` as const,
+    'zh-TW': (duration: string) => `${duration}後可重試` as const,
+  },
+  // 设置页 个人信息 验证邮箱
+  settingProfileVerifyEmailContentTitle: {
+    'en-US': () => 'Verify Email' as const,
+    'zh-CN': () => '验证邮箱' as const,
+    'zh-TW': () => '驗證信箱' as const,
+  },
+  settingProfileVerifyEmailVerifiedText: {
+    'en-US': () => 'Verified' as const,
+    'zh-CN': () => '已验证' as const,
+    'zh-TW': () => '已驗證' as const,
+  },
+  settingProfileVerifyEmailUnverifiedText: {
+    'en-US': () => 'Unverified' as const,
+    'zh-CN': () => '未验证' as const,
+    'zh-TW': () => '未驗證' as const,
+  },
+  settingProfileVerifyEmailPendingVerificationText: {
+    'en-US': () => 'Pending verification' as const,
+    'zh-CN': () => '待验证' as const,
+    'zh-TW': () => '待驗證' as const,
+  },
+  settingProfileVerifyEmailButtonSubmitText: {
+    'en-US': () => 'Verify Email' as const,
+    'zh-CN': () => '验证邮箱' as const,
+    'zh-TW': () => '驗證信箱' as const,
+  },
+  settingProfileVerifyEmailConfirmContainerTitle: {
+    'en-US': (email: string) =>
+      `A verification email will be sent to ${email}` as const,
+    'zh-CN': (email: string) => `将向 ${email} 发送验证邮件` as const,
+    'zh-TW': (email: string) => `將向 ${email} 發送驗證信` as const,
+  },
+  settingProfileVerifyEmailRetryAfterDuration: {
     'en-US': (duration: string) => `Retry after ${duration}` as const,
     'zh-CN': (duration: string) => `${duration}后可重试` as const,
     'zh-TW': (duration: string) => `${duration}後可重試` as const,

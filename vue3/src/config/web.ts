@@ -25,11 +25,17 @@ export const fetchConfig = {
   // baseUrl,
   timeoutPreferred: timeout,
   /**
-   * 为了 pocketbase SDK 的 requestEmailChange 而设置的超时时间
+   * 为了 pocketbase SDK 的
+   * requestEmailChange
+   * requestVerification
+   * requestPasswordReset
+   * 而设置的超时时间
+   *
+   * 服务端pocketbase将发送邮件，用时比较长
    *
    * 30秒
    */
-  timeoutForPbRequestEmailChange: 30000,
+  timeoutForPbRequestWillEmail: 30000,
 } as const
 
 export const queryConfig = {

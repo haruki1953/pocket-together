@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "250711-前端.md",
+                "file": "笔记/250802-碎碎念.md",
                 "mode": "source",
                 "source": false
               }
@@ -160,14 +160,14 @@
   },
   "active": "1280bf8d4e2144d0",
   "lastOpenFiles": [
-    "250711-前端.md",
+    "笔记/250802-碎碎念.md",
     "LOG.md",
-    "README.md",
+    "250711-前端.md",
     "笔记/250804-TypeScript类型体操笔记：动态键赋值为何会报类型错误，以及如何优雅解决.md",
+    "README.md",
     "temp.md",
     "250804-.md",
     "系统设计/PocketBase集合.md",
-    "笔记/250802-碎碎念.md",
     "vue3/README.md",
     "vue3/skill.md",
     "笔记/250706-pocketbase.md",

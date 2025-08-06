@@ -15,13 +15,15 @@ onBootstrap((e) => {
       【pbCollectionConfigDefault_public START】
       此内容在前后端一致
       - vue3\src\config\pb-collection-config.ts
-      - pocketbase\pb_hooks\initConfig.pb.js
+      - pocketbase\pb_hooks\init-config.pb.js
     */
 
     /** 是否允许基础用户上传文件 */
     'allow-basic-users-upload': true,
-    /** 邮箱提交最短秒数（由 客户端/前端 实现的速率限制，单位秒） */
+    /** 邮箱修改最短秒数（由 客户端/前端 实现的速率限制，单位秒） */
     'email-update-rate-limit-second': 30,
+    /** 邮箱验证最短秒数（由 客户端/前端 实现的速率限制，单位秒） */
+    'email-verify-rate-limit-second': 30,
 
     /*
       【pbCollectionConfigDefault_public END】
