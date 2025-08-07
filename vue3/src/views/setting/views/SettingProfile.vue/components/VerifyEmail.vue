@@ -117,7 +117,7 @@ const emailVerifyRateLimitSec = computed(
     pbCollectionConfigQuery.data.value?.['email-verify-rate-limit-second'] ??
     pbCollectionConfigDefaultGetFn()['email-verify-rate-limit-second']
 )
-// 距离下次可以提交的时间帮 单位秒
+// 距离下次可以提交的时间 单位秒
 const secondsUntilNextEmailSubmit = computed(() => {
   const lastSubmitDateObj = parseISODate(
     settingStateStore.emailVerifyLastSubmitDate
@@ -204,9 +204,9 @@ const emailVerifyRateLimitInfo = computed(() => {
             }}
           </template>
           <!-- 未验证（验证邮箱） -->
-          <template v-else>{{
-            i18nStore.t('settingProfileVerifyEmailButtonSubmitText')()
-          }}</template>
+          <template v-else>
+            {{ i18nStore.t('settingProfileVerifyEmailButtonSubmitText')() }}
+          </template>
         </ElButton>
       </div>
     </ConfirmContainer>

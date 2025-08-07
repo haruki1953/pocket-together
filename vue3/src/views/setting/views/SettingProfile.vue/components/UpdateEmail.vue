@@ -220,7 +220,7 @@ const emailUpdateRateLimitSec = computed(
     pbCollectionConfigQuery.data.value?.['email-update-rate-limit-second'] ??
     pbCollectionConfigDefaultGetFn()['email-update-rate-limit-second']
 )
-// 距离下次可以提交的时间帮 单位秒
+// 距离下次可以提交的时间 单位秒
 const secondsUntilNextEmailSubmit = computed(() => {
   const lastSubmitDateObj = parseISODate(
     settingStateStore.emailUpdateLastSubmitDate
