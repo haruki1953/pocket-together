@@ -41,9 +41,7 @@ const authStore = useAuthStore()
         <!-- 圆角盒子 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-6 flow-root rounded-3xl bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/20"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <!-- 内容盒子 -->
           <div class="m-4">
@@ -54,9 +52,7 @@ const authStore = useAuthStore()
         <!-- 需登录 修改用户名 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-6 flow-root rounded-3xl bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/30"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <div class="m-4">
             <UpdateUsername></UpdateUsername>
@@ -65,9 +61,7 @@ const authStore = useAuthStore()
         <!-- 需登录 修改头像 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-6 flow-root rounded-3xl bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/30"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <div class="m-4">
             <UpdateAvatar></UpdateAvatar>
@@ -76,9 +70,7 @@ const authStore = useAuthStore()
         <!-- 需登录 修改邮箱 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-1 flow-root rounded-t-3xl bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/30"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <div class="m-4">
             <UpdateEmail></UpdateEmail>
@@ -87,9 +79,7 @@ const authStore = useAuthStore()
         <!-- 需登录 验证邮箱 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-1 flow-root rounded-none bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/30"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <div class="m-4">
             <VerifyEmail></VerifyEmail>
@@ -98,9 +88,7 @@ const authStore = useAuthStore()
         <!-- 需登录 修改密码 -->
         <div
           v-if="authStore.isValid"
-          class="
-          transition-all duration-900 ease-in-out
-          mb-6 flow-root rounded-b-3xl bg-color-background-soft shadow-none hover:shadow-md dark:hover:shadow-black/60 hover:shadow-black/30"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
         >
           <div class="m-4">
             <UpdatePassword></UpdatePassword>
@@ -156,6 +144,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <VerifyEmail></VerifyEmail>
+        </div>
+      </div>
+      <!-- 需登录 修改密码 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <UpdatePassword></UpdatePassword>
         </div>
       </div>
     </div>
