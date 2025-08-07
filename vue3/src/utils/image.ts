@@ -406,3 +406,27 @@ export function imageMergeHorizontalService(
 
   return canvas
 }
+
+// 函数11：从 Blob 对象加载图片为 HTMLImageElement
+export function imageLoadImageFromBlobService(
+  blob: Blob
+  // 承诺
+): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    // 将裁剪好的对象转换为临时 URL
+    const fileUrl = URL.createObjectURL(blob)
+    const img = new Image()
+    // 回调，成功加载后执行
+    img.onload = () => {
+      URL.revokeObjectURL(fileUrl)
+      resolve(img)
+    }
+    // 回调，加载失败时执行
+    img.onerror = (err) => {
+      URL.revokeObjectURL(fileUrl)
+      reject(err)
+    }
+    // 将 src 设置为我们创建的临时 URL，开始回调
+    img.src = fileUrl
+  })
+}

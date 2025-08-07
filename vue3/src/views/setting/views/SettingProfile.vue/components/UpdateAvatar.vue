@@ -12,13 +12,15 @@ import {
   blobToFile,
   compareDatesSafe,
   fetchWithTimeoutPreferred,
-  imageCropToRatioService,
-  imageLoadImageFromFileService,
+  imageLoadImageFromBlobService,
   imageResizeImageService,
   potoMessage,
 } from '@/utils'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { UploadFile } from 'element-plus'
+// 图片裁剪依赖
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 
 const i18nStore = useI18nStore()
 
@@ -38,11 +40,11 @@ const profileAvatarUrl = computed(() => {
   )
 })
 
-// 图片数据
+// 存储裁剪后的图片 Blob 数据
 const imageBlobRef = ref<Blob | null>(null)
-// 图片预览链接
+// 存储裁剪后图片的预览 URL，通过 vue3\src\utils\image.ts 的函数11生成
 const imageUrlRef = ref<string | null>(null)
-// 内容中该显示的图片
+// 优先显示新裁剪的图片，否则显示当前头像。
 const imageForShow = computed(() => {
   if (imageUrlRef.value != null) {
     return imageUrlRef.value
@@ -50,67 +52,80 @@ const imageForShow = computed(() => {
   return profileAvatarUrl.value
 })
 
-// 图片选择
-const onImageSelect = async (uploadFile: UploadFile) => {
-  console.log(uploadFile)
+// 引用 vue-advanced-cropper 组件
+const cropperRef = ref<InstanceType<typeof Cropper> | null>(null)
+// 对话框显示隐藏
+const cropDialogVisible = ref(false)
+// 存储用户选择的原始图片的临时 URL，用于在裁剪器中显示
+const originalImage = ref<string | null>(null)
 
-  // 检查uploadFile.raw
-  ;(() => {
-    if (uploadFile.raw === undefined) {
-      throw new Error('uploadFile.raw === undefined')
-    }
-  })()
+// 当用户通过 ElUpload 选择图片后触发
+// 用 URL.createObjectURL() 创建 原始图片 的临时 URL，并显示裁剪对话框
+const onImageSelect = (uploadFile: UploadFile) => {
+  if (uploadFile.raw) {
+    originalImage.value = URL.createObjectURL(uploadFile.raw)
+    cropDialogVisible.value = true
+  }
+}
 
-  // 图片处理
-  const imageBlob = await (async () => {
-    // 加载文件
-    const imageEl = await imageLoadImageFromFileService(uploadFile)
-    // 将图片裁剪为1比1
-    const imageCropTo11 = imageCropToRatioService(imageEl, 1, 1)
-    // 将图片改变大小
-    const imageResize = imageResizeImageService(
-      imageCropTo11,
-      fileUserAvatarConfig.imageResizeNumber,
-      fileUserAvatarConfig.imageResizeNumber
-    )
-    // 将图片转为Blob
-    const imageBlob = await new Promise<Blob>((resolve) => {
-      imageResize.toBlob(
-        (blob) => {
-          if (!blob) {
-            throw new Error()
+// 成功拿到裁剪好又转化成了 Blob 的图片后
+// 对 Blob 进行调整 尺寸、压缩 验证大小 更新预览
+const crop = () => {
+  if (cropperRef.value) {
+    const result = cropperRef.value.getResult()
+    result.canvas?.toBlob(
+      async (blob) => {
+        if (blob) {
+          const imageBlob = await (async () => {
+            // 使用函数11将裁剪的 Blob 加载成 url 存到 imageEl
+            const imageEl = await imageLoadImageFromBlobService(blob)
+            // 将图像尺寸统一调整为预设值q
+            const imageResize = imageResizeImageService(
+              imageEl,
+              fileUserAvatarConfig.imageResizeNumber,
+              fileUserAvatarConfig.imageResizeNumber
+            )
+            const imageBlob = await new Promise<Blob>((resolve) => {
+              imageResize.toBlob(
+                (blob) => {
+                  if (!blob) {
+                    throw new Error()
+                  }
+                  resolve(blob)
+                },
+                fileUserAvatarConfig.toBlobType,
+                fileUserAvatarConfig.toBlobQuality
+              )
+            })
+            return imageBlob
+          })()
+
+          // 验证处理后 Blob 大小
+          ;(() => {
+            if (imageBlob.size >= fileUserAvatarConfig.imageBlobSizeNotGte) {
+              throw new Error('imageBlob.size >= 100000')
+            }
+          })()
+          // 释放旧 URL 对象
+          if (imageUrlRef.value) {
+            URL.revokeObjectURL(imageUrlRef.value)
           }
-          resolve(blob)
-        },
-        fileUserAvatarConfig.toBlobType,
-        fileUserAvatarConfig.toBlobQuality
-      )
-    })
-    return imageBlob
-  })()
-
-  // 大小确认
-  ;(() => {
-    if (imageBlob.size >= fileUserAvatarConfig.imageBlobSizeNotGte) {
-      throw new Error('imageBlob.size >= 100000')
-    }
-  })()
-
-  // 暂存图片
-  imageBlobRef.value = imageBlob
-  // 暂存图片预览链接
-  ;(() => {
-    // 释放旧的 URL 对象，防止内存泄漏
-    if (imageUrlRef.value != null) {
-      URL.revokeObjectURL(imageUrlRef.value)
-    }
-    imageUrlRef.value = URL.createObjectURL(imageBlob)
-  })()
+          imageBlobRef.value = imageBlob
+          // 在这一步为前面的 裁剪后图片的预览 URL 赋值
+          imageUrlRef.value = URL.createObjectURL(imageBlob)
+        }
+        // 关闭
+        cropDialogVisible.value = false
+      },
+      fileUserAvatarConfig.toBlobType,
+      fileUserAvatarConfig.toBlobQuality
+    )
+  }
 }
 
 // 取消按钮函数
 const cancelFn = () => {
-  // 释放旧的 URL 对象，防止内存泄漏
+  // 释放
   if (imageUrlRef.value != null) {
     URL.revokeObjectURL(imageUrlRef.value)
   }
@@ -118,13 +133,6 @@ const cancelFn = () => {
   imageUrlRef.value = null
 }
 
-// // 何时禁用取消按钮
-// const isDisableCancel = computed(() => {
-//   if (imageBlobRef.value == null) {
-//     return true
-//   }
-//   return false
-// })
 // 何时禁用提交按钮
 const isDisableSubmit = computed(() => {
   if (imageBlobRef.value == null) {
@@ -273,6 +281,26 @@ const submit = mutation.mutateAsync
         {{ i18nStore.t('settingButtonCancel')() }}
       </ElButton>
     </div>
+
+    <!-- 裁剪对话框 -->
+    <ElDialog v-model="cropDialogVisible" title="裁剪头像" width="80%">
+      <div style="height: 400px">
+        <Cropper
+          v-if="originalImage"
+          ref="cropperRef"
+          :src="originalImage"
+          :stencil-props="{
+            aspectRatio: 1,
+          }"
+        />
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <ElButton @click="cropDialogVisible = false">取消</ElButton>
+          <ElButton type="primary" @click="crop">确定</ElButton>
+        </span>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
