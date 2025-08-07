@@ -71,11 +71,11 @@ const onImageSelect = (uploadFile: UploadFile) => {
 // 成功拿到裁剪好又转化成了 Blob 的图片后
 // 对 Blob 进行调整 尺寸、压缩 验证大小 更新预览
 const crop = () => {
-  if (cropperRef.value) {
+  if (cropperRef.value != null) {
     const result = cropperRef.value.getResult()
     result.canvas?.toBlob(
       async (blob) => {
-        if (blob) {
+        if (blob != null) {
           const imageBlob = await (async () => {
             // 使用函数11将裁剪的 Blob 加载成 url 存到 imageEl
             const imageEl = await imageLoadImageFromBlobService(blob)
@@ -107,7 +107,7 @@ const crop = () => {
             }
           })()
           // 释放旧 URL 对象
-          if (imageUrlRef.value) {
+          if (imageUrlRef.value != null) {
             URL.revokeObjectURL(imageUrlRef.value)
           }
           imageBlobRef.value = imageBlob
@@ -289,7 +289,7 @@ const submit = mutation.mutateAsync
           v-if="originalImage"
           ref="cropperRef"
           :src="originalImage"
-          :stencil-props="{
+          :stencilProps="{
             aspectRatio: 1,
           }"
         />
