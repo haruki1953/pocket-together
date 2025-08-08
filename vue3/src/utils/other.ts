@@ -14,15 +14,28 @@ export const openLink = (url: string) => {
   window.open(url, '_blank')
 }
 
-// 生成随机密钥
+// // 生成随机密钥
+// export const generateRandomKey = (length: number = 16) => {
+//   const array = new Uint8Array(length)
+//   window.crypto.getRandomValues(array)
+//   return btoa(String.fromCharCode(...array))
+// }
+// // 生成随机类名
+// export const generateRandomClassName = (length?: number) => {
+//   return generateRandomKey(length).replace(/[^a-zA-Z]/g, '')
+// }
+// 使用预设字符集生成随机字符串
 export const generateRandomKey = (length: number = 16) => {
-  const array = new Uint8Array(length)
-  window.crypto.getRandomValues(array)
-  return btoa(String.fromCharCode(...array))
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length)
+    result += chars[randomIndex]
+  }
+  return result
 }
-// 生成随机类名
 export const generateRandomClassName = (length?: number) => {
-  return generateRandomKey(length).replace(/[^a-zA-Z]/g, '') // 只保留字母
+  return generateRandomKey(length)
 }
 
 export const getScrollbarWidth = () => {

@@ -74,106 +74,18 @@ $dark-steps: 1, 2, 3, 4, 5, 6, 7, 8, 9;
 --el-color-primary-dark-7
 --el-color-primary-dark-8
 --el-color-primary-dark-9
---el-color-success
---el-color-success-light-1
---el-color-success-light-2
---el-color-success-light-3
---el-color-success-light-4
---el-color-success-light-5
---el-color-success-light-6
---el-color-success-light-7
---el-color-success-light-8
---el-color-success-light-9
---el-color-success-dark-1
---el-color-success-dark-2
---el-color-success-dark-3
---el-color-success-dark-4
---el-color-success-dark-5
---el-color-success-dark-6
---el-color-success-dark-7
---el-color-success-dark-8
---el-color-success-dark-9
---el-color-info
---el-color-info-light-1
---el-color-info-light-2
---el-color-info-light-3
---el-color-info-light-4
---el-color-info-light-5
---el-color-info-light-6
---el-color-info-light-7
---el-color-info-light-8
---el-color-info-light-9
---el-color-info-dark-1
---el-color-info-dark-2
---el-color-info-dark-3
---el-color-info-dark-4
---el-color-info-dark-5
---el-color-info-dark-6
---el-color-info-dark-7
---el-color-info-dark-8
---el-color-info-dark-9
---el-color-warning
---el-color-warning-light-1
---el-color-warning-light-2
---el-color-warning-light-3
---el-color-warning-light-4
---el-color-warning-light-5
---el-color-warning-light-6
---el-color-warning-light-7
---el-color-warning-light-8
---el-color-warning-light-9
---el-color-warning-dark-1
---el-color-warning-dark-2
---el-color-warning-dark-3
---el-color-warning-dark-4
---el-color-warning-dark-5
---el-color-warning-dark-6
---el-color-warning-dark-7
---el-color-warning-dark-8
---el-color-warning-dark-9
---el-color-danger
---el-color-danger-light-1
---el-color-danger-light-2
---el-color-danger-light-3
---el-color-danger-light-4
---el-color-danger-light-5
---el-color-danger-light-6
---el-color-danger-light-7
---el-color-danger-light-8
---el-color-danger-light-9
---el-color-danger-dark-1
---el-color-danger-dark-2
---el-color-danger-dark-3
---el-color-danger-dark-4
---el-color-danger-dark-5
---el-color-danger-dark-6
---el-color-danger-dark-7
---el-color-danger-dark-8
---el-color-danger-dark-9
---el-color-error
---el-color-error-light-1
---el-color-error-light-2
---el-color-error-light-3
---el-color-error-light-4
---el-color-error-light-5
---el-color-error-light-6
---el-color-error-light-7
---el-color-error-light-8
---el-color-error-light-9
---el-color-error-dark-1
---el-color-error-dark-2
---el-color-error-dark-3
---el-color-error-dark-4
---el-color-error-dark-5
---el-color-error-dark-6
---el-color-error-dark-7
---el-color-error-dark-8
---el-color-error-dark-9
-*/
 
-.el-dialog.el-dialog {
-  border-radius: 20px;
-}
+--el-color-success
+...
+--el-color-info
+...
+--el-color-warning
+...
+--el-color-danger
+...
+--el-color-error
+...
+*/
 
 .el-message.el-message {
   border-radius: 20px;
@@ -289,4 +201,32 @@ $dark-steps: 1, 2, 3, 4, 5, 6, 7, 8, 9;
   transition:
     opacity var(--el-transition-duration),
     background-color 0.5s;
+}
+
+// 遮罩（主要用于对话框），为偏透明的背景色
+.el-overlay.el-overlay {
+  background-color: var(--color-background-a80);
+  backdrop-filter: blur(15px);         /* 模糊背景内容 */
+  -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
+}
+// dark背景色更深一些
+:root.dark .el-overlay.el-overlay {
+  background-color: var(--color-background-a90);
+}
+
+// 对话框完全透明，内容自由
+.el-dialog.el-dialog {
+  // --el-dialog-bg-color: var(--color-background-soft);
+  --el-dialog-bg-color: transparent;
+  --el-dialog-box-shadow: none;
+  // --el-dialog-border-radius: 20px;
+  --el-dialog-border-radius: 0;
+  --el-dialog-padding-primary: 0;
+  // border-radius: 20px;
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    color: var(--color-text);
+  }
 }

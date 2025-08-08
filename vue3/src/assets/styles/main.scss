@@ -1,22 +1,10 @@
 @use './base.css';
 @use './tailwind.css';
+@use './color.scss';
 @use './transition.scss';
 @use './animation.scss';
 @use './element-plus.scss';
 @use './nunito.css';
-
-
-:root {
-  // 基础颜色
-  $my-neutral: rgba(140, 147, 157, 1);
-  --my-neutral: #{$my-neutral};
-
-  // 使用循环生成不同透明度的颜色
-  @for $i from 1 through 9 {
-    $opacity: $i * 0.1; // 透明度从 0.1 到 0.9
-    --my-neutral-a#{$i}: rgba(140, 147, 157, #{$opacity});
-  }
-}
 
 // 下面是一些自定义的样式类，poto意为PocketTogether
 

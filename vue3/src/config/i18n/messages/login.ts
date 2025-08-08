@@ -84,4 +84,46 @@ export const i18nMessagesLoginPart = {
     'zh-CN': () => '登录失败' as const,
     'zh-TW': () => '登入失敗' as const,
   },
+  // 忘记密码
+  loginForgotPasswordContentTitle: {
+    'en-US': () => 'Forgot password' as const,
+    'zh-CN': () => '忘记密码' as const,
+    'zh-TW': () => '忘記密碼' as const,
+  },
+  loginForgotPasswordRulesEmailRequiredMessage: {
+    'en-US': () => 'Please enter email' as const,
+    'zh-CN': () => '请输入邮箱' as const,
+    'zh-TW': () => '請輸入信​​箱' as const,
+  },
+  loginForgotPasswordRulesEmailTypeMessage: {
+    'en-US': () => 'Incorrect email format' as const,
+    'zh-CN': () => '邮箱格式不正确' as const,
+    'zh-TW': () => '信​​箱格式不正確' as const,
+  },
+  loginForgotPasswordConfirmContainerTitle: {
+    'en-US': (email: string) =>
+      `A password reset link will be sent to ${email}` as const,
+    'zh-CN': (email: string) => `密码重置链接将发送至 ${email}` as const,
+    'zh-TW': (email: string) => `密碼重置連結將發送至 ${email}` as const,
+  },
+  loginForgotPasswordEmailLable: {
+    'en-US': () => 'Email' as const,
+    'zh-CN': () => '邮箱' as const,
+    'zh-TW': () => '信箱' as const,
+  },
+  loginForgotPasswordPlaceholderEmail: {
+    'en-US': () => 'Please enter email' as const,
+    'zh-CN': () => '请输入邮箱' as const,
+    'zh-TW': () => '請輸入信箱' as const,
+  },
+  loginForgotPasswordButtonSubmitText: {
+    'en-US': () => 'Reset Password' as const,
+    'zh-CN': () => '重置密码' as const,
+    'zh-TW': () => '重設密碼' as const,
+  },
+  loginForgotPasswordRetryAfterDuration: {
+    'en-US': (duration: string) => `Retry after ${duration}` as const,
+    'zh-CN': (duration: string) => `${duration}后可重试` as const,
+    'zh-TW': (duration: string) => `${duration}後可重試` as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType
