@@ -39,7 +39,7 @@ const submit = async () => {
         {{ i18nStore.t('settingProfileLogOutContentTitle')() }}
       </div>
       <!-- 按钮盒子 -->
-      <div class="poto-setting-button-box">
+      <div class="poto-setting-button-box not-center">
         <ElButton type="primary" round @click="submit()">
           <!-- 退出登录 -->
           {{ i18nStore.t('settingProfileLogOutButtonSubmitText')() }}

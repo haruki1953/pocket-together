@@ -143,4 +143,17 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': () => '退出登录' as const,
     'zh-TW': () => '登出' as const,
   },
+  // 设置页 个人信息 未登录提示
+  settingProfileNotLoginPromptTitle: {
+    'en-US': () =>
+      // eslint-disable-next-line prettier/prettier
+      'You\'re not logged in. Sign in to access more content.' as const,
+    'zh-CN': () => '当前未登录，登录后可查看更多内容' as const,
+    'zh-TW': () => '尚未登入，登入後可查看更多內容' as const,
+  },
+  settingProfileNotLoginPromptLoginText: {
+    'en-US': () => 'Sign in' as const,
+    'zh-CN': () => '登 录' as const,
+    'zh-TW': () => '登 入' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

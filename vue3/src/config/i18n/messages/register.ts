@@ -50,8 +50,8 @@ export const i18nMessagesRegisterPart = {
   },
   registerButtonText: {
     'en-US': () => 'Sign up' as const,
-    'zh-CN': () => '注册' as const,
-    'zh-TW': () => '註冊' as const,
+    'zh-CN': () => '注 册' as const,
+    'zh-TW': () => '註 冊' as const,
   },
   registerRulesPasswordConfirmRequiredMessage: {
     'en-US': () => 'Please confirm password' as const,

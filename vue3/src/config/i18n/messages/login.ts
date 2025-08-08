@@ -21,8 +21,8 @@ export const i18nMessagesLoginPart = {
   },
   loginButtonText: {
     'en-US': () => 'Sign in' as const,
-    'zh-CN': () => '登录' as const,
-    'zh-TW': () => '登入' as const,
+    'zh-CN': () => '登 录' as const,
+    'zh-TW': () => '登 入' as const,
   },
   loginForgetText: {
     'en-US': () => 'Forgot password' as const,

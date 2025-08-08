@@ -310,7 +310,7 @@ const emailUpdateRateLimitInfo = computed(() => {
         </ElForm>
       </div>
       <!-- 按钮盒子 -->
-      <div class="poto-setting-button-box not-center">
+      <div class="poto-setting-button-box">
         <!-- 保存按钮 -->
         <ElButton
           :loading="submitRunning"

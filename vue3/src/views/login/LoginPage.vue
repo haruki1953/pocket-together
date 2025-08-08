@@ -43,7 +43,7 @@ const showCol2TrueCol1False = computed(() => {
               'text-5xl': showCol2TrueCol1False,
               'text-3xl': !showCol2TrueCol1False,
             }"
-            class="gradient-text select-none truncate py-10 text-center font-bold"
+            class="gradient-text wrap-long-text select-none py-10 text-center font-bold"
           >
             {{ i18nStore.t('appNameI18n')() }}
           </div>
@@ -136,5 +136,10 @@ const showCol2TrueCol1False = computed(() => {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.wrap-long-text {
+  overflow-wrap: anywhere; /* 允许在任意点断行，但仍尝试保持完整词 */
+  white-space: pre-wrap;
 }
 </style>
