@@ -36,6 +36,21 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': () => '修改头像' as const,
     'zh-TW': () => '修改頭像' as const,
   },
+  settingProfileUpdateAvatarDialogTitle: {
+    'en-US': () => 'Crop Avatar' as const,
+    'zh-CN': () => '裁剪头像' as const,
+    'zh-TW': () => '裁剪頭像' as const,
+  },
+  settingProfileUpdateAvatarDialogCancelButton: {
+    'en-US': () => 'Cancel' as const,
+    'zh-CN': () => '取消' as const,
+    'zh-TW': () => '取消' as const,
+  },
+  settingProfileUpdateAvatarDialogCropButton: {
+    'en-US': () => 'Crop' as const,
+    'zh-CN': () => '裁剪' as const,
+    'zh-TW': () => '裁剪' as const,
+  },
   // 设置页 个人信息 修改邮箱
   settingProfileUpdateEmailContentTitle: {
     'en-US': () => 'Update Email' as const,

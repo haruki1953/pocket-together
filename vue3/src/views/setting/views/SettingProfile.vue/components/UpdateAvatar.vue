@@ -283,28 +283,72 @@ const submit = mutation.mutateAsync
     </div>
 
     <!-- 裁剪对话框 -->
-    <ElDialog v-model="cropDialogVisible" title="裁剪头像" width="80%">
-      <div style="height: 400px">
-        <Cropper
-          v-if="originalImage"
-          ref="cropperRef"
-          :src="originalImage"
-          :stencilProps="{
-            aspectRatio: 1,
-          }"
-        />
+    <ElDialog
+      v-model="cropDialogVisible"
+      :title="i18nStore.t('settingProfileUpdateAvatarDialogTitle')()"
+      width="80%"
+    >
+      <div class="flow-root rounded-t-3xl bg-color-background-soft">
+        <!-- title -->
+        <div class="my-0 hidden xl:my-4 xl:block">
+          <span class="m-8 text-xl font-bold text-color-text-soft">{{
+            i18nStore.t('settingProfileUpdateAvatarDialogTitle')()
+          }}</span>
+        </div>
+        <div class="mx-0 xl:mx-8">
+          <div
+            class="relative flex h-[600px] w-full justify-center overflow-hidden rounded-t-3xl xl:h-[400px] xl:rounded-3xl"
+          >
+            <img
+              v-if="originalImage"
+              :src="originalImage"
+              class="absolute left-0 top-0 h-full w-full scale-110 object-cover opacity-40 blur-lg"
+            />
+            <Cropper
+              v-if="originalImage"
+              ref="cropperRef"
+              :src="originalImage"
+              :stencilProps="{
+                aspectRatio: 1,
+              }"
+              class="cropperBg"
+            />
+          </div>
+          <!-- 占位 div -->
+          <div class="h-[2px] w-full"></div>
+        </div>
       </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <ElButton @click="cropDialogVisible = false">取消</ElButton>
-          <ElButton type="primary" @click="crop">确定</ElButton>
-        </span>
-      </template>
+      <!-- 再复制一份样式创建按钮 -->
+      <div
+        class="mt-[2px] flow-root rounded-b-3xl bg-color-background-soft xl:mt-0"
+      >
+        <div
+          class="poto-setting-button-box not-center mb-4 mr-2 mt-2 xl:mr-8 xl:mt-4"
+        >
+          <span class="dialog-footer">
+            <ElButton round @click="cropDialogVisible = false">{{
+              i18nStore.t('settingProfileUpdateAvatarDialogCancelButton')()
+            }}</ElButton>
+            <ElButton type="primary" round @click="crop">{{
+              i18nStore.t('settingProfileUpdateAvatarDialogCropButton')()
+            }}</ElButton>
+          </span>
+        </div>
+      </div>
     </ElDialog>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.cropperBg {
+  :deep() {
+    .vue-advanced-cropper__background,
+    .vue-advanced-cropper__wrapper {
+      background-color: unset;
+    }
+  }
+}
+
 .upload-box {
   :deep() {
     .el-upload {
