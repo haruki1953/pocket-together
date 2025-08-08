@@ -2,6 +2,8 @@
 import { useI18nStore } from '@/stores'
 import type { ElForm } from 'element-plus'
 import { useLoginFormRules, useLoginFormSubmit } from './composables'
+import ForgotPasswordDialog from './components/ForgotPasswordDialog.vue'
+import { routerDict } from '@/config'
 
 const i18nStore = useI18nStore()
 
@@ -24,9 +26,19 @@ const { isSubmitting, submit } = useLoginFormSubmit({
   formModel,
   isPrepareToSubmit,
 })
+
+const refForgotPasswordDialog = ref<InstanceType<
+  typeof ForgotPasswordDialog
+> | null>(null)
+
+const clickForgotPassword = () => {
+  // 打开忘记密码对话框
+  refForgotPasswordDialog.value?.open()
+}
 </script>
 
 <template>
+  <ForgotPasswordDialog ref="refForgotPasswordDialog"></ForgotPasswordDialog>
   <ElForm
     ref="form"
     :model="formModel"
@@ -75,20 +87,23 @@ const { isSubmitting, submit } = useLoginFormSubmit({
   <div class="relative h-2">
     <div class="absolute top-2 flex w-full items-center justify-between">
       <div class="flex flex-1 justify-start truncate">
-        <a
-          href="#"
-          class="mx-2 truncate text-xs text-el-primary hover:text-el-primary-light-3"
-        >
-          {{ i18nStore.t('loginForgetText')() }}
-        </a>
-      </div>
-      <div class="flex flex-1 justify-end truncate">
-        <a
-          href="#"
-          class="mx-2 truncate text-xs text-el-primary hover:text-el-primary-light-3"
+        <span
+          class="mx-2 cursor-pointer truncate text-xs text-el-primary hover:text-el-primary-light-3"
+          @click="
+            // 跳转至首页
+            $router.push(routerDict.HomePage.path)
+          "
         >
           {{ i18nStore.t('loginVisitorText')() }}
-        </a>
+        </span>
+      </div>
+      <div class="flex flex-1 justify-end truncate">
+        <span
+          class="mx-2 cursor-pointer truncate text-xs text-el-primary hover:text-el-primary-light-3"
+          @click="clickForgotPassword"
+        >
+          {{ i18nStore.t('loginForgetText')() }}
+        </span>
       </div>
     </div>
   </div>

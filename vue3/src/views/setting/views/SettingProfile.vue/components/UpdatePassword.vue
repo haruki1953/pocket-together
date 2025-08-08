@@ -27,7 +27,7 @@ const refConfirmContainer = ref<InstanceType<
   GlobalComponents['ConfirmContainer']
 > | null>(null)
 
-// 邮箱请求
+// 修改密码mutation
 const mutation = useMutation({
   // mutation函数
   mutationFn: async () => {

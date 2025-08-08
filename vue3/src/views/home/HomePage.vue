@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { routerDict } from '@/config'
 import { pb } from '@/lib'
 import { useAuthStore, useI18nStore } from '@/stores'
 
@@ -29,6 +30,7 @@ const authStore = useAuthStore()
     <div class="wrap-long-text">{{ authStore.token }}</div>
     <ElButton @click="testAuthRefresh">测试刷新auth</ElButton>
     <ElButton @click="testAuthClear">测试清除auth</ElButton>
+    <ElButton @click="$router.push(routerDict.LoginPage.path)">登录</ElButton>
   </div>
 </template>
 
