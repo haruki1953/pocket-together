@@ -127,4 +127,20 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': (duration: string) => `${duration}后可重试` as const,
     'zh-TW': (duration: string) => `${duration}後可重試` as const,
   },
+  // 设置页 个人信息 退出登录
+  settingProfileLogOutContentTitle: {
+    'en-US': () => 'Log Out' as const,
+    'zh-CN': () => '退出登录' as const,
+    'zh-TW': () => '登出' as const,
+  },
+  settingProfileLogOutConfirmContainerTitle: {
+    'en-US': () => 'Are you sure you want to log out?' as const,
+    'zh-CN': () => '确认要退出登录吗？' as const,
+    'zh-TW': () => '確定要登出嗎？' as const,
+  },
+  settingProfileLogOutButtonSubmitText: {
+    'en-US': () => 'Log Out' as const,
+    'zh-CN': () => '退出登录' as const,
+    'zh-TW': () => '登出' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

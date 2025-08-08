@@ -8,6 +8,7 @@ import UpdateAvatar from './components/UpdateAvatar.vue'
 import UpdateEmail from './components/UpdateEmail.vue'
 import VerifyEmail from './components/VerifyEmail.vue'
 import UpdatePassword from './components/UpdatePassword.vue'
+import LogOut from './components/LogOut.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -94,6 +95,15 @@ const authStore = useAuthStore()
             <UpdatePassword></UpdatePassword>
           </div>
         </div>
+        <!-- 需登录 退出登录 -->
+        <div
+          v-if="authStore.isValid"
+          class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+        >
+          <div class="m-4">
+            <LogOut></LogOut>
+          </div>
+        </div>
       </div>
       <!-- 第二列 -->
       <div class="flex-1"></div>
@@ -153,6 +163,15 @@ const authStore = useAuthStore()
       >
         <div class="m-4">
           <UpdatePassword></UpdatePassword>
+        </div>
+      </div>
+      <!-- 需登录 退出登录 -->
+      <div
+        v-if="authStore.isValid"
+        class="mb-6 flow-root rounded-3xl bg-color-background-soft"
+      >
+        <div class="m-4">
+          <LogOut></LogOut>
         </div>
       </div>
     </div>
