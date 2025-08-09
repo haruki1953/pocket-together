@@ -64,10 +64,9 @@ pocketbase 集合 config 的 useQuery 完成，已实现由pocketbase的config�
 
 ### 250808
 - 忘记密码
-
+- 退出登录
 
 ## TODO
-- 退出登录
 - 开发规划、多人开发的正确方式
 - 房间创建
 - 首页房间显示
