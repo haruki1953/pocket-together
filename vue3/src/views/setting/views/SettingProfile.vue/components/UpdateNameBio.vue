@@ -162,7 +162,10 @@ const submit = mutation.mutateAsync
         <ElInput
           v-model="name"
           size="large"
-          class="poto-el-input-line"
+          :placeholder="
+            i18nStore.t('settingProfileUpdateNameBioNamePlaceholder')()
+          "
+          class="poto-el-input-line placeholder-inputText"
           @focus="
             // 输入框获取焦点时，设置为已编辑
             setEdited(true)
@@ -185,7 +188,10 @@ const submit = mutation.mutateAsync
           type="textarea"
           :autosize="{ minRows: 3, maxRows: 20 }"
           resize="none"
-          class="poto-el-input-line"
+          class="poto-el-input-line placeholder-textareaText"
+          :placeholder="
+            i18nStore.t('settingProfileUpdateNameBioBioPlaceholder')()
+          "
           @focus="
             // 输入框获取焦点时，设置为已编辑
             setEdited(true)
@@ -211,4 +217,14 @@ const submit = mutation.mutateAsync
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-input.placeholder-inputText :deep(input::placeholder) {
+  color: #777777 !important;
+  opacity: 1;
+}
+
+.el-textarea.placeholder-textareaText :deep(textarea::placeholder) {
+  color: #777777 !important;
+  opacity: 1; // 确保颜色不被降低透明度
+}
+</style>

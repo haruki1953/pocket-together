@@ -19,6 +19,16 @@ export const i18nMessagesSettingPartProfilePart = {
     'zh-CN': () => '简介' as const,
     'zh-TW': () => '簡介' as const,
   },
+  settingProfileUpdateNameBioNamePlaceholder: {
+    'en-US': () => 'Write down the name you want to display' as const,
+    'zh-CN': () => '写下你希望展示的名称' as const,
+    'zh-TW': () => '寫下你希望展示的名稱' as const,
+  },
+  settingProfileUpdateNameBioBioPlaceholder: {
+    'en-US': () => 'Sketch your silhouette with words' as const,
+    'zh-CN': () => '用文字勾画你的剪影' as const,
+    'zh-TW': () => '用文字勾畫你的剪影' as const,
+  },
   // 设置页 个人信息 修改用户名
   settingProfileUpdateUsernameContentTitle: {
     'en-US': () => 'Modify Username' as const,
