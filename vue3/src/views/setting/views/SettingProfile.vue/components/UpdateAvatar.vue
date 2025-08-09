@@ -288,7 +288,9 @@ const submit = mutation.mutateAsync
       :title="i18nStore.t('settingProfileUpdateAvatarDialogTitle')()"
       width="80%"
     >
-      <div class="flow-root rounded-t-3xl bg-color-background-soft">
+      <div
+        class="flow-root rounded-t-3xl bg-color-background-soft shadow-lg shadow-black/20"
+      >
         <!-- title -->
         <div class="my-0 hidden xl:my-4 xl:block">
           <span class="m-8 text-xl font-bold text-color-text-soft">{{
@@ -299,10 +301,11 @@ const submit = mutation.mutateAsync
           <div
             class="relative flex h-[600px] w-full justify-center overflow-hidden rounded-t-3xl xl:h-[400px] xl:rounded-3xl"
           >
+            <!-- 填充黑色空白 -->
             <img
               v-if="originalImage"
               :src="originalImage"
-              class="absolute left-0 top-0 h-full w-full scale-110 object-cover opacity-40 blur-lg"
+              class="absolute left-0 top-0 h-full w-full scale-110 object-cover opacity-60 blur-md"
             />
             <Cropper
               v-if="originalImage"
@@ -314,16 +317,14 @@ const submit = mutation.mutateAsync
               class="cropperBg"
             />
           </div>
-          <!-- 占位 div -->
-          <div class="h-[2px] w-full"></div>
         </div>
       </div>
       <!-- 再复制一份样式创建按钮 -->
       <div
-        class="mt-[2px] flow-root rounded-b-3xl bg-color-background-soft xl:mt-0"
+        class="mt-[2px] flow-root rounded-b-3xl bg-color-background-soft shadow-lg shadow-black/20 xl:mt-0"
       >
         <div
-          class="poto-setting-button-box not-center mb-4 mr-2 mt-2 xl:mr-8 xl:mt-4"
+          class="poto-setting-button-box not-center mb-4 mr-4 mt-2 xl:mr-8 xl:mt-4"
         >
           <span class="dialog-footer">
             <ElButton round @click="cropDialogVisible = false">{{
