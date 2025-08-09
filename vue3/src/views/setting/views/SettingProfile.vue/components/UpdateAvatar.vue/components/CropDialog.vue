@@ -25,24 +25,18 @@ const imageBlobRef = defineModel<Blob | null>('imageBlobRef', {
 })
 
 const cropDialogVisible = ref(false)
-const open = () => {
-  cropDialogVisible.value = true
-}
-const close = () => {
-  cropDialogVisible.value = false
-}
-
-defineExpose({
-  open,
-  close,
-})
 
 // 自定义遮罩类名，随机生成
 const overlayClass = generateRandomClassName()
 // 对话框优化
-useDialogOptimization({
+const { open, close } = useDialogOptimization({
   dialogVisible: cropDialogVisible,
   overlayClass,
+})
+
+defineExpose({
+  open,
+  close,
 })
 
 // 对话框大小
@@ -103,7 +97,8 @@ const crop = () => {
           imageUrlRef.value = URL.createObjectURL(imageBlob)
         }
         // 关闭
-        cropDialogVisible.value = false
+        // cropDialogVisible.value = false
+        close()
       },
       fileUserAvatarConfig.toBlobType,
       fileUserAvatarConfig.toBlobQuality
@@ -157,7 +152,7 @@ const crop = () => {
       <div class="flow-root rounded-b-3xl bg-color-background-soft">
         <div class="poto-setting-button-box not-center mb-4 mr-2 mt-2">
           <span class="dialog-footer">
-            <ElButton round @click="cropDialogVisible = false">{{
+            <ElButton round @click="close()">{{
               i18nStore.t('settingProfileUpdateAvatarDialogCancelButton')()
             }}</ElButton>
             <ElButton type="primary" round @click="crop">{{

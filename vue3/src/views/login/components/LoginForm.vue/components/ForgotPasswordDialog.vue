@@ -26,25 +26,17 @@ const dialogWidth = computed(() => {
   return windowWidth * 0.9 < width ? '90%' : width
 })
 
-const open = () => {
-  dialogVisible.value = true
-}
-const close = () => {
-  dialogVisible.value = false
-}
+// 自定义遮罩类名，随机生成
+const overlayClass = generateRandomClassName()
+// 对话框优化
+const { open, close } = useDialogOptimization({
+  dialogVisible,
+  overlayClass,
+})
 
 defineExpose({
   open,
   close,
-})
-
-// 自定义遮罩类名，随机生成
-const overlayClass = generateRandomClassName()
-
-// 对话框优化
-useDialogOptimization({
-  dialogVisible,
-  overlayClass,
 })
 
 const i18nStore = useI18nStore()
@@ -103,6 +95,11 @@ const mutation = useMutation({
   // 一些收尾工作
   onSuccess: (data) => {},
 })
+
+const cancelFn = () => {
+  form.value?.resetFields()
+  close()
+}
 
 const submitRunning = ref(false)
 // 重置密码
@@ -245,6 +242,9 @@ const passwordUpdateRateLimitInfo = computed(() => {
               </div>
               <!-- 按钮盒子 -->
               <div class="poto-setting-button-box not-center">
+                <ElButton round @click="cancelFn()">
+                  {{ i18nStore.t('settingButtonCancel')() }}
+                </ElButton>
                 <!-- 重置密码按钮 -->
                 <ElButton
                   :loading="submitRunning"

@@ -8,7 +8,7 @@ export const useDialogOptimization = (dependencies: {
   dialogVisible: Ref<boolean>
   overlayClass: string
 }) => {
-  const { dialogVisible } = dependencies
+  const { dialogVisible, overlayClass } = dependencies
 
   watch(dialogVisible, () => {
     if (dialogVisible.value) {
@@ -56,6 +56,28 @@ export const useDialogOptimization = (dependencies: {
 
   // 返回事件操作
   const handleBackNavigation = () => {
-    dialogVisible.value = false
+    close()
+  }
+
+  // 打开方法
+  const open = () => {
+    dialogVisible.value = true
+  }
+  // 关闭方法
+  const close = () => {
+    // 直接设置为false会导致滚动条提前恢复而导致对话框滚动
+    // dialogVisible.value = false
+    // 应模拟点击关闭按钮使对话框关闭（即使display:hidden也可以）
+    const dialogOverlay = document.querySelector(
+      `.${overlayClass} .el-dialog__headerbtn`
+    ) as HTMLElement | null
+    if (dialogOverlay != null) {
+      dialogOverlay.click()
+    }
+  }
+
+  return {
+    open,
+    close,
   }
 }
