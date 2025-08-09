@@ -12,7 +12,7 @@ export const layoutLayoutNavConfig = {
   /**
    * 小屏时底部导航栏的高度
    */
-  navBottomHeight: 80,
+  navBottomHeight: 176,
 } as const
 
 /**
