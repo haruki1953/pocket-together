@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { useDialogOptimization } from '@/composables'
 import { fileUserAvatarConfig } from '@/config'
 import { useI18nStore } from '@/stores'
-import { imageLoadImageFromBlobService, imageResizeImageService } from '@/utils'
+import {
+  generateRandomClassName,
+  imageLoadImageFromBlobService,
+  imageResizeImageService,
+} from '@/utils'
+import { useWindowSize } from '@vueuse/core'
 // 图片裁剪依赖
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -29,6 +35,22 @@ const close = () => {
 defineExpose({
   open,
   close,
+})
+
+// 自定义遮罩类名，随机生成
+const overlayClass = generateRandomClassName()
+// 对话框优化
+useDialogOptimization({
+  dialogVisible: cropDialogVisible,
+  overlayClass,
+})
+
+// 对话框大小
+const windowSize = useWindowSize()
+const dialogWidth = computed(() => {
+  const width = 500
+  const windowWidth = windowSize.width.value
+  return windowWidth * 0.9 < width ? '90%' : width
 })
 
 // 引用 vue-advanced-cropper 组件
@@ -96,18 +118,21 @@ const crop = () => {
     <ElDialog
       v-model="cropDialogVisible"
       :title="i18nStore.t('settingProfileUpdateAvatarDialogTitle')()"
-      width="80%"
+      :width="dialogWidth"
+      :lockScroll="false"
+      appendToBody
+      :modalClass="overlayClass"
     >
       <div class="flow-root rounded-t-3xl bg-color-background-soft">
         <!-- title -->
-        <div class="my-0 hidden xl:my-4 xl:block">
+        <div class="my-0 hidden">
           <span class="m-8 text-xl font-bold text-color-text-soft">{{
             i18nStore.t('settingProfileUpdateAvatarDialogTitle')()
           }}</span>
         </div>
-        <div class="mx-0 xl:mx-8">
+        <div class="mx-0">
           <div
-            class="relative flex h-[600px] w-full justify-center overflow-hidden rounded-t-3xl xl:h-[400px] xl:rounded-3xl"
+            class="relative flex h-[500px] w-full justify-center overflow-hidden rounded-t-3xl"
           >
             <img
               v-if="originalImage"
@@ -124,17 +149,13 @@ const crop = () => {
               class="cropperBg"
             />
           </div>
-          <!-- 占位 div -->
-          <div class="h-[2px] w-full"></div>
         </div>
       </div>
+      <!-- 分割线 div -->
+      <div class="border border-color-background"></div>
       <!-- 再复制一份样式创建按钮 -->
-      <div
-        class="mt-[2px] flow-root rounded-b-3xl bg-color-background-soft xl:mt-0"
-      >
-        <div
-          class="poto-setting-button-box not-center mb-4 mr-2 mt-2 xl:mr-8 xl:mt-4"
-        >
+      <div class="flow-root rounded-b-3xl bg-color-background-soft">
+        <div class="poto-setting-button-box not-center mb-4 mr-2 mt-2">
           <span class="dialog-footer">
             <ElButton round @click="cropDialogVisible = false">{{
               i18nStore.t('settingProfileUpdateAvatarDialogCancelButton')()

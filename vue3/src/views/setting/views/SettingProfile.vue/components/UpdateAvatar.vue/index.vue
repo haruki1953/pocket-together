@@ -235,15 +235,6 @@ const submit = mutation.mutateAsync
 </template>
 
 <style lang="scss" scoped>
-.cropperBg {
-  :deep() {
-    .vue-advanced-cropper__background,
-    .vue-advanced-cropper__wrapper {
-      background-color: unset;
-    }
-  }
-}
-
 .upload-box {
   :deep() {
     .el-upload {
