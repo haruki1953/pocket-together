@@ -203,6 +203,7 @@ defineExpose({
   justify-content: center;
   align-items: center;
 }
+// ConfirmContainer 的 z-index 为 2
 .mask-background {
   z-index: 1;
 }

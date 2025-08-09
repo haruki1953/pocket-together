@@ -37,7 +37,8 @@ const { height: bottomHeight } = useElementSize(refBarBottom)
       }"
     ></div>
     <!-- 不响应点击 -->
-    <div class="pointer-events-none absolute top-0 h-full w-full">
+    <!-- 给 ContainerBar 的 z-index 设置为 10 class="z-10" -->
+    <div class="pointer-events-none absolute top-0 z-10 h-full w-full">
       <div class="sticky top-0 h-screen">
         <div class="relative h-full">
           <!-- 响应点击 -->
