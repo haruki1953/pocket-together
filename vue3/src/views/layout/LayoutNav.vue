@@ -2,30 +2,6 @@
 import { layoutLayoutNavConfig } from '@/config'
 import { useElementSize, useWindowSize } from '@vueuse/core'
 import NavList from './components/NavList.vue'
-// 滚动行为
-import { useScroll } from '@vueuse/core'
-import { ref, watch, onMounted } from 'vue'
-const isNavBottomUpOrDown = ref(true)
-const isMounted = ref(false)
-const { y } = useScroll(window)
-
-onMounted(() => {
-  // 避开刷新时的初始滚动事件
-  setTimeout(() => {
-    isMounted.value = true
-  }, 500)
-})
-watch(y, (newY, oldY) => {
-  if (!isMounted.value || newY === oldY) {
-    return
-  }
-
-  if (newY > oldY) {
-    isNavBottomUpOrDown.value = false
-  } else if (newY < oldY) {
-    isNavBottomUpOrDown.value = true
-  }
-})
 
 // const refDiv = ref<HTMLElement | null>(null)
 // const { width: refDivWidth } = useElementSize(refDiv)
@@ -79,8 +55,7 @@ const showNavTrueRithtFalseBottom = computed(() => {
                     height: `${layoutLayoutNavConfig.navBottomHeight}px`,
                     'min-width': '100%',
                   }"
-                  class="bottom-bar transform-all absolute flex w-fit items-end justify-center px-2 duration-1000 ease-in-out"
-                  :class="isNavBottomUpOrDown ? 'pb-28' : 'pb-2'"
+                  class="bottom-bar flex w-fit items-end justify-center px-2 pb-1"
                 >
                   <NavList></NavList>
                 </div>
@@ -103,8 +78,8 @@ const showNavTrueRithtFalseBottom = computed(() => {
   // 渐变，透明
   background: linear-gradient(
     to top,
-    var(--color-background) 20%,
-    transparent 50%
+    var(--color-background) 60%,
+    transparent 100%
   );
 }
 </style>
