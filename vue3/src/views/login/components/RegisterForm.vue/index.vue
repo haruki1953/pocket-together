@@ -71,6 +71,7 @@ const { isSubmitting, submit } = useRegisterFormSubmit({
     <ElFormItem prop="password">
       <ElInput
         v-model="formModel.password"
+        showPassword
         :placeholder="i18nStore.t('registerPlaceholderPassword')()"
         class="poto-el-input-line"
       >
@@ -82,6 +83,7 @@ const { isSubmitting, submit } = useRegisterFormSubmit({
     <ElFormItem prop="passwordConfirm">
       <ElInput
         v-model="formModel.passwordConfirm"
+        showPassword
         :placeholder="i18nStore.t('registerPlaceholderPasswordConfirm')()"
         class="poto-el-input-line"
       >

@@ -62,6 +62,7 @@ const clickForgotPassword = () => {
       <ElInput
         v-model="formModel.password"
         type="password"
+        showPassword
         :placeholder="i18nStore.t('loginPlaceholderPassword')()"
         name="password"
         class="poto-el-input-line"

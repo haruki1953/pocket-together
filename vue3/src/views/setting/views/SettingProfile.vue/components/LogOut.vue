@@ -40,7 +40,7 @@ const submit = async () => {
       </div>
       <!-- 按钮盒子 -->
       <div class="poto-setting-button-box not-center">
-        <ElButton type="primary" round @click="submit()">
+        <ElButton type="primary" class="bg-danger" round @click="submit()">
           <!-- 退出登录 -->
           {{ i18nStore.t('settingProfileLogOutButtonSubmitText')() }}
         </ElButton>
@@ -49,4 +49,8 @@ const submit = async () => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.bg-danger:hover {
+  background-color: var(--el-color-danger);
+}
+</style>
