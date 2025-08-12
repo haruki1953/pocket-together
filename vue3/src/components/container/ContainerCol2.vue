@@ -40,17 +40,23 @@ const windowSize = useWindowSize()
   <div class="container-col2">
     <div class="flex" :class="colContainerTwcss">
       <div v-if="col1Position === 'left'" :class="col1Twcss">
-        <slot name="col1"></slot>
+        <div class="slot-col1">
+          <slot name="col1"></slot>
+        </div>
       </div>
       <div :class="col2Twcss">
-        <div class="sticky top-0 h-screen">
+        <div class="slot-col2-with-el-scrollbar sticky top-0 h-screen">
           <ElScrollbar :height="windowSize.height.value">
-            <slot name="col2"></slot>
+            <div class="slot-col2">
+              <slot name="col2"></slot>
+            </div>
           </ElScrollbar>
         </div>
       </div>
       <div v-if="col1Position === 'right'" :class="col1Twcss">
-        <slot name="col1"></slot>
+        <div class="slot-col1">
+          <slot name="col1"></slot>
+        </div>
       </div>
     </div>
   </div>

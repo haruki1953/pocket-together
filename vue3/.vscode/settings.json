@@ -29,4 +29,6 @@
     ".*[tT][wW][cC][sS][sS].*",
   ],
   "typescript.tsdk": "node_modules\\typescript\\lib",
+  // 控制 Vue 组件 props 补全时的命名风格
+  "vue.complete.casing.props": "autoCamel"
 }
