@@ -8,16 +8,17 @@ import cover3 from './img/cover3.jpg'
 import cover4 from './img/cover4.jpg'
 import cover5 from './img/cover5.jpg'
 
-// Task 1.1: 定义数据接口
+// 1. 更新数据结构，添加 tags 和 isFavorited 状态
 interface RoomCard {
   id: number
   coverUrl: string
   title: string
   creator: string
   avatarUrl: string
+  tags: string[]
+  isFavorited: boolean
 }
 
-// Task 1.2: 模拟不同高度的内容
 const roomList = ref<RoomCard[]>([])
 
 const titles = [
@@ -37,17 +38,46 @@ const titles = [
   '测试标题：不是最短吧',
 ]
 
+// 2. 补充测试数据
+const sampleTags = [
+  '电影',
+  '游戏',
+  '学习',
+  '音乐',
+  '旅行',
+  '动漫',
+  '助眠',
+  '聊天',
+]
+const tagTypes = ['', 'success', 'info', 'warning', 'danger']
+
 // 使用导入的本地图片
 const imageUrls = [cover1, cover2, cover3, cover4, cover5]
 
 for (let i = 0; i < 14; i++) {
+  // 随机生成几个标签
+  const tags = []
+  const tagsCount = Math.floor(Math.random() * 4)
+  const availableTags = [...sampleTags]
+  for (let j = 0; j < tagsCount; j++) {
+    const randomIndex = Math.floor(Math.random() * availableTags.length)
+    tags.push(availableTags.splice(randomIndex, 1)[0])
+  }
+
   roomList.value.push({
     id: i,
     coverUrl: imageUrls[i % 5],
     title: titles[i],
-    creator: `用户_${i + 1}`,
+    creator: `用户-${i + 1}`,
     avatarUrl: `https://i.pravatar.cc/40?u=b${i + 1}`,
+    tags: tags,
+    isFavorited: false, // 初始化收藏状态
   })
+}
+
+// 切换收藏状态的函数
+const toggleFavorite = (room: RoomCard) => {
+  room.isFavorited = !room.isFavorited
 }
 </script>
 
@@ -55,15 +85,39 @@ for (let i = 0; i < 14; i++) {
   <div
     v-for="room in roomList"
     :key="room.id"
-    class="group mb-4 flow-root transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-xl transition-all duration-300 ease-in-out hover:!opacity-100"
+    class="group relative mb-4 flow-root transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
   >
-    <div class="transition-all duration-300 ease-in-out group-hover:scale-105">
-      <img :src="room.coverUrl" alt="Room cover" class="w-full" />
+    <!-- 封面 -->
+    <div class="overflow-hidden">
+      <img
+        :src="room.coverUrl"
+        alt="Room cover"
+        class="h-max w-full transition-all duration-300 ease-in-out group-hover:scale-105"
+      />
     </div>
-    <div class="p-4">
+    <!-- 底部 -->
+    <div
+      class="relative h-max w-full bg-color-background-soft p-4 group-hover:bg-gray-100 dark:group-hover:bg-neutral-800"
+    >
       <h3 class="font-bold text-gray-800 dark:text-gray-100">
         {{ room.title }}
       </h3>
+
+      <!-- 标签 -->
+      <div v-if="room.tags.length" class="mt-3">
+        <ElTag
+          v-for="(tag, index) in room.tags"
+          :key="tag"
+          class="mr-2"
+          round
+          :type="tagTypes[index % tagTypes.length]"
+          size="small"
+          effect="light"
+        >
+          {{ tag }}
+        </ElTag>
+      </div>
+      <!-- 用户 -->
       <div class="mt-3 flex items-center">
         <img :src="room.avatarUrl" class="mr-2 h-6 w-6 rounded-full" />
         <span class="text-sm text-gray-500 dark:text-gray-400">{{
@@ -71,7 +125,16 @@ for (let i = 0; i < 14; i++) {
         }}</span>
       </div>
     </div>
+
+    <!-- 收藏 -->
+    <i
+      class="absolute bottom-4 right-4 cursor-pointer text-2xl transition-all active:scale-90"
+      :class="{
+        'ri-star-fill text-blue-500': room.isFavorited,
+        'ri-star-line text-gray-400 hover:text-blue-500 dark:text-gray-500':
+          !room.isFavorited,
+      }"
+      @click.stop="toggleFavorite(room)"
+    ></i>
   </div>
 </template>
-
-<script setup lang="ts"></script>
