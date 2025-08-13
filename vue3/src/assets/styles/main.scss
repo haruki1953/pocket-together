@@ -6,6 +6,12 @@
 @use './element-plus.scss';
 @use './nunito.css';
 
+// 自定义文字被选中时的背景色和文字颜色
+::selection {
+  background: var(--el-color-primary-light-3); /* 选中时的背景色 */
+  color: var(--color-text);       /* 选中时的文字颜色 */
+}
+
 // 下面是一些自定义的样式类，poto意为PocketTogether
 
 // 自定义的el表单的错误提示样式
