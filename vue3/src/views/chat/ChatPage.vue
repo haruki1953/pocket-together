@@ -1,13 +1,67 @@
 <script setup lang="ts">
+import { Collections } from '@/lib'
+import { pb, type Create } from '@/lib'
+import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
 import { useI18nStore } from '@/stores'
+import { fetchWithTimeoutPreferred, potoMessage } from '@/utils'
 import { RiSendPlane2Fill, RiSendPlane2Line } from '@remixicon/vue'
+import { useMutation } from '@tanstack/vue-query'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
   title: computed(() => i18nStore.t('pageChat')()),
 })
 
-const inputTest = ref('')
+const chatInputContent = ref('')
+
+const profileQuery = useProfileQuery()
+
+// 消息发送Mutation
+const messageSendMutation = useMutation({
+  // mutation函数
+  mutationFn: async () => {
+    // 未登录，抛出错误
+    if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+      throw new Error(
+        '!pb.authStore.isValid || pb.authStore.record?.id == null'
+      )
+    }
+    // 个人信息没有值，抛出错误
+    if (profileQuery.data.value == null) {
+      throw new Error('!profileQuery.data.value == null')
+    }
+
+    // 准备数据
+    const createData: Create<Collections.Messages> = {
+      author: profileQuery.data.value.id,
+      content: chatInputContent.value,
+    }
+
+    // 通过 pocketbase SDK 请求
+    const pbRes = await pb.collection(Collections.Messages).create(createData, {
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+    console.log(pbRes)
+    return pbRes
+  },
+  // 一些收尾工作
+  onSuccess: (data) => {
+    chatInputContent.value = ''
+  },
+  // 错误处理
+  onError: (error) => {
+    potoMessage({
+      type: 'error',
+      message: '发送失败',
+    })
+  },
+  // ✅ 在网络错误时重试
+  retry: queryRetryPbNetworkError,
+})
+// 消息发送提交
+const messageSendSubmit = messageSendMutation.mutateAsync
+const messageSendSubmitRunning = messageSendMutation.isPending
 </script>
 
 <template>
@@ -46,7 +100,7 @@ const inputTest = ref('')
                         <!-- 输入框 -->
                         <div class="ml-2 mr-1 flex-1">
                           <ElInput
-                            v-model="inputTest"
+                            v-model="chatInputContent"
                             size="large"
                             type="textarea"
                             resize="none"
@@ -56,7 +110,12 @@ const inputTest = ref('')
                         </div>
                         <!-- 按钮 -->
                         <div class="mr-2">
-                          <ElButton circle type="primary">
+                          <ElButton
+                            circle
+                            type="primary"
+                            :loading="messageSendSubmitRunning"
+                            @click="messageSendSubmit()"
+                          >
                             <template #icon>
                               <RiSendPlane2Fill></RiSendPlane2Fill>
                             </template>
