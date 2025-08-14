@@ -2,14 +2,14 @@
 import type { HomeCardType } from './types'
 
 const emit = defineEmits<{
-  (e: 'toggleFavorite', id: number): void
+  (e: 'toggleFavorite', home: HomeCardType): void
 }>()
 
 defineProps<{
   home: HomeCardType
 }>()
 
-const tagTypes = ['', 'success', 'info', 'warning', 'danger']
+const tagTypes = ['success', 'info', 'warning', 'danger'] as const
 </script>
 
 <template>
@@ -63,7 +63,7 @@ const tagTypes = ['', 'success', 'info', 'warning', 'danger']
         'ri-star-line text-gray-400 hover:text-blue-500 dark:text-gray-500':
           !home.isFavorited,
       }"
-      @click.stop="emit('toggleFavorite', home.id)"
+      @click.stop="emit('toggleFavorite', home)"
     ></i>
   </div>
 </template>
