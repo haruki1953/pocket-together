@@ -14,7 +14,7 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
 
 <template>
   <div
-    class="group relative mb-4 flow-root transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:cursor-pointer"
+    class="group relative mb-4 flow-root transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
   >
     <!-- 封面 -->
     <div class="overflow-hidden">
@@ -35,45 +35,6 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
       <!-- 标签 -->
       <div v-if="home.tags.length" class="mt-3">
         <ElTag
-          v-for="(tag, index) in home.tags"
-          :key="tag"
-          class="mr-2"
-          round
-          :type="tagTypes[index % tagTypes.length]"
-          size="small"
-          effect="light"
-        >
-          {{ tag }}
-        </ElTag>
-      </div>
-      <!-- 用户 -->
-      <div class="mt-3 flex items-center">
-        <img :src="home.avatarUrl" class="mr-2 h-6 w-6 rounded-full" />
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{
-          home.creator
-        }}</span>
-        <!-- 用户 hover 按钮（无功能） -->
-        <button
-          class="ml-2 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-200 text-xs text-blue-700 dark:text-blue-300 cursor-pointer"
-          type="button"
-        >
-          用户操作
-        </button>
-      </div>
-    </div>
-
-    <!-- 收藏 -->
-    <i
-      class="absolute bottom-4 right-4 cursor-pointer text-2xl transition-all active:scale-90"
-      :class="{
-        'ri-star-fill text-blue-500': home.isFavorited,
-        'ri-star-line text-gray-400 hover:text-blue-500 dark:text-gray-500':
-          !home.isFavorited,
-      }"
-      @click.stop="emit('toggleFavorite', home)"
-    ></i>
-  </div>
-</template>        <ElTag
           v-for="(tag, index) in home.tags"
           :key="tag"
           class="mr-2"
