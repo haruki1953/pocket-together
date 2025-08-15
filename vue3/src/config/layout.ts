@@ -5,7 +5,7 @@ export const layoutLayoutNavConfig = {
   /**
    * 导航栏布局配置
    * rightNav >= 768 > botttomNav |
-   * 大于768将显示右侧导航栏，小于768将显示底部导航栏
+   * 大于等于768将显示右侧导航栏，小于768将显示底部导航栏
    * useWindowSize
    */
   breakpointNavRightToNavBottom: 768,
@@ -21,7 +21,7 @@ export const layoutLayoutNavConfig = {
 export const layoutLoginPageConfig = {
   /**
    * Col2 >= 768 > Col1
-   * 大于768显示两列，小于则显示一列
+   * 大于等于768显示两列，小于则显示一列
    * useWindowSize
    */
   breakpointCol2ToCol1: 768,
@@ -33,7 +33,7 @@ export const layoutLoginPageConfig = {
 export const layoutSettingPageConfig = {
   /**
    * leftNav >= 768 > topNav |
-   * 大于768将显示左侧导航栏，小于768将显示顶部导航栏
+   * 大于等于768将显示左侧导航栏，小于768将显示顶部导航栏
    * 和 全局导航栏 类似
    * useWindowSize
    */
@@ -49,6 +49,26 @@ export const layoutSettingPageConfig = {
    */
   breakpointContentCol2ToCol1: 1024,
 } as const
+
+/** 全局聊天页布局配置 */
+export const layoutChatPageConfig = {
+  /**
+   * Col2 >= 768 > Col1
+   * 大于等于768显示两列，小于则显示一列（只显示用户列表，聊天在另外的页面）
+   * useWindowSize
+   */
+  breakpointCol2ToCol1: 768,
+  /**
+   * Width500 >= 1024 > Width400
+   * 大于1024时聊天栏宽度为500，小于则为400
+   * useWindowSize
+   */
+  breakpointChatWidth5ToWidth4: 1024,
+  /**
+   * 导航栏位于底部时（小屏），内容的最大宽度
+   */
+  contentMaxWidthOnNavBottom: 500,
+}
 
 // 参考
 // breakpoints: {
