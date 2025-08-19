@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import ChatInputBar from './components/ChatInputBar.vue'
 import { useWindowSize } from '@vueuse/core'
 import { layoutChatPageConfig } from '@/config'
+import ChatCol from './components/ChatCol.vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -50,21 +50,8 @@ const showChatWidth5TrueWidth4False = computed(() => {
           </div>
         </template>
         <template #col2>
-          <div>
-            <ContainerBar>
-              <template #default>
-                <div class="mb-1 ml-6 mr-4 mt-6">
-                  <div>聊天栏</div>
-                  <div class="h-[2000px] bg-red-950"></div>
-                  <div>聊天栏聊天栏聊天栏聊天栏聊天栏</div>
-                </div>
-              </template>
-              <template #bar>
-                <div class="ml-6 mr-4 flow-root">
-                  <ChatInputBar></ChatInputBar>
-                </div>
-              </template>
-            </ContainerBar>
+          <div class="ml-6 mr-4">
+            <ChatCol></ChatCol>
           </div>
         </template>
       </ContainerCol2>
