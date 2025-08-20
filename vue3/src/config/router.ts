@@ -51,6 +51,10 @@ export const routerDict = {
     path: '/login',
     name: 'LoginPage',
   },
+  CreateRoomPage: {
+    path: '/room/create',
+    name: 'CreateRoomPage',
+  },
 } as const satisfies Record<string, RouterItem>
 
 interface RouterInfo extends RouterItem {

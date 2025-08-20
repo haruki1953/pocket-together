@@ -9,6 +9,7 @@ import SettingPage from './views/setting/SettingPage.vue'
 import NavPage from './views/nav/NavPage.vue'
 import SettingProfile from './views/setting/views/SettingProfile.vue'
 import { routerDict } from './config'
+import CreateRoomPage from './views/home/CreateRoomPage.vue'
 
 // 路由
 const router = createRouter({
@@ -56,6 +57,10 @@ const router = createRouter({
         {
           ...routerDict.LoginPage,
           component: LoginPage,
+        },
+        {
+          ...routerDict.CreateRoomPage,
+          component: CreateRoomPage,
         },
       ],
     },

@@ -1,7 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div
+  <RouterLink
+    :to="{ name: 'CreateRoomPage' }"
     class="group mb-4 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
   >
     <!-- 添加房间 -->
@@ -21,5 +22,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </RouterLink>
 </template>
