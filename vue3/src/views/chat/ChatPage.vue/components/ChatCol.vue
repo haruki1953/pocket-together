@@ -7,9 +7,19 @@ import ChatInputBar from './ChatInputBar.vue'
     <ContainerBar>
       <template #default>
         <div class="mb-1 mt-6">
-          <div>聊天栏</div>
-          <div class="h-[2000px] bg-red-950"></div>
-          <div>聊天栏聊天栏聊天栏聊天栏聊天栏</div>
+          <!-- 聊天栏 -->
+          <div>
+            <!-- 自己的消息 -->
+            <div>
+              <div class="flex flex-row-reverse justify-end">
+                <!-- 头像 -->
+                <div></div>
+                <!-- 消息 -->
+                <div></div>
+              </div>
+            </div>
+            <!-- 其他用户的消息 -->
+          </div>
         </div>
       </template>
       <template #bar>
