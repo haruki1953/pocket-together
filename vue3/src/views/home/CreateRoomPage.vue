@@ -33,19 +33,17 @@ function removeTag(index: number) {
       </button>
       <h1 class="text-lg font-semibold">创建房间</h1>
       <div class="w-8" />
-      <!-- Placeholder for alignment -->
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow overflow-y-auto p-4 md:p-6 lg:p-8">
+    <!-- 主要内容 -->
+    <main class="flex-grow overflow-y-auto p-4 md:p-6 lg:p-6">
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2">
-        <!-- Left Column: Edit Info -->
         <div class="space-y-6">
           <h2 class="text-2xl font-bold text-cyan-500">信息编辑</h2>
 
-          <!-- Cover Image Upload -->
+          <!-- 上传封面 -->
           <div
-            class="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-colors hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
+            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-colors hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
           >
             <RiImageAddLine class="h-12 w-12" />
             <p class="mt-2 text-lg font-semibold">请上传封面图片</p>
@@ -77,13 +75,13 @@ function removeTag(index: number) {
               class="w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
               @keydown.enter.prevent="addTag"
             />
-            <div class="mt-2 flex flex-wrap gap-2">
+            <div class="mt-4 flex flex-wrap gap-2">
               <span
                 v-for="(tag, index) in tags"
                 :key="index"
                 class="flex items-center rounded-full bg-cyan-100 px-3 py-1 text-sm font-medium text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200"
               >
-                #{{ tag }}
+                # {{ tag }}
                 <button
                   class="ml-2 text-cyan-500 hover:text-cyan-700"
                   @click="removeTag(index)"
@@ -96,7 +94,7 @@ function removeTag(index: number) {
         </div>
 
         <!-- 房间属性 -->
-        <div class="space-y-8">
+        <div class="">
           <!-- 房间预览文本 -->
           <div>
             <h2 class="text-2xl font-bold text-cyan-500">预览</h2>
@@ -104,26 +102,56 @@ function removeTag(index: number) {
               这是您的房间被其他人看到的样子
             </p>
             <!-- 容器 -->
-            <div
-              class="mt-4 h-60 w-full columns-3 gap-4 bg-gray-100 p-4 dark:bg-gray-800/50 sm:gap-6"
-            >
+            <div class="relative mt-4 h-[320px] w-full overflow-hidden">
+              <!-- 上阴影遮罩 -->
+              <div
+                class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
+              ></div>
+              <!-- 下阴影遮罩 -->
+              <div
+                class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
+              ></div>
               <!-- 房间卡片预览 -->
-              <div class="h-full w-full"></div>
+              <div
+                class="absolute -top-[70px] left-0 z-40 min-h-[460px] w-full columns-3 p-4"
+              >
+                <div
+                  class="group relative mb-4 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-60 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-4 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+              </div>
             </div>
           </div>
 
           <!-- 属性设置 -->
           <div>
-            <h2 class="text-2xl font-bold text-cyan-500">房间设置</h2>
-            <div class="mt-4 space-y-3">
+            <h2 class="mt-4 text-2xl font-bold text-cyan-500">房间设置</h2>
+            <div class="mt-4">
               <div
-                class="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="mt-4 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
               >
                 <span>自定义主题色</span>
                 <div class="h-6 w-6 rounded-full bg-cyan-400" />
               </div>
               <div
-                class="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="mt-4 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
               >
                 <span>人数限制</span>
                 <span class="text-gray-500 dark:text-gray-400"
@@ -131,7 +159,7 @@ function removeTag(index: number) {
                 >
               </div>
               <div
-                class="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="mt-4 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
               >
                 <span>密码限制</span>
                 <span class="text-gray-500 dark:text-gray-400"
@@ -143,7 +171,7 @@ function removeTag(index: number) {
 
           <!-- Create Room Button -->
           <button
-            class="w-full rounded-lg bg-cyan-500 py-4 text-lg font-bold text-white shadow-lg transition-transform hover:scale-105"
+            class="mt-6 w-full rounded-lg bg-cyan-500 py-4 text-lg font-bold text-white shadow-lg transition-transform hover:scale-105"
           >
             创建房间 &gt;
           </button>
