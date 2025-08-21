@@ -117,6 +117,7 @@ const crop = () => {
       :lockScroll="false"
       appendToBody
       :modalClass="overlayClass"
+      :closeOnClickModal="false"
     >
       <div class="flow-root rounded-t-3xl bg-color-background-soft">
         <!-- title -->

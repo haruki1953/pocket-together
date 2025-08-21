@@ -62,7 +62,7 @@ const messageSendSubmitRunning = messageSendMutation.isPending
 <template>
   <div class="chat-input-bar flow-root">
     <div
-      class="chat-input-box mb-3 mt-5 flow-root rounded-3xl bg-color-background-soft"
+      class="chat-input-box mb-3 mt-3 flow-root rounded-3xl bg-color-background-soft"
     >
       <!-- <div class="m-3 h-16 bg-red-950">输入框</div> -->
       <div class="my-2 flex items-center">
@@ -102,7 +102,7 @@ const messageSendSubmitRunning = messageSendMutation.isPending
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    var(--color-background) 30px
+    var(--color-background) 12px
   );
 }
 .chat-input-box {

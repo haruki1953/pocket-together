@@ -8,7 +8,7 @@
 
 // 自定义文字被选中时的背景色和文字颜色
 ::selection {
-  background: var(--el-color-primary-light-3); /* 选中时的背景色 */
+  background: var(--el-color-primary); /* 选中时的背景色 */
   color: var(--color-text);       /* 选中时的文字颜色 */
 }
 
