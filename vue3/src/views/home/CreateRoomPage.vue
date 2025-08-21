@@ -52,7 +52,7 @@ function removeTag(index: number) {
             <p class="text-sm">支持 JPG, PNG, WEBP, SVG等多种格式</p>
           </div>
 
-          <!-- Title Input -->
+          <!-- 编辑标题 -->
           <input
             v-model="roomTitle"
             type="text"
@@ -60,7 +60,7 @@ function removeTag(index: number) {
             class="w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
-          <!-- Description Input -->
+          <!-- 编辑简介 -->
           <textarea
             v-model="roomDescription"
             placeholder="单击此处输入简介"
@@ -68,7 +68,7 @@ function removeTag(index: number) {
             class="w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
-          <!-- Tags Input -->
+          <!-- 编辑 Tag -->
           <div>
             <input
               v-model="newTag"
@@ -95,35 +95,24 @@ function removeTag(index: number) {
           </div>
         </div>
 
-        <!-- Right Column: Preview & Settings -->
+        <!-- 房间属性 -->
         <div class="space-y-8">
-          <!-- Preview Section -->
+          <!-- 房间预览文本 -->
           <div>
             <h2 class="text-2xl font-bold text-cyan-500">预览</h2>
             <p class="text-gray-500 dark:text-gray-400">
               这是您的房间被其他人看到的样子
             </p>
+            <!-- 容器 -->
             <div
-              class="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-gray-100 p-4 dark:bg-gray-800/50"
+              class="mt-4 h-60 w-full columns-3 gap-4 bg-gray-100 p-4 dark:bg-gray-800/50 sm:gap-6"
             >
-              <!-- Placeholder for preview cards -->
-              <div
-                v-for="i in 4"
-                :key="i"
-                class="h-32 rounded-lg bg-gray-300 dark:bg-gray-700"
-                :class="{ 'col-span-2 h-48': i === 2 }"
-              >
-                <div
-                  v-if="i === 2"
-                  class="flex h-full items-center justify-center text-gray-500"
-                >
-                  房间卡片预览
-                </div>
-              </div>
+              <!-- 房间卡片预览 -->
+              <div class="h-full w-full"></div>
             </div>
           </div>
 
-          <!-- Settings Section -->
+          <!-- 属性设置 -->
           <div>
             <h2 class="text-2xl font-bold text-cyan-500">房间设置</h2>
             <div class="mt-4 space-y-3">
