@@ -1,7 +1,32 @@
 <script setup lang="ts">
-import { appLogo } from '@/config'
 import ChatInputBar from './ChatInputBar.vue'
 import ChatMessage from './ChatMessage.vue'
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { type MessagesResponse } from '@/lib'
+import { pbMessagesListRoomCursorApi } from '@/api'
+
+const infiniteQuery = useInfiniteQuery({
+  queryKey: ['CharCol-temp'],
+  queryFn: async ({ pageParam }: { pageParam: MessagesResponse | null }) => {
+    const pbRes = await pbMessagesListRoomCursorApi({
+      roomId: '',
+      pageParam,
+    })
+
+    return pbRes
+  },
+  initialPageParam: null,
+  getNextPageParam: (lastPage, pages) => {
+    if (lastPage.items.length === 0 || lastPage.totalPages === 1) {
+      return undefined
+    }
+    return lastPage.items[lastPage.items.length - 1]
+  },
+})
+
+const testPbPage = async () => {
+  infiniteQuery.fetchNextPage()
+}
 </script>
 
 <template>
@@ -9,6 +34,7 @@ import ChatMessage from './ChatMessage.vue'
     <ContainerBar>
       <template #default>
         <div class="mb-1 mt-6">
+          <ElButton @click="testPbPage">pb分页测试</ElButton>
           <!-- 聊天栏 -->
           <div>
             <!-- 自己的消息 -->
