@@ -101,8 +101,10 @@ function removeTag(index: number) {
             <p class="text-gray-500 dark:text-gray-400">
               这是您的房间被其他人看到的样子
             </p>
-            <!-- 容器 -->
-            <div class="relative mt-4 h-[314px] w-full overflow-hidden">
+            <!-- 视觉上的区域限制容器 -->
+            <div
+              class="relative mt-4 h-[280px] w-full overflow-hidden lg:h-[314px]"
+            >
               <!-- 上阴影遮罩 -->
               <div
                 class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
@@ -111,30 +113,30 @@ function removeTag(index: number) {
               <div
                 class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
               ></div>
-              <!-- 房间卡片预览 -->
+              <!-- 实际上的预览卡片 rendering 区域 -->
               <div
-                class="absolute -top-[70px] left-0 z-40 min-h-[460px] w-full columns-3 p-4"
+                class="absolute -top-[60px] left-0 z-40 h-[400px] w-full columns-3 p-4 lg:-top-[70px] lg:h-[460px]"
               >
                 <div
-                  class="group relative mb-3 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
-                ></div>
-                <div
-                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
-                ></div>
-                <div
-                  class="group relative mb-3 flow-root h-60 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
                 ></div>
                 <div
                   class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-52 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                ></div>
+                <div
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
+                ></div>
+                <div
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
                 ></div>
               </div>
             </div>
