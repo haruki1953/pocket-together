@@ -10,6 +10,7 @@ import { useI18nStore } from '@/stores'
 import { compareDatesSafe, potoMessage } from '@/utils'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { fetchWithTimeoutPreferred } from '@/utils'
+import { pbUsersUpdateNameBioApi } from '@/api'
 
 const i18nStore = useI18nStore()
 
@@ -85,19 +86,12 @@ const mutation = useMutation({
         '!pb.authStore.isValid || pb.authStore.record?.id == null'
       )
     }
-    // 准备数据
-    const updateData: Update<Collections.Users> = {
-      name: name.value,
-      bio: bio.value,
-    }
 
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .update(pb.authStore.record.id, updateData, {
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
-      })
+    const pbRes = await pbUsersUpdateNameBioApi({
+      name: name.value,
+      bio: bio.value,
+    })
 
     console.log(pbRes)
     return pbRes
@@ -130,9 +124,6 @@ const mutation = useMutation({
   },
   // 失败之后的处理
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
-
     potoMessage({
       type: 'error',
       message: i18nStore.t('messageUpdateFailure')(),

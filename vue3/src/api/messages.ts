@@ -1,6 +1,8 @@
 import {
   Collections,
+  onPbResErrorStatus401AuthClear,
   pb,
+  type Create,
   type FilesResponse,
   type MessagesRecord,
   type MessagesResponse,
@@ -10,7 +12,35 @@ import {
 import type { Group, KeyValueMirror } from '@/types'
 import { fetchWithTimeoutPreferred } from '@/utils'
 
-/** pb messages集合，游标分页查询 */
+/** messages集合 发送消息 需登录 */
+export const pbMessagesSendChatApi = async (data: { content: string }) => {
+  // 未登录，抛出错误
+  if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+    throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
+  }
+
+  // 准备数据
+  const createData: Create<Collections.Messages> = {
+    author: pb.authStore.record.id,
+    content: data.content,
+  }
+
+  // 通过 pocketbase SDK 请求
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .create(createData, {
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+    .catch((error) => {
+      // 出现鉴权失败则清除authStore
+      onPbResErrorStatus401AuthClear(error)
+      throw error
+    })
+  return pbRes
+}
+
+/** messages集合 游标分页查询 */
 export const pbMessagesListRoomCursorApi = async (data: {
   /** 指定房间（空字符串即为全局聊天） */
   roomId: string
@@ -105,7 +135,20 @@ export const pbMessagesListRoomCursorApi = async (data: {
        * 查询created比游标所指的小的，因为上面的sort是created降序排序。
        * 需要考虑到created相同的情况，所以需要借助id来固定顺序，
        * 上面的sort是（日期相同时）id升序，所以created相等时查询id比游标所指小的
+       * ```
+       * (
+       *   room='' &&
+       *   (
+       *     created<'2025-08-22 11:14:09.288Z' ||
+       *     (
+       *       created='2025-08-22 11:14:09.288Z' &&
+       *       id>'syta3u7m0eeud1a'
+       *     )
+       *   )
+       * )
+       * ```
        */
+      // const filterStr =
       return `
       (
         ${recordKeys.room}='${roomId}' &&
@@ -118,6 +161,8 @@ export const pbMessagesListRoomCursorApi = async (data: {
         )
       )
       `
+      // console.log(filterStr)
+      // return filterStr
     })()
   })()
 

@@ -1,3 +1,4 @@
+import { pbUsersGetOneApi } from '@/api'
 import { queryConfig } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryKeys, queryRetryPbNetworkError } from '@/queries'
@@ -25,17 +26,7 @@ export const useProfileQuery = () => {
         )
       }
       // pb请求
-      const pbRes = await pb
-        .collection(Collections.Users)
-        .getOne(pb.authStore.record.id, {
-          // timeout为5000
-          fetch: fetchWithTimeoutPreferred,
-        })
-        .catch((error) => {
-          // 出现鉴权失败则清除authStore
-          onPbResErrorStatus401AuthClear(error)
-          throw error
-        })
+      const pbRes = await pbUsersGetOneApi(pb.authStore.record.id)
       console.log(pbRes)
 
       // 将 pbRes 持久化，以用于 placeholderData

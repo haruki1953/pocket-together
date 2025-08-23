@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { pbUsersRequestPasswordResetApi } from '@/api'
 import { PotoFormValidationError } from '@/classes'
 import { useDialogOptimization } from '@/composables'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
@@ -71,21 +72,13 @@ const mutation = useMutation({
   // mutation函数
   mutationFn: async () => {
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .requestPasswordReset(formModel.value.email, {
-        // 服务端pocketbase将发送邮件，用时比较长
-        // timeout为30秒
-        fetch: fetchWithTimeoutForPbRequestWillEmail,
-      })
+    const pbRes = await pbUsersRequestPasswordResetApi(formModel.value.email)
     console.log(pbRes)
     return pbRes
   },
   // ✅ 在网络错误时重试
   retry: queryRetryPbNetworkError,
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
     // 未知错误
     potoMessage({
       type: 'error',

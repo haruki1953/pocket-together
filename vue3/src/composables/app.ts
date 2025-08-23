@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { fetchWithTimeoutPreferred } from '@/utils'
 import { queryRetryPbNetworkError } from '@/queries'
 import { ClientResponseError } from 'pocketbase'
+import { pbUsersAuthRefreshApi } from '@/api'
 
 // 组合式的意义就是封装和复用有状态逻辑
 // https://cn.vuejs.org/guide/reusability/composables.html
@@ -72,17 +73,9 @@ export const useInitPbAuth = () => {
         return
       }
 
-      const pbRes = await pb.collection(Collections.Users).authRefresh({
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
-      })
+      const pbRes = await pbUsersAuthRefreshApi().catch(() => null)
 
       return pbRes
-    },
-    // 错误处理
-    onError: (error) => {
-      // 出现鉴权失败则清除authStore
-      onPbResErrorStatus401AuthClear(error)
     },
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,

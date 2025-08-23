@@ -10,6 +10,7 @@ import type { useLoginFormRules } from './rules'
 import { queryRetryPbNetworkError } from '@/queries'
 import { useRouter } from 'vue-router'
 import { routerDict } from '@/config'
+import { pbUsersAuthWithPasswordApi } from '@/api'
 
 type LoginFormRules = ReturnType<typeof useLoginFormRules>
 
@@ -39,16 +40,10 @@ export const useLoginFormSubmit = (data: {
       })
 
       // PocketBase 登录
-      const pbRes = await pb
-        .collection(Collections.Users)
-        .authWithPassword(
-          formModel.value.usernameOrEmail,
-          formModel.value.password,
-          {
-            // timeout为5000
-            fetch: fetchWithTimeoutPreferred,
-          }
-        )
+      const pbRes = await pbUsersAuthWithPasswordApi(
+        formModel.value.usernameOrEmail,
+        formModel.value.password
+      )
 
       // console.log(pbRes)
       return pbRes

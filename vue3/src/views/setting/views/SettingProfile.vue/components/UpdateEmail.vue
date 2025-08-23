@@ -22,6 +22,7 @@ import { useMutation } from '@tanstack/vue-query'
 import { useNow } from '@vueuse/core'
 import type { ElForm, FormRules } from 'element-plus'
 import { ClientResponseError } from 'pocketbase'
+import { pbUsersRequestEmailChangeApi } from '@/api'
 
 const i18nStore = useI18nStore()
 
@@ -134,19 +135,9 @@ const mutation = useMutation({
         '!pb.authStore.isValid || pb.authStore.record?.id == null'
       )
     }
-    // 个人信息没有值，抛出错误
-    if (profileQuery.data.value == null) {
-      throw new Error('!profileQuery.data.value == null')
-    }
 
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .requestEmailChange(formModel.value.email, {
-        // requestEmailChange 服务端pocketbase将发送邮件，用时比较长
-        // timeout为30秒
-        fetch: fetchWithTimeoutForPbRequestWillEmail,
-      })
+    const pbRes = await pbUsersRequestEmailChangeApi(formModel.value.email)
     console.log(pbRes)
     return pbRes
   },
@@ -154,9 +145,6 @@ const mutation = useMutation({
   retry: queryRetryPbNetworkError,
   // 错误处理
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
-
     if (error instanceof ClientResponseError) {
       // pb相关错误
       if (error.data?.data?.newEmail?.code === 'validation_invalid_new_email') {

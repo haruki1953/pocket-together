@@ -1,3 +1,4 @@
+import { pbUsersListAuthMethodsApi } from '@/api'
 import { queryConfig } from '@/config'
 import { Collections, pb } from '@/lib'
 import { queryKeys, queryRetryPbNetworkError } from '@/queries'
@@ -15,10 +16,7 @@ export const useListAuthMethodsQuery = () => {
     // 查询函数
     queryFn: async () => {
       // pb请求
-      const pbRes = await pb.collection(Collections.Users).listAuthMethods({
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
-      })
+      const pbRes = await pbUsersListAuthMethodsApi()
       // console.log(pbRes)
 
       // 将 pbRes 持久化，以用于 placeholderData

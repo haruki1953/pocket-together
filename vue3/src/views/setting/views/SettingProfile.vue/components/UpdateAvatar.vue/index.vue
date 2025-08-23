@@ -17,6 +17,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { UploadFile } from 'element-plus'
 import CropDialog from './components/CropDialog.vue'
+import { pbUsersUpdateAvatarApi } from '@/api'
 
 const i18nStore = useI18nStore()
 
@@ -104,24 +105,10 @@ const mutation = useMutation({
     // 准备文件
     const imageFile = blobToFile(imageBlobRef.value, 'image')
 
-    // 准备数据
-    const updateData = {
-      avatar: imageFile,
-    }
-    // 类型存在性校验：确保 'avatar' 是 Update<Collections.Users> 的有效键。
-    // 该对象不会实际使用，仅用于在类型层面触发错误以验证类型定义的完整性。
-    // 如果数据库中 avatar 字段更改为其他，并重新生成类型后，这里就会报错，以此提醒自己修改上面的 updateData
-    const _updateData_typeCheck: Update<Collections.Users> = {
-      avatar: '',
-    }
-
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .update(pb.authStore.record.id, updateData, {
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
-      })
+    const pbRes = await pbUsersUpdateAvatarApi({
+      avatar: imageFile,
+    })
 
     console.log(pbRes)
     return pbRes
@@ -153,9 +140,6 @@ const mutation = useMutation({
   },
   // 失败之后的处理
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
-
     potoMessage({
       type: 'error',
       message: i18nStore.t('messageUpdateFailure')(),

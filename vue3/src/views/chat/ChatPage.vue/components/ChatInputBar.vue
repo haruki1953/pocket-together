@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { pbMessagesSendChatApi } from '@/api'
 import { Collections } from '@/lib'
 import { pb, type Create } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
@@ -21,21 +22,10 @@ const messageSendMutation = useMutation({
         '!pb.authStore.isValid || pb.authStore.record?.id == null'
       )
     }
-    // 个人信息没有值，抛出错误
-    if (profileQuery.data.value == null) {
-      throw new Error('!profileQuery.data.value == null')
-    }
-
-    // 准备数据
-    const createData: Create<Collections.Messages> = {
-      author: profileQuery.data.value.id,
-      content: chatInputContent.value,
-    }
 
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb.collection(Collections.Messages).create(createData, {
-      // timeout为5000
-      fetch: fetchWithTimeoutPreferred,
+    const pbRes = await pbMessagesSendChatApi({
+      content: chatInputContent.value,
     })
     console.log(pbRes)
     return pbRes

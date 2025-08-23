@@ -7,6 +7,7 @@ import { ClientResponseError } from 'pocketbase'
 import type { useRegisterFormRules } from './rules'
 import type { RegisterFormForm, RegisterFormFormModel } from './dependencise'
 import { queryRetryPbNetworkError } from '@/queries'
+import { pbUsersCreateRegisterApi } from '@/api'
 
 type RegisterFormRules = ReturnType<typeof useRegisterFormRules>
 
@@ -44,20 +45,12 @@ export const useRegisterFormSubmit = (data: {
         throw new PotoFormValidationError()
       })
 
-      // 准备数据
-      const createData: Create<Collections.Users> = {
+      // 通过 pocketbase SDK 请求
+      const pbRes = await pbUsersCreateRegisterApi({
         username: formModel.value.username,
         email: formModel.value.email,
         password: formModel.value.password,
         passwordConfirm: formModel.value.passwordConfirm,
-        // 默认等级为basic，如果擅自设置为premium则会被api规则阻止
-        level: UsersLevelOptions.basic,
-      }
-
-      // 通过 pocketbase SDK 请求
-      const pbRes = await pb.collection(Collections.Users).create(createData, {
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
       })
 
       console.log(pbRes)

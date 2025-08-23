@@ -1,3 +1,4 @@
+import { pbConfigGetFullListApi } from '@/api'
 import {
   pbCollectionConfigDefaultGetFn,
   pbCollectionConfigSchema,
@@ -23,17 +24,7 @@ export const usePbCollectionConfigQuery = () => {
     // 查询函数
     queryFn: async () => {
       // pb 请求
-      const pbRes = await pb
-        .collection(Collections.Config)
-        .getFullList({
-          // timeout为5000
-          fetch: fetchWithTimeoutPreferred,
-        })
-        .catch((error) => {
-          // 出现鉴权失败则清除authStore
-          onPbResErrorStatus401AuthClear(error)
-          throw error
-        })
+      const pbRes = await pbConfigGetFullListApi()
       console.log(pbRes)
 
       // 数据处理

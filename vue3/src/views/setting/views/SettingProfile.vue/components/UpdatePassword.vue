@@ -16,6 +16,7 @@ import {
 } from '@/utils'
 import { useNow } from '@vueuse/core'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
+import { pbUsersRequestPasswordResetApi } from '@/api'
 
 const i18nStore = useI18nStore()
 
@@ -43,21 +44,16 @@ const mutation = useMutation({
     }
 
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .requestPasswordReset(profileQuery.data.value.email, {
-        // 服务端pocketbase将发送邮件，用时比较长
-        // timeout为30秒
-        fetch: fetchWithTimeoutForPbRequestWillEmail,
-      })
+    const pbRes = await pbUsersRequestPasswordResetApi(
+      profileQuery.data.value.email
+    )
+
     console.log(pbRes)
     return pbRes
   },
   // ✅ 在网络错误时重试
   retry: queryRetryPbNetworkError,
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
     // 未知错误
     potoMessage({
       type: 'error',

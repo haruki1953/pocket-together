@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { pbUsersUpdateUsernameApi } from '@/api'
 import { PotoFormValidationError } from '@/classes'
 import { rulesUsername } from '@/config'
 import {
@@ -139,18 +140,10 @@ const mutation = useMutation({
       throw new PotoFormValidationError()
     })
 
-    // 准备数据
-    const updateData: Update<Collections.Users> = {
-      username: formModel.value.username,
-    }
-
     // 通过 pocketbase SDK 请求
-    const pbRes = await pb
-      .collection(Collections.Users)
-      .update(pb.authStore.record.id, updateData, {
-        // timeout为5000
-        fetch: fetchWithTimeoutPreferred,
-      })
+    const pbRes = await pbUsersUpdateUsernameApi({
+      username: formModel.value.username,
+    })
     console.log(pbRes)
     return pbRes
   },
@@ -180,9 +173,6 @@ const mutation = useMutation({
   },
   // 错误处理
   onError: (error) => {
-    // 出现鉴权失败则清除authStore
-    onPbResErrorStatus401AuthClear(error)
-
     if (error instanceof ClientResponseError) {
       // pb相关错误
       if (error.data?.data?.username?.code === 'validation_not_unique') {
