@@ -2,13 +2,46 @@
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
 import { layoutSettingPageConfig } from '@/config'
-import { useWindowSize } from '@vueuse/core'
+// 监视 DOM，检测尺寸
+import { useWindowSize, useIntersectionObserver } from '@vueuse/core'
 import type { HomeCardType } from './types'
+// 瀑布流
+import MasonryWall from '@yeger/vue-masonry-wall'
 
 // 全部卡片
 const AllCard = ref<HomeCardType[]>([])
 const DisplayCards = ref<HomeCardType[]>([])
-const PAGE_SIZE = 8
+// 每次显示数量
+const PAGE_SIZE = 10
+// 绑定哨兵
+const loadMoreCards = ref(null)
+const loadMore = () => {
+  // 检查是否还有更多卡片可以加载
+  if (DisplayCards.value.length >= AllCard.value.length) {
+    stop()
+    return
+  }
+  // 头索引
+  const statCards = DisplayCards.value.length
+  // 尾索引
+  const endCards = statCards + PAGE_SIZE
+  // 添加新卡片(根据头尾索引)
+  const nextCards = AllCard.value.slice(statCards, endCards)
+  // DisplayCards.value.push(...nextCards)
+  // 数组覆盖
+  DisplayCards.value = [...DisplayCards.value, ...nextCards]
+}
+
+// 调用 useIntersectionObserver
+const { stop } = useIntersectionObserver(
+  loadMoreCards,
+  // 监视 DOM 进入屏幕回调
+  ([{ isIntersecting }]) => {
+    if (isIntersecting) {
+      loadMore()
+    }
+  }
+)
 
 onMounted(() => {
   DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
@@ -20,6 +53,7 @@ import cover2 from './img/cover2.jpg'
 import cover3 from './img/cover3.jpg'
 import cover4 from './img/cover4.jpg'
 import cover5 from './img/cover5.jpg'
+import cover6 from './img/blood.png'
 
 const titles = [
   '测试标题：极短',
@@ -51,9 +85,12 @@ const sampleTags = [
 ]
 
 // 使用导入的本地图片
-const imageUrls = [cover1, cover2, cover3, cover4, cover5]
+const imageUrls = [cover1, cover2, cover3, cover4, cover5, cover6]
 
-for (let i = 0; i < 14; i++) {
+// 为菜单占位，欺骗 typescript
+AllCard.value.push({} as HomeCardType)
+
+for (let i = 0; i < 40; i++) {
   // 随机生成几个标签
   const tags = []
   const tagsCount = Math.floor(Math.random() * 4)
@@ -65,7 +102,7 @@ for (let i = 0; i < 14; i++) {
 
   AllCard.value.push({
     id: i,
-    coverUrl: imageUrls[i % 5],
+    coverUrl: imageUrls[i % 6],
     title: titles[i],
     creator: `用户-${i + 1}`,
     avatarUrl: `https://i.pravatar.cc/40?u=b${i + 1}`,
@@ -79,6 +116,7 @@ const toggleFavorite = (room: HomeCardType) => {
   room.isFavorited = !room.isFavorited
 }
 
+// 以下是响应式布局相关
 const { width: windowWidth } = useWindowSize()
 
 const showContentTrueCol2FalseCol1 = computed(() => {
@@ -94,19 +132,18 @@ const showContentTrueCol2FalseCol1 = computed(() => {
 <template>
   <div v-if="showContentTrueCol2FalseCol1" class="min-h-screen p-4 pt-6 sm:p-6">
     <!-- 瀑布流容器 -->
-    <div class="columns-2 gap-4 sm:gap-6 md:columns-3 lg:columns-4">
-      <!-- 菜单卡片 -->
-      <div>
-        <HomeMenu></HomeMenu>
-      </div>
-      <!-- 房间卡片 -->
-      <HomeCard
-        v-for="card in DisplayCards"
-        :key="card.id"
-        :home="card"
-        @toggleFavorite="toggleFavorite"
-      />
-    </div>
+    <MasonryWall :items="DisplayCards" :columnWidth="300" :gap="16">
+      <template #default="{ item, index }">
+        <!-- 菜单卡片 -->
+        <div v-if="index === 0">
+          <HomeMenu></HomeMenu>
+        </div>
+        <!-- 房间卡片 -->
+        <HomeCard v-else :home="item" @toggleFavorite="toggleFavorite" />
+      </template>
+    </MasonryWall>
+    <!-- 触发器 -->
+    <div ref="loadMoreCards"></div>
   </div>
 
   <div v-else class="min-h-screen p-4 pt-6 sm:p-6">
@@ -122,6 +159,7 @@ const showContentTrueCol2FalseCol1 = computed(() => {
         :home="card"
         @toggleFavorite="toggleFavorite"
       />
+      <div ref="loadMoreCards"></div>
     </div>
   </div>
 </template>
