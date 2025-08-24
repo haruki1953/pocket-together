@@ -1,3 +1,4 @@
+import { chatRoomMessagesInfiniteQueryPerPageNumberConfig } from '@/config'
 import {
   Collections,
   onPbResErrorStatus401AuthClear,
@@ -169,7 +170,7 @@ export const pbMessagesListRoomCursorApi = async (data: {
   // 🚀 发起 PocketBase 查询，携带类型安全的 expand 字段与 Expand 类型，并有 sort filter
   const pbRes = await pb
     .collection(Collections.Messages)
-    .getList<Expand>(1, 2, {
+    .getList<Expand>(1, chatRoomMessagesInfiniteQueryPerPageNumberConfig, {
       expand,
       sort,
       filter,

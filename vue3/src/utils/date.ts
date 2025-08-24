@@ -36,6 +36,42 @@ export const compareDatesSafe = (
 }
 
 /**
+ * 计算两个 Date 字符串之间的秒数差（向最近整数四舍五入）。
+ *
+ * - 如果任一参数不是有效的 Date 对象，返回 null。
+ * - 结果为正数或负数，取决于时间顺序。
+ *
+ * @param a 起始时间点（较早或较晚均可）
+ * @param b 目标时间点（较早或较晚均可）
+ * @returns 两个时间点之间的秒数差（整数），或 null（无效输入）
+ *
+ * @example
+ * ```ts
+ * const t1 = new Date('2025-08-24T14:00:00Z');
+ * const t2 = new Date('2025-08-24T14:00:02.400Z');
+ * const diff = compareDatesSafeGetSecondsBetween(t1, t2); // 返回 2.4
+ * ```
+ */
+export const compareDatesSafeGetSecondsBetween = (
+  a?: string | null,
+  b?: string | null
+) => {
+  const dateA = a != null ? new Date(a) : null
+  const dateB = b != null ? new Date(b) : null
+
+  const isValidDateA = dateA instanceof Date && !isNaN(dateA.getTime())
+  const isValidDateB = dateB instanceof Date && !isNaN(dateB.getTime())
+
+  if (!isValidDateA || !isValidDateB) return null
+
+  const timeA = dateA.getTime()
+  const timeB = dateB.getTime()
+  const msDiff = timeB - timeA
+
+  return msDiff / 1000
+}
+
+/**
  * 根据指定级别解析 ISO 格式的日期字符串，返回 Date 或 null。
  *
  * 解析级别说明：

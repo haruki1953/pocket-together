@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appLogo, fileUserAvatarConfig } from '@/config'
+import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
 import {
   Collections,
   onPbResErrorStatus401AuthClear,
@@ -28,7 +28,7 @@ const profileAvatarUrl = computed(() => {
     profileQuery.data.value == null ||
     profileQuery.data.value.avatar === ''
   ) {
-    return appLogo
+    return appUserDefaultAvatar
   }
   return pb.files.getURL(
     profileQuery.data.value,
