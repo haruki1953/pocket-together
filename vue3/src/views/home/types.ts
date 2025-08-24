@@ -1,5 +1,6 @@
 export interface HomeCardType {
-  id: number
+  id: number | string
+  type: 'card' | 'menu'
   coverUrl: string
   title: string
   creator: string

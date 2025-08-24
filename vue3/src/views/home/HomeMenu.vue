@@ -2,7 +2,7 @@
 
 <template>
   <div
-    class="group mb-4 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
+    class="group transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
   >
     <RouterLink :to="{ name: 'CreateRoomPage' }">
       <!-- 添加房间 -->

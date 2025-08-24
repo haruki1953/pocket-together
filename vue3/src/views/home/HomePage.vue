@@ -12,7 +12,7 @@ import MasonryWall from '@yeger/vue-masonry-wall'
 const AllCard = ref<HomeCardType[]>([])
 const DisplayCards = ref<HomeCardType[]>([])
 // 每次显示数量
-const PAGE_SIZE = 10
+const PAGE_SIZE = 8
 // 绑定哨兵
 const loadMoreCards = ref(null)
 const loadMore = () => {
@@ -44,7 +44,8 @@ const { stop } = useIntersectionObserver(
 )
 
 onMounted(() => {
-  DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
+  // DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
+  loadMore()
 })
 
 // 导入本地图片
@@ -87,8 +88,17 @@ const sampleTags = [
 // 使用导入的本地图片
 const imageUrls = [cover1, cover2, cover3, cover4, cover5, cover6]
 
-// 为菜单占位，欺骗 typescript
-AllCard.value.push({} as HomeCardType)
+// 先添加菜单卡片
+AllCard.value.push({
+  id: 'menu-card',
+  type: 'menu',
+  title: '',
+  coverUrl: '',
+  creator: '',
+  avatarUrl: '',
+  tags: [],
+  isFavorited: false,
+})
 
 for (let i = 0; i < 40; i++) {
   // 随机生成几个标签
@@ -100,10 +110,14 @@ for (let i = 0; i < 40; i++) {
     tags.push(availableTags.splice(randomIndex, 1)[0])
   }
 
+  // 随机选择一个标题
+  const randomTitleIndex = Math.floor(Math.random() * titles.length)
+
   AllCard.value.push({
     id: i,
+    type: 'card',
     coverUrl: imageUrls[i % 6],
-    title: titles[i],
+    title: titles[randomTitleIndex],
     creator: `用户-${i + 1}`,
     avatarUrl: `https://i.pravatar.cc/40?u=b${i + 1}`,
     tags: tags,
@@ -132,12 +146,15 @@ const showContentTrueCol2FalseCol1 = computed(() => {
 <template>
   <div v-if="showContentTrueCol2FalseCol1" class="min-h-screen p-4 pt-6 sm:p-6">
     <!-- 瀑布流容器 -->
-    <MasonryWall :items="DisplayCards" :columnWidth="300" :gap="16">
-      <template #default="{ item, index }">
+    <MasonryWall
+      :items="DisplayCards"
+      :columnWidth="300"
+      :gap="16"
+      :keyMapper="(item) => item.id"
+    >
+      <template #default="{ item }">
         <!-- 菜单卡片 -->
-        <div v-if="index === 0">
-          <HomeMenu></HomeMenu>
-        </div>
+        <HomeMenu v-if="item.type === 'menu'"></HomeMenu>
         <!-- 房间卡片 -->
         <HomeCard v-else :home="item" @toggleFavorite="toggleFavorite" />
       </template>
