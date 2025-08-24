@@ -4,28 +4,14 @@ import ChatMessage from './ChatMessage.vue'
 import { useInfiniteQuery } from '@tanstack/vue-query'
 import { type MessagesResponse } from '@/lib'
 import { pbMessagesListRoomCursorApi } from '@/api'
+import { useChatRoomMessagesInfiniteQuery } from '@/queries'
 
-const infiniteQuery = useInfiniteQuery({
-  queryKey: ['CharCol-temp'],
-  queryFn: async ({ pageParam }: { pageParam: MessagesResponse | null }) => {
-    const pbRes = await pbMessagesListRoomCursorApi({
-      roomId: '',
-      pageParam,
-    })
-
-    return pbRes
-  },
-  initialPageParam: null,
-  getNextPageParam: (lastPage, pages) => {
-    if (lastPage.items.length === 0 || lastPage.totalPages === 1) {
-      return undefined
-    }
-    return lastPage.items[lastPage.items.length - 1]
-  },
+const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
+  roomId: '',
 })
 
 const testPbPage = async () => {
-  infiniteQuery.fetchNextPage()
+  chatRoomMessagesInfiniteQuery.fetchNextPage()
 }
 </script>
 

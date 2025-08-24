@@ -5,5 +5,9 @@ export const queryKeys = {
   listAuthMethods: () => ['listAuthMethods'] as const,
   /** usePbCollectionConfigQuery */
   pbCollectionConfig: () => ['pbCollectionConfig'] as const,
-  /** ChatRoomInfinite */
+  /** useChatRoomMessagesInfiniteQuery */
+  chatRoomMessagesInfinite: (roomId: string) => [
+    'chatRoomMessagesInfinite',
+    roomId,
+  ],
 }
