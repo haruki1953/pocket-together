@@ -15,21 +15,50 @@ const DisplayCards = ref<HomeCardType[]>([])
 const PAGE_SIZE = 8
 // 绑定哨兵
 const loadMoreCards = ref(null)
-const loadMore = () => {
+// 加载锁，为了在 DOM 出现前加载出图片
+const cardImgLoading = ref(false)
+
+// 辅助函数，为每个图片创建加载任务，待所有任务完成后再统一返回
+const loadImage = (urls: string[]) => {
+  // 为每个链接创建一个承诺总和成一个组
+  const promises = urls.map((url) => {
+    return new Promise((resolve) => {
+      const imgdesu = new Image()
+      imgdesu.onload = resolve
+      imgdesu.onerror = resolve
+      imgdesu.src = url
+    })
+  })
+  return Promise.all(promises)
+}
+
+// 加载更多卡片，异步
+const loadMore = async () => {
+  // 在加载图片就别执行 DOM 加载操作
+  if (cardImgLoading.value) return
   // 检查是否还有更多卡片可以加载
   if (DisplayCards.value.length >= AllCard.value.length) {
     stop()
     return
   }
+  // 满足以上条件，加载中，上锁
+  cardImgLoading.value = true
   // 头索引
   const statCards = DisplayCards.value.length
   // 尾索引
   const endCards = statCards + PAGE_SIZE
   // 添加新卡片(根据头尾索引)
   const nextCards = AllCard.value.slice(statCards, endCards)
+  if (nextCards.length > 0) {
+    const imageUrlsLoad = nextCards
+      .map((carddesu) => carddesu.coverUrl)
+      .filter(Boolean)
+    await loadImage(imageUrlsLoad)
+  }
   // DisplayCards.value.push(...nextCards)
   // 数组覆盖
   DisplayCards.value = [...DisplayCards.value, ...nextCards]
+  cardImgLoading.value = false
 }
 
 // 调用 useIntersectionObserver
