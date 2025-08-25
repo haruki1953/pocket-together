@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RiArrowLeftSLine, RiImageAddLine } from '@remixicon/vue'
 
 const roomTitle = ref('')
 const roomDescription = ref('')
 const newTag = ref('')
 const tags = ref(['TEST', 'TEST', 'TEST'])
+
+const isReady = ref(false)
+
+onMounted(() => {
+  setTimeout(() => {
+    isReady.value = true
+  }, 50)
+})
 
 function addTag() {
   if (newTag.value && !tags.value.includes(newTag.value)) {
@@ -23,7 +31,7 @@ function removeTag(index: number) {
   <div class="flex h-full flex-col bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
     <header
-      class="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+      class="flex h-14 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
     >
       <button
         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -45,9 +53,64 @@ function removeTag(index: number) {
           <div
             class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-colors hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
           >
-            <RiImageAddLine class="h-12 w-12" />
+            <!-- 动画 svg -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-12"
+              viewBox="0 0 24 24"
+            >
+              <g
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path
+                  stroke-dasharray="72"
+                  stroke-dashoffset="72"
+                  d="M3 14v-9h18v14h-18v-5"
+                >
+                  <animate
+                    fill="freeze"
+                    attributeName="stroke-dashoffset"
+                    dur="0.6s"
+                    values="72;0"
+                  />
+                </path>
+                <path
+                  stroke-dasharray="24"
+                  stroke-dashoffset="24"
+                  stroke-width="1"
+                  d="M3 16l4 -3l3 2l6 -5l5 4"
+                >
+                  <animate
+                    fill="freeze"
+                    attributeName="stroke-dashoffset"
+                    begin="0.6s"
+                    dur="0.4s"
+                    values="24;0"
+                  />
+                </path>
+              </g>
+              <circle
+                cx="7.5"
+                cy="9.5"
+                r="1.5"
+                fill="currentColor"
+                fill-opacity="0"
+              >
+                <animate
+                  fill="freeze"
+                  attributeName="fill-opacity"
+                  begin="1s"
+                  dur="0.2s"
+                  values="0;1"
+                />
+              </circle>
+            </svg>
             <p class="mt-2 text-lg font-semibold">请上传封面图片</p>
-            <p class="text-sm">支持 JPG, PNG, WEBP, SVG等多种格式</p>
+            <p class="text-sm">支持 JPG, PNG, WEBP 等多种格式</p>
           </div>
 
           <!-- 编辑标题 -->
@@ -115,28 +178,29 @@ function removeTag(index: number) {
               ></div>
               <!-- 实际上的预览卡片 rendering 区域 -->
               <div
-                class="absolute -top-[60px] left-0 z-40 h-[400px] w-full columns-3 p-4 lg:-top-[70px] lg:h-[460px]"
+                class="absolute -top-[60px] left-0 z-40 h-[400px] w-full columns-3 p-4 transition-all duration-700 ease-in-out lg:-top-[105px] lg:h-[588px]"
+                :class="isReady ? 'pt-4 opacity-100' : 'pt-20 opacity-0'"
               >
                 <div
-                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
-                ></div>
-                <div
-                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
-                ></div>
-                <div
-                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>
                 <div
                   class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-28"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>
                 <div
-                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-52"
+                  class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-28"
+                ></div>
+                <div
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
+                ></div>
+                <div
+                  class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>
               </div>
             </div>

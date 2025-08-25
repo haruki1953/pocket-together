@@ -12,7 +12,7 @@ import MasonryWall from '@yeger/vue-masonry-wall'
 const AllCard = ref<HomeCardType[]>([])
 const DisplayCards = ref<HomeCardType[]>([])
 // 每次显示数量
-const PAGE_SIZE = 8
+const PAGE_SIZE = 9
 // 绑定哨兵
 const loadMoreCards = ref(null)
 // 加载锁，为了在 DOM 出现前加载出图片
