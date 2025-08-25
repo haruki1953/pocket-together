@@ -3,6 +3,7 @@ import { useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import { layoutChatPageConfig } from '@/config'
 import ChatCol from './components/ChatCol.vue'
+import type { GlobalComponents } from 'vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -24,12 +25,17 @@ const showChatWidth5TrueWidth4False = computed(() => {
   }
   return false
 })
+
+const refContainerCol2 = ref<InstanceType<
+  GlobalComponents['ContainerCol2']
+> | null>(null)
 </script>
 
 <template>
   <div class="chat-page">
     <div v-if="showCol2TrueCol1False" class="container-col2-box">
       <ContainerCol2
+        ref="refContainerCol2"
         col1Position="right"
         col1Twcss="flex-1"
         :col2Twcss="
@@ -51,7 +57,9 @@ const showChatWidth5TrueWidth4False = computed(() => {
         </template>
         <template #col2>
           <div class="ml-6 mr-4">
-            <ChatCol></ChatCol>
+            <ChatCol
+              :refScrollWarp="refContainerCol2?.refElScrollbar?.wrapRef"
+            ></ChatCol>
           </div>
         </template>
       </ContainerCol2>
@@ -83,6 +91,8 @@ const showChatWidth5TrueWidth4False = computed(() => {
       .el-scrollbar__wrap {
         // 防止目标区域中的滚动触发父元素中的滚动
         overscroll-behavior: contain;
+        /* 禁用滚动锚定 */
+        // overflow-anchor: none;
       }
     }
   }

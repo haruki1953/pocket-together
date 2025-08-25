@@ -100,3 +100,16 @@ export const urlJoinUtil = (...segments: string[]): string => {
 export const capitalizeFirstLetter = (str: string) => {
   return str.replace(/^\S/, (char) => char.toUpperCase())
 }
+
+/**
+ * 生成指定范围内的随机整数（包含 min 和 max）
+ * 参数顺序不敏感，会自动处理 min/max 的大小关系
+ * @param a 任意一个边界值
+ * @param b 另一个边界值
+ * @returns 随机整数
+ */
+export const generateRandomIntegerBetween = (a: number, b: number): number => {
+  const min = Math.min(a, b)
+  const max = Math.max(a, b)
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}

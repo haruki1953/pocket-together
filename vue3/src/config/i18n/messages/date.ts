@@ -3,7 +3,7 @@ import type {
   UseTimeAgoMessagesType,
 } from '@/types'
 import type { I18nMessagesSatisfiesType } from '.'
-import type { useTimeAgo, UseTimeAgoUnitNamesDefault } from '@vueuse/core'
+
 /**
  * i18nMessages 日期相关部分
  */

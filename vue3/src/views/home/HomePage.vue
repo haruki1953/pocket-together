@@ -34,9 +34,4 @@ const authStore = useAuthStore()
   </div>
 </template>
 
-<style lang="scss" scoped>
-.wrap-long-text {
-  overflow-wrap: anywhere; /* 允许在任意点断行，但仍尝试保持完整词 */
-  white-space: pre-wrap;
-}
-</style>
+<style lang="scss" scoped></style>

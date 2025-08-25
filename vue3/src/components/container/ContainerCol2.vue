@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
+import type { ElScrollbar } from 'element-plus'
 
 // 将默认值独立出来是因为这样才能有tailwind提示
 // 默认居中
@@ -33,7 +34,11 @@ withDefaults(
   }
 )
 
-const windowSize = useWindowSize()
+const refElScrollbar = ref<null | InstanceType<typeof ElScrollbar>>(null)
+
+defineExpose({
+  refElScrollbar,
+})
 </script>
 
 <template>
@@ -46,7 +51,7 @@ const windowSize = useWindowSize()
       </div>
       <div :class="col2Twcss">
         <div class="slot-col2-with-el-scrollbar sticky top-0 h-screen">
-          <ElScrollbar :height="windowSize.height.value">
+          <ElScrollbar ref="refElScrollbar" height="100vh">
             <div class="slot-col2">
               <slot name="col2"></slot>
             </div>

@@ -2,6 +2,8 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { type MessagesResponse } from '@/lib'
 import { pbMessagesListRoomCursorApi } from '@/api'
 import { queryKeys } from './query-keys'
+import { queryConfig } from '@/config'
+import { queryRetryPbNetworkError } from './query-retry'
 
 /** 聊天页消息 游标分页无限查询 */
 export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
@@ -24,6 +26,10 @@ export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
       }
       return lastPage.items[lastPage.items.length - 1]
     },
+    // 缓存时间
+    staleTime: queryConfig.staleTimeLong,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
   })
 
   return infiniteQuery

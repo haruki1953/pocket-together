@@ -3,16 +3,36 @@ import type { Group } from '@/types'
 import ChatInputBar from './ChatInputBar.vue'
 import ChatMessage from './ChatMessage.vue'
 import { useChatRoomMessagesInfiniteQuery } from '@/queries'
+import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
+import { pbMessagesSendChatApi } from '@/api'
+import { useScroll } from '@vueuse/core'
+
+const props = defineProps<{
+  /** 滚动容器元素 */
+  refScrollWarp?: HTMLDivElement
+}>()
 
 // 聊天页消息 游标分页无限查询
 const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
   roomId: '',
 })
 
+// 测试，查询下一页
 const testPbPage = async () => {
   console.log(chatRoomMessagesInfiniteQuery.data.value)
   // 加载下一页
   chatRoomMessagesInfiniteQuery.fetchNextPage()
+}
+// 测试批量添加消息
+const testPbSend = async () => {
+  const randomInteger = generateRandomIntegerBetween(1, 10)
+  for (let i = 0; i < randomInteger; i++) {
+    await pbMessagesSendChatApi({
+      content: generateRandomKey(
+        generateRandomIntegerBetween(5, generateRandomIntegerBetween(20, 200))
+      ),
+    })
+  }
 }
 
 // 将分页数据处理为消息数组，反转（从旧到新）
@@ -37,7 +57,9 @@ export type ChatRoomMessagesItem = NonNullable<
   typeof chatRoomMessagesList.value
 >[number]
 
-//
+// 消息变动时的滚动处理
+// useScroll
+// props.refScrollWarp
 </script>
 
 <template>
@@ -45,10 +67,11 @@ export type ChatRoomMessagesItem = NonNullable<
     <ContainerBar>
       <template #default>
         <div class="mb-1 mt-6">
-          <!-- <ElButton @click="testPbPage">pb分页测试</ElButton> -->
+          <ElButton @click="testPbPage">pb分页测试</ElButton>
+          <ElButton @click="testPbSend">pb批量消息</ElButton>
           <!-- 聊天栏 -->
           <div v-if="chatRoomMessagesList != null">
-            <!-- 自己的消息 -->
+            <!-- 消息 -->
             <ChatMessage
               v-for="(item, index) in chatRoomMessagesList"
               :key="item.id"

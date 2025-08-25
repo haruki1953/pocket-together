@@ -289,7 +289,7 @@ const timeAgo = useTimeAgo(
             }"
           >
             <div class="flex-1">
-              <div class="mx-3 my-2">
+              <div class="wrap-long-text mx-3 my-2">
                 {{ chatRoomMessagesItem.content }}
               </div>
             </div>

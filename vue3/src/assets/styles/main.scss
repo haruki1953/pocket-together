@@ -12,6 +12,12 @@
   color: var(--color-text);       /* 选中时的文字颜色 */
 }
 
+// 有长文本显示的元素最好加这个
+.wrap-long-text {
+  overflow-wrap: anywhere;     /* 尽可能在任意点断行，避免水平滚动，但仍优先保持词完整 */
+  white-space: pre-wrap;       /* 保留空格和换行，同时允许自动换行 */
+}
+
 // 下面是一些自定义的样式类，poto意为PocketTogether
 
 // 自定义的el表单的错误提示样式
