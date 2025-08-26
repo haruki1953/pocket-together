@@ -179,6 +179,11 @@ const showContentTrueCol2FalseCol1 = computed(() => {
   }
   return false
 })
+
+// 为小屏幕过滤掉 menu-card
+const smallScreenCards = computed(() => {
+  return DisplayCards.value.filter((card) => card.type !== 'menu')
+})
 </script>
 
 <template>
@@ -206,21 +211,29 @@ const showContentTrueCol2FalseCol1 = computed(() => {
     <div ref="loadMoreCards"></div>
   </div>
 
-  <div v-else class="min-h-screen p-4 pt-6 sm:p-6">
+  <div v-else class="min-h-screen">
     <div>
-      <HomeMenu></HomeMenu>
+      <HomeMenu class="m-2"></HomeMenu>
     </div>
     <!-- 瀑布流容器 -->
-    <div class="columns-2 gap-4 sm:gap-6 md:columns-3 lg:columns-4">
-      <!-- 房间卡片 -->
-      <HomeCard
-        v-for="card in DisplayCards"
-        :key="card.id"
-        :home="card"
-        @toggleFavorite="toggleFavorite"
-      />
-      <div ref="loadMoreCards"></div>
-    </div>
+    <MasonryWall
+      class="px-2"
+      :items="smallScreenCards"
+      :columnWidth="200"
+      :gap="16"
+      :keyMapper="(item) => item.id"
+    >
+      <template #default="{ item }">
+        <!-- 房间卡片 -->
+        <HomeCard
+          :class="isReady ? 'mt-0 opacity-100' : 'mt-96 opacity-0'"
+          :home="item"
+          @toggleFavorite="toggleFavorite"
+        />
+      </template>
+    </MasonryWall>
+    <!-- 触发器 -->
+    <div ref="loadMoreCards"></div>
   </div>
 </template>
 
