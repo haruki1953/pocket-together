@@ -67,4 +67,17 @@ defineExpose({
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container-col2 {
+  :deep() {
+    .slot-col2-with-el-scrollbar {
+      .el-scrollbar__wrap {
+        // 防止目标区域中的滚动触发父元素中的滚动
+        overscroll-behavior: contain;
+        /* 禁用滚动锚定 */
+        // overflow-anchor: none;
+      }
+    }
+  }
+}
+</style>

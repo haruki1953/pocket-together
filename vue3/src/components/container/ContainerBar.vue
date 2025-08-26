@@ -4,8 +4,22 @@
  */
 import { useElementSize, useWindowSize } from '@vueuse/core'
 
+const props = defineProps<{
+  /** bottomHeight测量的高度会有延时，如果需要立即测量滚动高度旧会导致问题，此时可以通过此参数指定默认高度 */
+  defaultBarHeight?: number
+}>()
+
 const refBarBottom = ref<HTMLElement | null>(null)
 const { height: bottomHeight } = useElementSize(refBarBottom)
+
+const bottomHeightWidthDefault = computed(() => {
+  if (props.defaultBarHeight != null) {
+    if (bottomHeight.value === 0) {
+      return props.defaultBarHeight
+    }
+  }
+  return bottomHeight.value
+})
 </script>
 
 <template>
@@ -33,7 +47,7 @@ const { height: bottomHeight } = useElementSize(refBarBottom)
     <!-- 和底栏一样高的div，保证底栏滚动到底部时不会盖住内容 -->
     <div
       :style="{
-        height: `${bottomHeight}px`,
+        height: `${bottomHeightWidthDefault}px`,
       }"
     ></div>
     <!-- 不响应点击 -->

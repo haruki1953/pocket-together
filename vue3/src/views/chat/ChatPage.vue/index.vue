@@ -91,8 +91,8 @@ const refContainerCol2 = ref<InstanceType<
       .el-scrollbar__wrap {
         // 防止目标区域中的滚动触发父元素中的滚动
         overscroll-behavior: contain;
-        /* 禁用滚动锚定 */
-        // overflow-anchor: none;
+        /* 禁用滚动锚定，避免影响自己主动地滚动控制逻辑 */
+        overflow-anchor: none;
       }
     }
   }
