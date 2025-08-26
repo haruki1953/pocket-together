@@ -73,8 +73,8 @@ const { stop } = useIntersectionObserver(
 )
 
 onMounted(() => {
-  // DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
-  loadMore()
+  DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
+  // loadMore()
 })
 
 // 导入本地图片
@@ -159,6 +159,15 @@ const toggleFavorite = (room: HomeCardType) => {
   room.isFavorited = !room.isFavorited
 }
 
+// 检测进入页面
+const isReady = ref(false)
+
+onMounted(() => {
+  setTimeout(() => {
+    isReady.value = true
+  }, 50)
+})
+
 // 以下是响应式布局相关
 const { width: windowWidth } = useWindowSize()
 
@@ -183,9 +192,14 @@ const showContentTrueCol2FalseCol1 = computed(() => {
     >
       <template #default="{ item }">
         <!-- 菜单卡片 -->
-        <HomeMenu v-if="item.type === 'menu'"></HomeMenu>
+        <HomeMenu v-if="item.type === 'menu'" :key="item.id"></HomeMenu>
         <!-- 房间卡片 -->
-        <HomeCard v-else :home="item" @toggleFavorite="toggleFavorite" />
+        <HomeCard
+          v-else
+          :class="isReady ? 'mt-0 opacity-100' : 'mt-96 opacity-0'"
+          :home="item"
+          @toggleFavorite="toggleFavorite"
+        />
       </template>
     </MasonryWall>
     <!-- 触发器 -->

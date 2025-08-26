@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { RiArrowLeftSLine, RiImageAddLine } from '@remixicon/vue'
+import { RiArrowLeftSLine } from '@remixicon/vue'
 
 const roomTitle = ref('')
 const roomDescription = ref('')
 const newTag = ref('')
 const tags = ref(['TEST', 'TEST', 'TEST'])
 
+// 检测进入页面
 const isReady = ref(false)
 
 onMounted(() => {
@@ -16,7 +17,7 @@ onMounted(() => {
 })
 
 function addTag() {
-  if (newTag.value && !tags.value.includes(newTag.value)) {
+  if (newTag.value !== '' && !tags.value.includes(newTag.value)) {
     tags.value.push(newTag.value)
     newTag.value = ''
   }
@@ -51,7 +52,8 @@ function removeTag(index: number) {
 
           <!-- 上传封面 -->
           <div
-            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-colors hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
+            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-all duration-700 ease-in-out hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
+            :class="isReady ? 'opacity-100' : 'opacity-0'"
           >
             <!-- 动画 svg -->
             <svg
