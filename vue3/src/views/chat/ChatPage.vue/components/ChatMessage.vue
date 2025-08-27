@@ -235,7 +235,11 @@ const timeAgo = useTimeAgo(
 </script>
 
 <template>
-  <div class="flow-root">
+  <div
+    class="chat-message flow-root"
+    :class="`chat-message-${chatRoomMessagesItem.id}`"
+    :data-message-id="chatRoomMessagesItem.id"
+  >
     <div class="mt-1">
       <!-- 头像与消息 -->
       <div

@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Group } from '@/types'
-import ChatInputBar from './ChatInputBar.vue'
-import ChatMessage from './ChatMessage.vue'
 import { useChatRoomMessagesInfiniteQuery } from '@/queries'
 import {
   generateRandomIntegerBetween,
@@ -10,11 +7,15 @@ import {
 } from '@/utils'
 import { pbMessagesSendChatApi } from '@/api'
 import { useScroll } from '@vueuse/core'
+import { ChatInputBar, ChatMessage } from './dependencies'
+import { useChatScrollMessageChange } from './composables'
 
 const props = defineProps<{
   /** 滚动容器元素 */
   refScrollWarp?: HTMLDivElement
 }>()
+// 供封装的组件或组合式函数使用
+export type PropsType = typeof props
 
 // 聊天页消息 游标分页无限查询
 const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
@@ -25,58 +26,17 @@ const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
 const testPbPage = async () => {
   console.log(chatRoomMessagesInfiniteQuery.data.value)
 
-  /**
-   * 获取收集数据
-   * 收集旧数据，以供计算处理滚动时使用
-   */
-  const dataOld = (() => {
-    const messageData = (() => {
-      if (chatRoomMessagesList.value == null) {
-        return null
-      }
-      return [...chatRoomMessagesList.value]
-    })()
-    return {
-      messageData,
-      scrollHeight: props.refScrollWarp?.scrollHeight,
-    }
-  })()
+  // 处理聊天滚动（在消息变动前）
+  const chatScrollCaptureSnapshot =
+    chatScrollCaptureSnapshotBeforeMessageChange()
 
   // 加载下一页
   await chatRoomMessagesInfiniteQuery.fetchNextPage()
 
-  // 计算处理滚动
-  ;(async (data: typeof dataOld) => {
-    // // 此时可能能获取更准确的ScrollHeight，意为视图更新的瞬间前的滚动高度（比dataOld的更好，更不容易错位）
-    // // 如果此值和之后获取的ScrollHeight不同即是正确的，旧有限使用此值
-    // // 否则应使用dataOld.scrollHeight
-    // const beforeTickScrollHeight = props.refScrollWarp?.scrollHeight
-    const beforeTickScrollHeight = data.scrollHeight
-    console.log(beforeTickScrollHeight)
-    await nextTick()
-    // 通过旧数据判断其是否为在上方添加（暂未实现）
-    // 计算出增加的高度，将scrollHeight也增加对应的数值，即可使添加数据后滚动仍处于刚才的位置
-    console.log(props.refScrollWarp?.scrollHeight)
-    const nowScrollHeight = props.refScrollWarp?.scrollHeight
-    // ScrollHeight 没有值是异常的，直接返回
-    if (beforeTickScrollHeight == null || nowScrollHeight == null) {
-      console.error(beforeTickScrollHeight == null || nowScrollHeight == null)
-      return
-    }
-    // 增加的高度
-    const addedHeight = nowScrollHeight - beforeTickScrollHeight
-    // 增加的高度小于等于0是异常的，直接返回
-    if (addedHeight <= 0) {
-      console.error('addedHeight <= 0')
-      return
-    }
-    // 设置当前滚动位置
-    props.refScrollWarp?.scrollTo({
-      top: props.refScrollWarp.scrollTop + addedHeight,
-      // behavior: 'smooth', // 平滑滚动
-    })
-  })(dataOld)
+  // 处理聊天滚动（在消息变动后）
+  chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
 }
+
 // 测试批量添加消息
 const testPbSend = async () => {
   const randomInteger = generateRandomIntegerBetween(1, 10)
@@ -105,6 +65,7 @@ const chatRoomMessagesList = computed(() => {
   const messagesListReverseData = messagesListData.reverse()
   return messagesListReverseData
 })
+export type ChatRoomMessagesListType = typeof chatRoomMessagesList
 
 // 消息的类型
 export type ChatRoomMessagesItem = NonNullable<
@@ -128,6 +89,12 @@ onMounted(async () => {
     // behavior: 'smooth', // 平滑滚动
   })
 })
+
+/** 封装了聊天页消息变动时的滚动处理 */
+const {
+  chatScrollCaptureSnapshotBeforeMessageChange,
+  chatScrollAdjustPositionAfterMessageChange,
+} = useChatScrollMessageChange({ props, chatRoomMessagesList })
 </script>
 
 <template>
