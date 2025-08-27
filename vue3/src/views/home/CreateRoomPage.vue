@@ -29,10 +29,10 @@ function removeTag(index: number) {
 </script>
 
 <template>
-  <div class="flex h-full flex-col bg-gray-50 dark:bg-gray-900">
+  <div class="flex h-full flex-col">
     <!-- Header -->
     <header
-      class="flex h-14 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+      class="flex h-14 flex-shrink-0 items-center justify-between bg-gray-200 px-4 py-3 dark:bg-[#222222]"
     >
       <button
         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -47,12 +47,17 @@ function removeTag(index: number) {
     <!-- 主要内容 -->
     <main class="flex-grow overflow-y-auto p-4 md:p-6 lg:p-4">
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2">
-        <div class="space-y-6">
-          <h2 class="text-2xl font-bold text-cyan-500">信息编辑</h2>
+        <div class="space-y-5">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-300">信息编辑</h2>
+            <p class="text-gray-500 dark:text-gray-400">
+              这是您的房间被其他人看到的样子
+            </p>
+          </div>
 
           <!-- 上传封面 -->
           <div
-            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-all duration-700 ease-in-out hover:border-cyan-400 hover:bg-cyan-100 dark:bg-cyan-900/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
+            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-all duration-700 ease-in-out hover:border-cyan-800 hover:bg-cyan-100 dark:bg-gray-800/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
             :class="isReady ? 'opacity-100' : 'opacity-0'"
           >
             <!-- 动画 svg -->
@@ -162,7 +167,7 @@ function removeTag(index: number) {
         <div class="">
           <!-- 房间预览文本 -->
           <div>
-            <h2 class="text-2xl font-bold text-cyan-500">预览</h2>
+            <h2 class="text-2xl font-bold text-gray-300">预览</h2>
             <p class="text-gray-500 dark:text-gray-400">
               这是您的房间被其他人看到的样子
             </p>
@@ -172,15 +177,15 @@ function removeTag(index: number) {
             >
               <!-- 上阴影遮罩 -->
               <div
-                class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
+                class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
               ></div>
               <!-- 下阴影遮罩 -->
               <div
-                class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-gray-900 dark:via-gray-900/30 dark:to-gray-900/0"
+                class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
               ></div>
               <!-- 实际上的预览卡片 rendering 区域 -->
               <div
-                class="absolute -top-[60px] left-0 z-40 h-[400px] w-full columns-3 p-4 transition-all duration-700 ease-in-out lg:-top-[105px] lg:h-[588px]"
+                class="absolute -top-[60px] left-0 z-40 h-[460px] w-full columns-3 px-0 transition-all duration-700 ease-in-out lg:-top-[105px] lg:h-[588px] lg:px-4"
                 :class="isReady ? 'pt-4 opacity-100' : 'pt-20 opacity-0'"
               >
                 <div
@@ -192,6 +197,7 @@ function removeTag(index: number) {
                 <div
                   class="group relative mb-3 flow-root h-20 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-28"
                 ></div>
+                <!-- 预览卡片 -->
                 <div
                   class="group relative mb-3 flow-root h-44 transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
                 ></div>

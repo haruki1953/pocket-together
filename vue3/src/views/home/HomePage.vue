@@ -213,14 +213,14 @@ const smallScreenCards = computed(() => {
 
   <div v-else class="min-h-screen">
     <div>
-      <HomeMenu class="m-2"></HomeMenu>
+      <HomeMenu class="mx-2 my-4"></HomeMenu>
     </div>
     <!-- 瀑布流容器 -->
     <MasonryWall
       class="px-2"
       :items="smallScreenCards"
       :columnWidth="200"
-      :gap="16"
+      :gap="6"
       :keyMapper="(item) => item.id"
     >
       <template #default="{ item }">
