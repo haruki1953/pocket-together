@@ -4,6 +4,26 @@
   <div
     class="group transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
   >
+    <!-- 新增选项卡区域 -->
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex gap-4 w-full">
+        <button
+          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
+        >
+          全部房间
+        </button>
+        <button
+          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
+        >
+          搜索房间
+        </button>
+        <button
+          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
+        >
+          收藏房间
+        </button>
+      </div>
+    </div>
     <RouterLink :to="{ name: 'CreateRoomPage' }">
       <!-- 添加房间 -->
       <div
