@@ -17,6 +17,8 @@ export const appNameI18n = {
 
 /** 聊天页中消息游标分页无限查询，每页消息的数量 */
 export const chatRoomMessagesInfiniteQueryPerPageNumberConfig = 30 as const
+/** 聊天页滚动处理，收集变动前消息元素的最大数量，一般比分页大小大一点即可，其实更准确的说应该根据显示数量限制的配置来决定 */
+export const chatRoomMessagesScrollCaptureElementNumberConfig = 40 as const
 
 /**
  * 聊天页 消息合并显示 消息的最大时间差（单位秒）

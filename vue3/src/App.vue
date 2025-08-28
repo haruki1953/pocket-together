@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { i18nLocaleInfo } from './config'
-import { useI18nStore } from './stores'
+import { useI18nStore, useRealtimeMessagesStore } from './stores'
 import { useDark } from '@vueuse/core'
 import { computed } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
@@ -28,6 +28,10 @@ useFirstDataLoadingAndAnimationMaskClose({
 
 // 在程序初始化时，进行关于pocketbase身份验证的一些操作
 useInitPbAuth()
+
+// 启动消息订阅
+const realtimeMessagesStore = useRealtimeMessagesStore()
+realtimeMessagesStore.startSubscribe()
 
 const isDark = useDark()
 </script>

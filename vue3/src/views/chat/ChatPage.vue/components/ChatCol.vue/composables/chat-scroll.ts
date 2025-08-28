@@ -1,5 +1,6 @@
 import { compareDatesSafeWithNull } from '@/utils'
 import type { ChatRoomMessagesListType, PropsType } from './dependencies'
+import { chatRoomMessagesScrollCaptureElementNumberConfig } from '@/config'
 
 /** 封装了聊天页消息变动时的滚动处理 */
 export const useChatScrollMessageChange = (data: {
@@ -26,9 +27,9 @@ export const useChatScrollMessageChange = (data: {
     const messageElementMetrics = (() => {
       if (chatRoomMessagesList.value == null) return null
 
-      // 只收集前60条消息的 DOM 元素高度（之后记得要将配置封装）
+      // 只收集前几十条消息的 DOM 元素高度（具体数量根据配置控制）
       const selector = chatRoomMessagesList.value
-        .slice(0, 60)
+        .slice(0, chatRoomMessagesScrollCaptureElementNumberConfig)
         .map((msg) => `.chat-message-${msg.id}`)
         .join(', ')
 
