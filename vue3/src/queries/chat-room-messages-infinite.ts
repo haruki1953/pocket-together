@@ -28,6 +28,7 @@ export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
     },
     // 缓存时间
     staleTime: queryConfig.staleTimeLong,
+    // staleTime: 10,
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,
   })

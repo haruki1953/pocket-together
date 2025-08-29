@@ -3,8 +3,12 @@ import { pbMessagesSendChatApi } from '@/api'
 import { Collections } from '@/lib'
 import { pb, type Create } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
-import { useI18nStore } from '@/stores'
-import { fetchWithTimeoutPreferred, potoMessage } from '@/utils'
+import { useI18nStore, useRealtimeMessagesStore } from '@/stores'
+import {
+  fetchWithTimeoutPreferred,
+  potoMessage,
+  watchUntilSourceCondition,
+} from '@/utils'
 import { RiSendPlane2Fill, RiSendPlane2Line } from '@remixicon/vue'
 import { useMutation } from '@tanstack/vue-query'
 
@@ -44,9 +48,28 @@ const messageSendMutation = useMutation({
   // ✅ 在网络错误时重试
   retry: queryRetryPbNetworkError,
 })
+
+const realtimeMessagesStore = useRealtimeMessagesStore()
+
+const messageSendSubmitRunning = ref(false)
 // 消息发送提交
-const messageSendSubmit = messageSendMutation.mutateAsync
-const messageSendSubmitRunning = messageSendMutation.isPending
+const messageSendSubmit = async () => {
+  messageSendSubmitRunning.value = true
+  try {
+    const resData = await messageSendMutation.mutateAsync()
+    // 发送后，仍应等待realtime收到自己发的消息
+    await watchUntilSourceCondition(
+      computed(
+        () =>
+          realtimeMessagesStore.createList.find((i) => i.id === resData.id) !=
+          null
+      ),
+      (val) => val === true
+    )
+  } finally {
+    messageSendSubmitRunning.value = false
+  }
+}
 </script>
 
 <template>

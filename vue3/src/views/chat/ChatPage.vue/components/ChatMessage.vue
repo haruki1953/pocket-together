@@ -235,6 +235,9 @@ const timeAgo = useTimeAgo(
 </script>
 
 <template>
+  <!--
+   chat-message-${chatRoomMessagesItem.id}，data-message-id，用于聊天页处理滚动的收集元素数据
+  -->
   <div
     class="chat-message flow-root"
     :class="`chat-message-${chatRoomMessagesItem.id}`"

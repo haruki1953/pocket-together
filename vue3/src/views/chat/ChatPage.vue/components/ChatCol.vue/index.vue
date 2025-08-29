@@ -9,6 +9,8 @@ import { pbMessagesSendChatApi } from '@/api'
 import { useScroll } from '@vueuse/core'
 import { ChatInputBar, ChatMessage } from './dependencies'
 import { useChatScrollMessageChange } from './composables'
+import { useRealtimeMessagesStore } from '@/stores'
+import { chatRoomMessagesScrollRealtimeIsBottomDistance } from '@/config'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -72,13 +74,42 @@ export type ChatRoomMessagesItem = NonNullable<
   typeof chatRoomMessagesList.value
 >[number]
 
+const realtimeMessagesStore = useRealtimeMessagesStore()
+
+// 从实时消息中，获取本房间的消息
+const chatRoomMessagesRealtime = computed(() => {
+  return realtimeMessagesStore.createList.filter((i) => i.room === '')
+})
+
+// 将 MessagesRealtime 和 MessagesList 融合
+const chatRoomMessagesListAndRealtime = computed(() => {
+  if (chatRoomMessagesList.value == null) {
+    return null
+  }
+  // 将MessagesRealtime与MessagesList重复的删除
+  const messagesRealtimeDeleteDuplicates =
+    chatRoomMessagesRealtime.value.filter(
+      (realtimaeItem) =>
+        chatRoomMessagesList.value?.find(
+          (listItem) => listItem.id === realtimaeItem.id
+        ) == null
+    )
+  return [...chatRoomMessagesList.value, ...messagesRealtimeDeleteDuplicates]
+})
+
+// 最终用于渲染的数据
+const chatRoomMessagesForShow = computed(
+  () => chatRoomMessagesListAndRealtime.value
+)
+
 // 消息变动时的滚动处理
 const messagesWarpScroll = useScroll(props.refScrollWarp)
 // props.refScrollWarp
 
+// 初始化时滚动到底部
 onMounted(async () => {
   // 等待存在消息数据
-  await watchUntilSourceCondition(chatRoomMessagesList, (val) => val != null)
+  await watchUntilSourceCondition(chatRoomMessagesForShow, (val) => val != null)
   // 之后滚动到底部
   await nextTick()
   // console.log(props.refScrollWarp)
@@ -90,11 +121,43 @@ onMounted(async () => {
   })
 })
 
+// 新增实时消息时，如果贴近底部，则滚到底部（平滑）
+watch(
+  () => chatRoomMessagesRealtime.value.map((i) => i.id).toString(),
+  async () => {
+    if (props.refScrollWarp == null) {
+      return
+    }
+
+    // 距底部的距离
+    const distanceFromBottom =
+      props.refScrollWarp.scrollHeight -
+      props.refScrollWarp.clientHeight -
+      props.refScrollWarp.scrollTop
+    if (distanceFromBottom > chatRoomMessagesScrollRealtimeIsBottomDistance) {
+      // 大于10px，则算不贴近底部，直接返回
+      return
+    }
+
+    // 等待渲染
+    await nextTick()
+
+    // 滚动
+    props.refScrollWarp.scrollTo({
+      top: props.refScrollWarp.scrollHeight,
+      behavior: 'smooth', // 平滑滚动
+    })
+  }
+)
+
 /** 封装了聊天页消息变动时的滚动处理 */
 const {
   chatScrollCaptureSnapshotBeforeMessageChange,
   chatScrollAdjustPositionAfterMessageChange,
-} = useChatScrollMessageChange({ props, chatRoomMessagesList })
+} = useChatScrollMessageChange({
+  props,
+  chatRoomMessagesList: chatRoomMessagesForShow,
+})
 </script>
 
 <template>
@@ -105,10 +168,10 @@ const {
           <ElButton @click="testPbPage">pb分页测试</ElButton>
           <ElButton @click="testPbSend">pb批量消息</ElButton>
           <!-- 聊天栏 -->
-          <div v-if="chatRoomMessagesList != null">
+          <div v-if="chatRoomMessagesForShow != null">
             <!-- 消息 -->
             <ChatMessage
-              v-for="(item, index) in chatRoomMessagesList"
+              v-for="(item, index) in chatRoomMessagesForShow"
               :key="item.id"
               :chatRoomMessagesItem="item"
               :chatRoomMessagesItemPrevious="
@@ -119,18 +182,18 @@ const {
                   if (index < 1) {
                     return null
                   }
-                  return chatRoomMessagesList[index - 1]
+                  return chatRoomMessagesForShow[index - 1]
                 })()
               "
               :chatRoomMessagesItemNext="
                 (() => {
                   // 下一条消息
                   // 确保存在
-                  // index === chatRoomMessagesList.length - 1
-                  if (index > chatRoomMessagesList.length - 2) {
+                  // index === chatRoomMessagesForShow.length - 1
+                  if (index > chatRoomMessagesForShow.length - 2) {
                     return null
                   }
-                  return chatRoomMessagesList[index + 1]
+                  return chatRoomMessagesForShow[index + 1]
                 })()
               "
             ></ChatMessage>
