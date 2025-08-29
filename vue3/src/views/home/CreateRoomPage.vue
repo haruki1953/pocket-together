@@ -32,7 +32,7 @@ function removeTag(index: number) {
   <div class="flex h-full flex-col">
     <!-- Header -->
     <header
-      class="flex h-14 flex-shrink-0 items-center justify-between bg-gray-200 px-4 py-3 dark:bg-[#222222]"
+      class="flex h-14 flex-shrink-0 items-center justify-between bg-blue-100 px-4 py-3 dark:bg-[#222222]"
     >
       <button
         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -49,7 +49,9 @@ function removeTag(index: number) {
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="space-y-5">
           <div>
-            <h2 class="text-2xl font-bold text-gray-300">信息编辑</h2>
+            <h2 class="text-2xl font-bold text-cyan-500 dark:text-gray-300">
+              信息编辑
+            </h2>
             <p class="text-gray-500 dark:text-gray-400">
               这是您的房间被其他人看到的样子
             </p>
@@ -125,7 +127,7 @@ function removeTag(index: number) {
             v-model="roomTitle"
             type="text"
             placeholder="单击此处输入标题"
-            class="w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
           <!-- 编辑简介 -->
@@ -133,7 +135,7 @@ function removeTag(index: number) {
             v-model="roomDescription"
             placeholder="单击此处输入简介"
             rows="5"
-            class="w-full resize-none rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full resize-none rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
           <!-- 编辑 Tag -->
@@ -142,7 +144,7 @@ function removeTag(index: number) {
               v-model="newTag"
               type="text"
               placeholder="单击输入文本后按 Enter 创建标签"
-              class="w-full rounded-lg border-gray-300 bg-white p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+              class="w-full rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
               @keydown.enter.prevent="addTag"
             />
             <div class="mt-4 flex flex-wrap gap-2">
@@ -167,7 +169,9 @@ function removeTag(index: number) {
         <div class="">
           <!-- 房间预览文本 -->
           <div>
-            <h2 class="text-2xl font-bold text-gray-300">预览</h2>
+            <h2 class="text-2xl font-bold text-cyan-500 dark:text-gray-800">
+              预览
+            </h2>
             <p class="text-gray-500 dark:text-gray-400">
               这是您的房间被其他人看到的样子
             </p>
@@ -177,11 +181,11 @@ function removeTag(index: number) {
             >
               <!-- 上阴影遮罩 -->
               <div
-                class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
+                class="absolute top-0 z-50 h-6 w-full bg-gradient-to-b from-white via-white/30 to-white/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
               ></div>
               <!-- 下阴影遮罩 -->
               <div
-                class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-gray-50 via-gray-50/30 to-gray-50/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
+                class="absolute bottom-0 z-50 h-6 w-full bg-gradient-to-t from-white via-white/30 to-white/0 dark:from-[#181818] dark:via-[#181818]/30 dark:to-[#181818]/0"
               ></div>
               <!-- 实际上的预览卡片 rendering 区域 -->
               <div
@@ -219,7 +223,7 @@ function removeTag(index: number) {
             <h2 class="mt-4 text-2xl font-bold text-cyan-500">房间设置</h2>
             <div class="mt-4">
               <div
-                class="mt-4 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="mt-4 flex items-center justify-between rounded-lg bg-blue-100 p-4 shadow-sm dark:bg-gray-800"
               >
                 <span>人数限制</span>
                 <span class="text-gray-500 dark:text-gray-400"
@@ -227,7 +231,7 @@ function removeTag(index: number) {
                 >
               </div>
               <div
-                class="mt-4 flex items-center justify-between rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="mt-4 flex items-center justify-between rounded-lg bg-blue-100 p-4 shadow-sm dark:bg-gray-800"
               >
                 <span>密码限制</span>
                 <span class="text-gray-500 dark:text-gray-400"
@@ -237,12 +241,20 @@ function removeTag(index: number) {
             </div>
           </div>
 
-          <!-- Create Room Button -->
-          <button
-            class="mt-4 w-full rounded-lg bg-cyan-500 py-4 text-lg font-bold text-white shadow-lg hover:bg-cyan-600"
+          <!-- Button -->
+          <ElButton
+            type="primary"
+            round
+            style="
+              height: 60px;
+              width: 100%;
+              border-radius: 12px;
+              font-size: 18px;
+            "
+            class="mt-6 py-4 text-white shadow-lg"
           >
             创建房间 &gt;
-          </button>
+          </ElButton>
         </div>
       </div>
     </main>
