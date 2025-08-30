@@ -68,18 +68,19 @@ const chatRoomMessagesList = computed(() => {
   return messagesListReverseData
 })
 export type ChatRoomMessagesListType = typeof chatRoomMessagesList
-
 // 消息的类型
 export type ChatRoomMessagesItem = NonNullable<
   typeof chatRoomMessagesList.value
 >[number]
 
+// 实时消息Store
 const realtimeMessagesStore = useRealtimeMessagesStore()
 
 // 从实时消息中，获取本房间的消息
 const chatRoomMessagesRealtime = computed(() => {
   return realtimeMessagesStore.createList.filter((i) => i.room === '')
 })
+export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
 
 // 将 MessagesRealtime 和 MessagesList 融合
 const chatRoomMessagesListAndRealtime = computed(() => {
@@ -101,54 +102,7 @@ const chatRoomMessagesListAndRealtime = computed(() => {
 const chatRoomMessagesForShow = computed(
   () => chatRoomMessagesListAndRealtime.value
 )
-
-// 消息变动时的滚动处理
-const messagesWarpScroll = useScroll(props.refScrollWarp)
-// props.refScrollWarp
-
-// 初始化时滚动到底部
-onMounted(async () => {
-  // 等待存在消息数据
-  await watchUntilSourceCondition(chatRoomMessagesForShow, (val) => val != null)
-  // 之后滚动到底部
-  await nextTick()
-  // console.log(props.refScrollWarp)
-  // console.log(props.refScrollWarp?.scrollHeight)
-  // console.log(props.refScrollWarp?.scrollTop)
-  props.refScrollWarp?.scrollTo({
-    top: props.refScrollWarp.scrollHeight,
-    // behavior: 'smooth', // 平滑滚动
-  })
-})
-
-// 新增实时消息时，如果贴近底部，则滚到底部（平滑）
-watch(
-  () => chatRoomMessagesRealtime.value.map((i) => i.id).toString(),
-  async () => {
-    if (props.refScrollWarp == null) {
-      return
-    }
-
-    // 距底部的距离
-    const distanceFromBottom =
-      props.refScrollWarp.scrollHeight -
-      props.refScrollWarp.clientHeight -
-      props.refScrollWarp.scrollTop
-    if (distanceFromBottom > chatRoomMessagesScrollRealtimeIsBottomDistance) {
-      // 大于10px，则算不贴近底部，直接返回
-      return
-    }
-
-    // 等待渲染
-    await nextTick()
-
-    // 滚动
-    props.refScrollWarp.scrollTo({
-      top: props.refScrollWarp.scrollHeight,
-      behavior: 'smooth', // 平滑滚动
-    })
-  }
-)
+export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
 
 /** 封装了聊天页消息变动时的滚动处理 */
 const {
@@ -156,7 +110,8 @@ const {
   chatScrollAdjustPositionAfterMessageChange,
 } = useChatScrollMessageChange({
   props,
-  chatRoomMessagesList: chatRoomMessagesForShow,
+  chatRoomMessagesForShow,
+  chatRoomMessagesRealtime,
 })
 </script>
 

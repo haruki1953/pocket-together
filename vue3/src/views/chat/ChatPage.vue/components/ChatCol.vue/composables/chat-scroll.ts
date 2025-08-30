@@ -1,13 +1,73 @@
-import { compareDatesSafeWithNull } from '@/utils'
-import type { ChatRoomMessagesListType, PropsType } from './dependencies'
-import { chatRoomMessagesScrollCaptureElementNumberConfig } from '@/config'
+import { compareDatesSafeWithNull, watchUntilSourceCondition } from '@/utils'
+import type {
+  ChatRoomMessagesForShowType,
+  ChatRoomMessagesRealtimeType,
+  PropsType,
+} from './dependencies'
+import {
+  chatRoomMessagesScrollCaptureElementNumberConfig,
+  chatRoomMessagesScrollRealtimeIsBottomDistance,
+} from '@/config'
+import { useScroll } from '@vueuse/core'
 
 /** 封装了聊天页消息变动时的滚动处理 */
 export const useChatScrollMessageChange = (data: {
-  chatRoomMessagesList: ChatRoomMessagesListType
+  chatRoomMessagesForShow: ChatRoomMessagesForShowType
+  chatRoomMessagesRealtime: ChatRoomMessagesRealtimeType
   props: PropsType
 }) => {
-  const { props, chatRoomMessagesList } = data
+  const { props, chatRoomMessagesForShow, chatRoomMessagesRealtime } = data
+
+  // 消息变动时的滚动处理
+  const messagesWarpScroll = useScroll(props.refScrollWarp)
+  // props.refScrollWarp
+
+  // 初始化时滚动到底部
+  onMounted(async () => {
+    // 等待存在消息数据
+    await watchUntilSourceCondition(
+      chatRoomMessagesForShow,
+      (val) => val != null
+    )
+    // 之后滚动到底部
+    await nextTick()
+    // console.log(props.refScrollWarp)
+    // console.log(props.refScrollWarp?.scrollHeight)
+    // console.log(props.refScrollWarp?.scrollTop)
+    props.refScrollWarp?.scrollTo({
+      top: props.refScrollWarp.scrollHeight,
+      // behavior: 'smooth', // 平滑滚动
+    })
+  })
+
+  // 新增实时消息时，如果贴近底部，则滚到底部（平滑）
+  watch(
+    () => chatRoomMessagesRealtime.value.map((i) => i.id).toString(),
+    async () => {
+      if (props.refScrollWarp == null) {
+        return
+      }
+
+      // 距底部的距离
+      const distanceFromBottom =
+        props.refScrollWarp.scrollHeight -
+        props.refScrollWarp.clientHeight -
+        props.refScrollWarp.scrollTop
+      if (distanceFromBottom > chatRoomMessagesScrollRealtimeIsBottomDistance) {
+        // 大于10px，则算不贴近底部，直接返回
+        return
+      }
+
+      // 等待渲染
+      await nextTick()
+
+      // 滚动
+      props.refScrollWarp.scrollTo({
+        top: props.refScrollWarp.scrollHeight,
+        behavior: 'smooth', // 平滑滚动
+      })
+    }
+  )
 
   /**
    * 处理聊天滚动（在消息变动前）
@@ -17,18 +77,18 @@ export const useChatScrollMessageChange = (data: {
   const chatScrollCaptureSnapshotBeforeMessageChange = () => {
     // 消息数据快照
     const messageListSnapshot = (() => {
-      if (chatRoomMessagesList.value == null) {
+      if (chatRoomMessagesForShow.value == null) {
         return null
       }
-      return [...chatRoomMessagesList.value]
+      return [...chatRoomMessagesForShow.value]
     })()
 
     // 消息元素高度信息
     const messageElementMetrics = (() => {
-      if (chatRoomMessagesList.value == null) return null
+      if (chatRoomMessagesForShow.value == null) return null
 
       // 只收集前几十条消息的 DOM 元素高度（具体数量根据配置控制）
-      const selector = chatRoomMessagesList.value
+      const selector = chatRoomMessagesForShow.value
         .slice(0, chatRoomMessagesScrollCaptureElementNumberConfig)
         .map((msg) => `.chat-message-${msg.id}`)
         .join(', ')
@@ -68,17 +128,17 @@ export const useChatScrollMessageChange = (data: {
     const { messageListSnapshot, messageElementMetrics } = previousSnapshot
     // 所需数据没有值，直接返回
     if (
-      chatRoomMessagesList.value == null ||
+      chatRoomMessagesForShow.value == null ||
       messageListSnapshot == null ||
       messageElementMetrics == null ||
-      chatRoomMessagesList.value.length === 0 ||
+      chatRoomMessagesForShow.value.length === 0 ||
       messageListSnapshot.length === 0
     ) {
       console.error(
         `
-      chatRoomMessagesList.value == null ||
+      chatRoomMessagesForShow.value == null ||
       messageListSnapshot == null ||
-      chatRoomMessagesList.value.length === 0 ||
+      chatRoomMessagesForShow.value.length === 0 ||
       messageListSnapshot.length === 0
         `
       )
@@ -97,7 +157,7 @@ export const useChatScrollMessageChange = (data: {
      */
     const isListTopAddOrReduce = compareDatesSafeWithNull(
       messageListSnapshot[0].created,
-      chatRoomMessagesList.value[0].created
+      chatRoomMessagesForShow.value[0].created
     )
     // 存在无效值，返回
     if (isListTopAddOrReduce == null) {
@@ -114,8 +174,8 @@ export const useChatScrollMessageChange = (data: {
       if (isListTopAddOrReduce === 1) {
         // 消息数组顶部增加，统计增加的item.id
         // 储存变化的消息
-        const itemDeltaList: typeof chatRoomMessagesList.value = []
-        for (const item of chatRoomMessagesList.value) {
+        const itemDeltaList: typeof chatRoomMessagesForShow.value = []
+        for (const item of chatRoomMessagesForShow.value) {
           // 消息id等于旧的数组中的第一个，即代表增加的消息已收集完毕
           if (item.id === messageListSnapshot[0].id) {
             break
@@ -128,10 +188,10 @@ export const useChatScrollMessageChange = (data: {
         // isListTopAddOrReduce === -1
         // 消息数组顶部减少，统计减少的item.id
         // 储存变化的消息
-        const itemDeltaList: typeof chatRoomMessagesList.value = []
+        const itemDeltaList: typeof chatRoomMessagesForShow.value = []
         for (const item of messageListSnapshot) {
           // 消息id等于新的数组中的第一个，即代表减少的消息已收集完毕
-          if (item.id === chatRoomMessagesList.value[0].id) {
+          if (item.id === chatRoomMessagesForShow.value[0].id) {
             break
           }
           // 收集变化的消息

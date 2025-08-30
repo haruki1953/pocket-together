@@ -1,1 +1,1 @@
-export type { ChatRoomMessagesListType, PropsType } from '../index.vue'
+export type * from '../index.vue'
