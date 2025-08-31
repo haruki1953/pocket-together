@@ -1,26 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const menuItems = ref([
+  { id: 'all', text: '全部房间' },
+  { id: 'search', text: '搜索房间' },
+  { id: 'favorites', text: '收藏房间' },
+])
+</script>
 
 <template>
   <div
     class="group transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
   >
     <!-- 新增选项卡区域 -->
-    <div class="flex justify-between items-center mb-4">
-      <div class="flex gap-4 w-full">
+    <div class="mb-4 flex items-center justify-between">
+      <div class="flex w-full flex-col gap-4">
         <button
-          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
+          v-for="item in menuItems"
+          :key="item.id"
+          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-colors hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
         >
-          全部房间
-        </button>
-        <button
-          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
-        >
-          搜索房间
-        </button>
-        <button
-          class="flex-1 py-2 rounded-lg text-base font-semibold transition-colors bg-gray-100 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-800"
-        >
-          收藏房间
+          {{ item.text }}
         </button>
       </div>
     </div>

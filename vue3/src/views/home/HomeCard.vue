@@ -32,6 +32,13 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
         {{ home.title }}
       </h3>
 
+      <!-- 用户 -->
+      <div class="mt-3 flex items-center">
+        <img :src="home.avatarUrl" class="mr-2 h-6 w-6 rounded-full" />
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{
+          home.creator
+        }}</span>
+      </div>
       <!-- 标签 -->
       <div v-if="home.tags.length" class="mt-3">
         <ElTag
@@ -46,12 +53,9 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
           {{ tag }}
         </ElTag>
       </div>
-      <!-- 用户 -->
-      <div class="mt-3 flex items-center">
-        <img :src="home.avatarUrl" class="mr-2 h-6 w-6 rounded-full" />
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{
-          home.creator
-        }}</span>
+      <!-- 在线人数 -->
+      <div class="mb-1 mt-3 flex items-center font-bold text-gray-400">
+        0 人在线
       </div>
     </div>
 

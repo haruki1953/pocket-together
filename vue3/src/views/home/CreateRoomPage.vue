@@ -169,7 +169,7 @@ function removeTag(index: number) {
         <div class="">
           <!-- 房间预览文本 -->
           <div>
-            <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-800">
+            <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-300">
               预览
             </h2>
             <p class="text-gray-500 dark:text-gray-400">
@@ -220,7 +220,11 @@ function removeTag(index: number) {
 
           <!-- 属性设置 -->
           <div>
-            <h2 class="mt-4 text-2xl font-bold text-cyan-500">房间设置</h2>
+            <h2
+              class="mt-4 text-2xl font-bold text-cyan-600 dark:text-gray-300"
+            >
+              房间设置
+            </h2>
             <div class="mt-4">
               <div
                 class="mt-4 flex items-center justify-between rounded-lg bg-blue-100 p-4 shadow-sm dark:bg-gray-800"
