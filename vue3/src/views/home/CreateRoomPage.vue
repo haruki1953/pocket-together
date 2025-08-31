@@ -49,7 +49,7 @@ function removeTag(index: number) {
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="space-y-5">
           <div>
-            <h2 class="text-2xl font-bold text-cyan-500 dark:text-gray-300">
+            <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-300">
               信息编辑
             </h2>
             <p class="text-gray-500 dark:text-gray-400">
@@ -127,7 +127,7 @@ function removeTag(index: number) {
             v-model="roomTitle"
             type="text"
             placeholder="单击此处输入标题"
-            class="w-full rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
           <!-- 编辑简介 -->
@@ -135,7 +135,7 @@ function removeTag(index: number) {
             v-model="roomDescription"
             placeholder="单击此处输入简介"
             rows="5"
-            class="w-full resize-none rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full resize-none rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
           <!-- 编辑 Tag -->
@@ -144,7 +144,7 @@ function removeTag(index: number) {
               v-model="newTag"
               type="text"
               placeholder="单击输入文本后按 Enter 创建标签"
-              class="w-full rounded-lg border-gray-300 bg-gray-300 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
+              class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
               @keydown.enter.prevent="addTag"
             />
             <div class="mt-4 flex flex-wrap gap-2">
@@ -169,7 +169,7 @@ function removeTag(index: number) {
         <div class="">
           <!-- 房间预览文本 -->
           <div>
-            <h2 class="text-2xl font-bold text-cyan-500 dark:text-gray-800">
+            <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-800">
               预览
             </h2>
             <p class="text-gray-500 dark:text-gray-400">
