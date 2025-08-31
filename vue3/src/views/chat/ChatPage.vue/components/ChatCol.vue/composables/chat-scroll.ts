@@ -6,7 +6,7 @@ import type {
 } from './dependencies'
 import {
   chatRoomMessagesScrollCaptureElementNumberConfig,
-  chatRoomMessagesScrollRealtimeIsBottomDistance,
+  chatRoomMessagesScrollRealtimeIsBottomDistanceConfig,
 } from '@/config'
 import { useScroll } from '@vueuse/core'
 
@@ -53,7 +53,10 @@ export const useChatScrollMessageChange = (data: {
         props.refScrollWarp.scrollHeight -
         props.refScrollWarp.clientHeight -
         props.refScrollWarp.scrollTop
-      if (distanceFromBottom > chatRoomMessagesScrollRealtimeIsBottomDistance) {
+      if (
+        distanceFromBottom >
+        chatRoomMessagesScrollRealtimeIsBottomDistanceConfig
+      ) {
         // 大于10px，则算不贴近底部，直接返回
         return
       }

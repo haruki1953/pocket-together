@@ -10,7 +10,12 @@ import { useScroll } from '@vueuse/core'
 import { ChatInputBar, ChatMessage } from './dependencies'
 import { useChatScrollMessageChange } from './composables'
 import { useRealtimeMessagesStore } from '@/stores'
-import { chatRoomMessagesScrollRealtimeIsBottomDistance } from '@/config'
+import {
+  chatRoomMessagesLimitInitShowItemNumberConfig,
+  chatRoomMessagesLimitLoadMoreMaxItemNumberConfig,
+  chatRoomMessagesLimitShowItemMaxNumberConfig,
+  chatRoomMessagesScrollRealtimeIsBottomDistanceConfig,
+} from '@/config'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -24,6 +29,29 @@ const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
   roomId: '',
 })
 
+/**
+ * 下一页逻辑，向上加载更多
+ * ```
+ * chatRoomMessagesListAndRealtime 简称 cRMLAR ，是当前无限查询加实时消息全部的数组
+ * chatRoomMessagesLimitLoadMoreMaxItemNumberConfig 简称 cRMLLMMINC ，是每次加载更多消息的最多数量
+ * chatRoomMessagesLimitTopCursor
+ * chatRoomMessagesLimitBottomCursor
+ *
+ * 循环 {
+ *   判断剩余的 cRMLAR 是否足够 cRMLLMMINC，够 {
+ *     退出循环
+ *   }
+ *   是否最后一页，是 {
+ *     退出循环
+ *   }
+ *   请求下一页
+ * }
+ *
+ * 计算限制游标
+ *
+ *
+ * ```
+ */
 // 测试，查询下一页
 const testPbPage = async () => {
   console.log(chatRoomMessagesInfiniteQuery.data.value)
@@ -32,8 +60,135 @@ const testPbPage = async () => {
   const chatScrollCaptureSnapshot =
     chatScrollCaptureSnapshotBeforeMessageChange()
 
-  // 加载下一页
-  await chatRoomMessagesInfiniteQuery.fetchNextPage()
+  await (async () => {
+    // 没有消息数据，直接返回
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      return
+    }
+    if (chatRoomMessagesLimitList.value == null) {
+      return
+    }
+    // 已经显示最顶部的数据，返回
+    if (
+      chatRoomMessagesInfiniteQuery.hasNextPage.value === false &&
+      chatRoomMessagesLimitList.value.length > 0 &&
+      chatRoomMessagesListAndRealtime.value.length > 0 &&
+      chatRoomMessagesLimitList.value[0].id ===
+        chatRoomMessagesListAndRealtime.value[0].id
+    )
+      if (chatRoomMessagesLimitTopCursor.value == null) {
+        // chatRoomMessagesLimitTopCursor 为 null，这是不正常的情况
+        // 为了增强或许可以进行一些操作
+        return
+      }
+    while (true) {
+      // 计算顶部剩余的数量（cRMLAR）
+      const topRemainingNumber = (() => {
+        // 获取 index
+        const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
+          (i) => i.id === chatRoomMessagesLimitTopCursor.value
+        )
+        // 未找到 index
+        if (findIndex === -1) {
+          return 'findIndex === -1' as const
+        }
+        // index 的值即为数组在此项前方的数量
+        return findIndex
+      })()
+      // 未找到 TopCursor 对应的item，这是不正常的
+      if (topRemainingNumber === 'findIndex === -1') {
+        return
+      }
+      // 【break 1】判断剩余的 cRMLAR 是否足够 cRMLLMMINC ，够则退出循环
+      if (
+        topRemainingNumber >= chatRoomMessagesLimitLoadMoreMaxItemNumberConfig
+      ) {
+        break
+      }
+      // 【break 2】是否最后一页（没有下一页），是则退出循环
+      if (chatRoomMessagesInfiniteQuery.hasNextPage.value === false) {
+        break
+      }
+      // 请求下一页
+      await chatRoomMessagesInfiniteQuery.fetchNextPage()
+    }
+    // 计算限制游标
+    // 当前TopCursor的index
+    const indexTopCursorNow = (() => {
+      // 获取当前index，因为上面找过，所以这里肯定是找到的（不可能等于-1）
+      const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
+        (i) => i.id === chatRoomMessagesLimitTopCursor.value
+      )
+      return findIndex
+    })()
+    // 新的TopCursor的index
+    const indexTopCursorNew = (() => {
+      // 顶部增加 cRMLLMMINC 个消息
+      const newIndex =
+        indexTopCursorNow - chatRoomMessagesLimitLoadMoreMaxItemNumberConfig
+      // 避免index不合法，一般是数组过短引起的 index < 0，返回 0 即可，意为数组从后往前不够 cRMLLMMINC 个则尽可能靠前的item
+      if (
+        newIndex < 0 ||
+        newIndex > chatRoomMessagesListAndRealtime.value.length - 1
+      ) {
+        return 0
+      }
+      // index合法，返回
+      return newIndex
+    })()
+    const indexBottomCursorNew = (() => {
+      // 计算将增加的数量
+      const willAddItemNumber = indexTopCursorNow - indexTopCursorNew
+      // 计算增加后的总数量
+      const AddedArrayLength =
+        chatRoomMessagesLimitList.value.length + willAddItemNumber
+      // 判断是否超出，未超出，返回 'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      if (AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig) {
+        return 'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      }
+      // 超出，根据indexTopCursorNew计算indexBottomCursorNew，index肯定不会大于最大值，其实不必担心index不合法
+      const newIndex =
+        indexTopCursorNew + chatRoomMessagesLimitShowItemMaxNumberConfig - 1
+      if (
+        newIndex < 0 ||
+        newIndex > chatRoomMessagesListAndRealtime.value.length - 1
+      ) {
+        return chatRoomMessagesListAndRealtime.value.length - 1
+      }
+      return newIndex
+    })()
+
+    // 获取游标值
+    const valTopCursorNew =
+      chatRoomMessagesListAndRealtime.value[indexTopCursorNew].id
+    const valBottomCursorNew = (() => {
+      // 未超出，则chatRoomMessagesLimitBottomCursor不用改，返回当前值即可
+      if (
+        indexBottomCursorNew ===
+        'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      ) {
+        return chatRoomMessagesLimitBottomCursor.value
+      }
+      // 超出，即根据刚刚得到indexBottomCursorNew获取
+      return chatRoomMessagesListAndRealtime.value[indexBottomCursorNew].id
+    })()
+
+    // 为显示限制游标赋值
+    chatRoomMessagesLimitTopCursor.value = valTopCursorNew
+    chatRoomMessagesLimitBottomCursor.value = valBottomCursorNew
+
+    // 确保响应式计算属性生效
+    // await watchUntilSourceCondition(
+    //   chatRoomMessagesLimitList,
+    //   (val) =>
+    //     val != null &&
+    //     val.length > 0 &&
+    //     val[0].id === chatRoomMessagesLimitTopCursor.value
+    // )
+    console.log(chatRoomMessagesLimitTopCursor.value)
+    console.log(chatRoomMessagesLimitBottomCursor.value)
+    console.log(chatRoomMessagesLimitList.value)
+  })()
 
   // 处理聊天滚动（在消息变动后）
   chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
@@ -98,10 +253,99 @@ const chatRoomMessagesListAndRealtime = computed(() => {
   return [...chatRoomMessagesList.value, ...messagesRealtimeDeleteDuplicates]
 })
 
+// 限制消息显示数量，顶部游标与底部游标
+const chatRoomMessagesLimitTopCursor = ref<string | null>(null)
+const chatRoomMessagesLimitBottomCursor = ref<string | null>(null)
+
+// 已限制数量的消息列表
+const chatRoomMessagesLimitList = computed(() => {
+  // chatRoomMessagesListAndRealtime 没有值，返回null
+  if (chatRoomMessagesListAndRealtime.value == null) {
+    return null
+  }
+  // 都为默认值，限制数量功能还未初始化，返回null
+  if (
+    chatRoomMessagesLimitTopCursor.value == null &&
+    chatRoomMessagesLimitBottomCursor.value == null
+  ) {
+    return null
+  }
+
+  // 找到两个Cursor所对应的序列值
+  const indexTopCursor = (() => {
+    // 未找到则默认为第一个
+    const defaultIndex = 0
+    if (chatRoomMessagesLimitTopCursor.value == null) {
+      return defaultIndex
+    }
+    const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
+      (i) => i.id === chatRoomMessagesLimitTopCursor.value
+    )
+    if (findIndex === -1) {
+      return defaultIndex
+    }
+    return findIndex
+  })()
+  const indexBottomCursor = (() => {
+    // 未找到则默认为最后一个
+    const defaultIndex = chatRoomMessagesListAndRealtime.value.length - 1
+    if (chatRoomMessagesLimitBottomCursor.value == null) {
+      return defaultIndex
+    }
+    const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
+      (i) => i.id === chatRoomMessagesLimitBottomCursor.value
+    )
+    if (findIndex === -1) {
+      return defaultIndex
+    }
+    return findIndex
+  })()
+
+  // 包含indexBottomCursor所指的
+  const limitList = chatRoomMessagesListAndRealtime.value.slice(
+    indexTopCursor,
+    indexBottomCursor + 1
+  )
+  return limitList
+})
+
+// 初始化显示限制，setup时就可以进行
+;(async () => {
+  // 等待存在消息数据
+  await watchUntilSourceCondition(
+    chatRoomMessagesListAndRealtime,
+    (val) => val != null
+  )
+  // 此时仍不存在消息数据是异常的，直接返回
+  // watchUntilSourceCondition 并不能约束类型
+  // 主要目的是让下文的 chatRoomMessagesListAndRealtime 类型正确
+  if (chatRoomMessagesListAndRealtime.value == null) {
+    console.error('chatRoomMessagesListAndRealtime.value == null')
+    return
+  }
+
+  // chatRoomMessagesLimitInitShowItemNumberConfig 简称为 cRMLISINC
+  // 从后往前限制 cRMLISINC 个，也就是找到从后往前第 cRMLISINC 个的item
+  const indexTopCursor = (() => {
+    // length - cRMLISINC 即从后往前第 cRMLISINC 个的item
+    const index =
+      chatRoomMessagesListAndRealtime.value.length -
+      chatRoomMessagesLimitInitShowItemNumberConfig
+    // 避免index不合法，一般是数组过短引起的 index < 0，返回 0 即可，意为数组从后往前不够 cRMLISINC 个则尽可能靠前的item
+    if (index < 0 || index > chatRoomMessagesListAndRealtime.value.length - 1) {
+      return 0
+    }
+    return index
+  })()
+
+  const itemTopCursor = chatRoomMessagesListAndRealtime.value[indexTopCursor]
+
+  // 为用于显示数量限制的游标赋值
+  chatRoomMessagesLimitTopCursor.value = itemTopCursor.id
+})()
+
 // 最终用于渲染的数据
-const chatRoomMessagesForShow = computed(
-  () => chatRoomMessagesListAndRealtime.value
-)
+const chatRoomMessagesForShow = computed(() => chatRoomMessagesLimitList.value)
 export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
 
 /** 封装了聊天页消息变动时的滚动处理 */
