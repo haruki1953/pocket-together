@@ -76,6 +76,7 @@ export const useChatScrollMessageChange = (data: {
    * 处理聊天滚动（在消息变动前）
    * 收集滚动前的快照数据，用于后续滚动补偿计算。
    * 与 chatScrollAdjustPositionAfterMessageChange 结合使用
+   * 【250901】最好在消息变动的最近的前一刻使用此函数收集信息，不然scrollSnapshot可能随用户滚动而不正确
    */
   const chatScrollCaptureSnapshotBeforeMessageChange = () => {
     // 消息数据快照
@@ -110,11 +111,21 @@ export const useChatScrollMessageChange = (data: {
 
     // // 当前滚动内容高度
     // const scrollHeightSnapshot = props.refScrollWarp?.scrollHeight ?? null
+    // 当前滚动信息
+    const scrollSnapshot = (() => {
+      if (props.refScrollWarp == null) {
+        return null
+      }
+      return {
+        scrollHeight: props.refScrollWarp.scrollHeight,
+        scrollTop: props.refScrollWarp.scrollTop,
+      }
+    })()
 
     return {
       messageListSnapshot,
       messageElementMetrics,
-      // scrollHeightSnapshot,
+      scrollSnapshot,
     }
   }
 
@@ -128,14 +139,16 @@ export const useChatScrollMessageChange = (data: {
       typeof chatScrollCaptureSnapshotBeforeMessageChange
     >
   ) => {
-    const { messageListSnapshot, messageElementMetrics } = previousSnapshot
+    const { messageListSnapshot, messageElementMetrics, scrollSnapshot } =
+      previousSnapshot
     // 所需数据没有值，直接返回
     if (
       chatRoomMessagesForShow.value == null ||
       messageListSnapshot == null ||
       messageElementMetrics == null ||
       chatRoomMessagesForShow.value.length === 0 ||
-      messageListSnapshot.length === 0
+      messageListSnapshot.length === 0 ||
+      props.refScrollWarp == null
     ) {
       console.error(
         `
@@ -147,6 +160,8 @@ export const useChatScrollMessageChange = (data: {
       )
       return
     }
+    console.log(props.refScrollWarp.scrollHeight)
+    console.log(props.refScrollWarp.scrollTop)
     /**
      * 判断消息数组顶部为增加还是减少（只有顶部的增减会影响滚动）
      * ```
@@ -169,9 +184,10 @@ export const useChatScrollMessageChange = (data: {
     }
     // 消息数组顶部不变，无需处理滚动，返回
     if (isListTopAddOrReduce === 0) {
-      console.log('isListTopAddOrReduce === 0')
+      console.error('isListTopAddOrReduce === 0')
       return
     }
+    console.log('isListTopAddOrReduce', isListTopAddOrReduce)
     // 统计消息数据的变化
     const listTopDelta = (() => {
       if (isListTopAddOrReduce === 1) {
@@ -204,7 +220,15 @@ export const useChatScrollMessageChange = (data: {
       }
     })()
 
+    // // 缓存一下 scrollTop 值，让之后的计算更精准
+    // const cacheScrollTopVal = props.refScrollWarp.scrollTop
+    console.log(props.refScrollWarp.scrollHeight)
+    console.log(props.refScrollWarp.scrollTop)
+
     await nextTick() // 等待 DOM 更新
+
+    console.log(props.refScrollWarp.scrollHeight)
+    console.log(props.refScrollWarp.scrollTop)
 
     // 计算高度变化，将用于调整滚动
     const heightDeltaForScroll = (() => {
@@ -227,16 +251,29 @@ export const useChatScrollMessageChange = (data: {
           (elItem) =>
             listTopDelta.find((msgItem) => msgItem.id === elItem.id) != null
         )
+        console.log(elements)
         // 统计高度
         let height = 0
-        elements.forEach((el) => (height += el.offsetHeight))
+        elements.forEach((el) => {
+          height += el.offsetHeight
+        })
         return -height
       }
     })()
 
+    // 正确的 ScrollTop 的值
+    const correctScrollTopVal = (() => {
+      // 优先使用 scrollSnapshot
+      if (scrollSnapshot != null) {
+        return scrollSnapshot.scrollTop
+      }
+      // 否则使用 props.refScrollWarp.scrollTop
+      return props.refScrollWarp.scrollTop
+    })()
+
     // 滚动补偿：将滚动设置为 scrollTop与变化的高度的和
-    props.refScrollWarp?.scrollTo({
-      top: props.refScrollWarp.scrollTop + heightDeltaForScroll,
+    props.refScrollWarp.scrollTo({
+      top: correctScrollTopVal + heightDeltaForScroll,
       // behavior: 'smooth', // 平滑滚动不适用与此
     })
   }

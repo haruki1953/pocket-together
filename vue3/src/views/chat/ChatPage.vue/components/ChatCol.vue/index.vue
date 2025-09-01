@@ -56,11 +56,18 @@ const chatRoomMessagesInfiniteQuery = useChatRoomMessagesInfiniteQuery({
 const testPbPage = async () => {
   console.log(chatRoomMessagesInfiniteQuery.data.value)
 
-  // 处理聊天滚动（在消息变动前）
-  const chatScrollCaptureSnapshot =
-    chatScrollCaptureSnapshotBeforeMessageChange()
+  // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
+  let chatScrollCaptureSnapshot = null as ReturnType<
+    typeof chatScrollCaptureSnapshotBeforeMessageChange
+  > | null
 
-  await (async () => {
+  await (async (data: {
+    /**
+     * 在显示限制游标被赋值的前一刻，会调用这个函数
+     * 也就是显示内容改变的前一刻，主要用于 chatScrollCaptureSnapshotBeforeMessageChange 调用
+     */
+    beforeLimitCursorUpdate: () => void
+  }) => {
     // 没有消息数据，直接返回
     if (chatRoomMessagesListAndRealtime.value == null) {
       return
@@ -75,12 +82,14 @@ const testPbPage = async () => {
       chatRoomMessagesListAndRealtime.value.length > 0 &&
       chatRoomMessagesLimitList.value[0].id ===
         chatRoomMessagesListAndRealtime.value[0].id
-    )
-      if (chatRoomMessagesLimitTopCursor.value == null) {
-        // chatRoomMessagesLimitTopCursor 为 null，这是不正常的情况
-        // 为了增强或许可以进行一些操作
-        return
-      }
+    ) {
+      return
+    }
+    // chatRoomMessagesLimitTopCursor 为 null，这是不正常的情况，返回
+    if (chatRoomMessagesLimitTopCursor.value == null) {
+      // 为了增强或许可以进行一些操作
+      return
+    }
     while (true) {
       // 计算顶部剩余的数量（cRMLAR）
       const topRemainingNumber = (() => {
@@ -136,8 +145,9 @@ const testPbPage = async () => {
       // index合法，返回
       return newIndex
     })()
+    // 新的BottomCursor的index
     const indexBottomCursorNew = (() => {
-      // 计算将增加的数量
+      // 计算将增加的数量 indexTopCursorNow 的值大于 indexTopCursorNew
       const willAddItemNumber = indexTopCursorNow - indexTopCursorNew
       // 计算增加后的总数量
       const AddedArrayLength =
@@ -148,7 +158,7 @@ const testPbPage = async () => {
       }
       // 超出，根据indexTopCursorNew计算indexBottomCursorNew，index肯定不会大于最大值，其实不必担心index不合法
       const newIndex =
-        indexTopCursorNew + chatRoomMessagesLimitShowItemMaxNumberConfig - 1
+        indexTopCursorNew + (chatRoomMessagesLimitShowItemMaxNumberConfig - 1)
       if (
         newIndex < 0 ||
         newIndex > chatRoomMessagesListAndRealtime.value.length - 1
@@ -162,7 +172,7 @@ const testPbPage = async () => {
     const valTopCursorNew =
       chatRoomMessagesListAndRealtime.value[indexTopCursorNew].id
     const valBottomCursorNew = (() => {
-      // 未超出，则chatRoomMessagesLimitBottomCursor不用改，返回当前值即可
+      // 未超出，则 chatRoomMessagesLimitBottomCursor 不用改，返回当前值即可
       if (
         indexBottomCursorNew ===
         'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
@@ -173,23 +183,151 @@ const testPbPage = async () => {
       return chatRoomMessagesListAndRealtime.value[indexBottomCursorNew].id
     })()
 
+    // 调用回调函数 beforeLimitCursorUpdate
+    data.beforeLimitCursorUpdate()
+
     // 为显示限制游标赋值
     chatRoomMessagesLimitTopCursor.value = valTopCursorNew
     chatRoomMessagesLimitBottomCursor.value = valBottomCursorNew
 
-    // 确保响应式计算属性生效
-    // await watchUntilSourceCondition(
-    //   chatRoomMessagesLimitList,
-    //   (val) =>
-    //     val != null &&
-    //     val.length > 0 &&
-    //     val[0].id === chatRoomMessagesLimitTopCursor.value
-    // )
-    console.log(chatRoomMessagesLimitTopCursor.value)
-    console.log(chatRoomMessagesLimitBottomCursor.value)
-    console.log(chatRoomMessagesLimitList.value)
-  })()
+    // console.log(chatRoomMessagesLimitTopCursor.value)
+    // console.log(chatRoomMessagesLimitBottomCursor.value)
+    // console.log(chatRoomMessagesLimitList.value)
+  })({
+    // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
+    beforeLimitCursorUpdate: () => {
+      chatScrollCaptureSnapshot = chatScrollCaptureSnapshotBeforeMessageChange()
+    },
+  })
 
+  if (chatScrollCaptureSnapshot == null) {
+    return
+  }
+  // 处理聊天滚动（在消息变动后）
+  chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
+}
+
+// 测试，查询上一页（控制显示限制）
+const testPbPageBottom = async () => {
+  // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
+  let chatScrollCaptureSnapshot = null as ReturnType<
+    typeof chatScrollCaptureSnapshotBeforeMessageChange
+  > | null
+
+  await (async (data: {
+    /**
+     * 在显示限制游标被赋值的前一刻，会调用这个函数
+     * 也就是显示内容改变的前一刻，主要用于 chatScrollCaptureSnapshotBeforeMessageChange 调用
+     */
+    beforeLimitCursorUpdate: () => void
+  }) => {
+    // 没有消息数据，直接返回
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      return
+    }
+    if (chatRoomMessagesLimitList.value == null) {
+      return
+    }
+    // 已显示最底部的数据，返回
+    if (chatRoomMessagesLimitBottomCursor.value == null) {
+      return
+    }
+    // chatRoomMessagesLimitTopCursor 为 null，这是不正常的情况，返回
+    if (chatRoomMessagesLimitTopCursor.value == null) {
+      // 为了增强或许可以进行一些操作
+      return
+    }
+    // 计算限制游标
+    // 当前BottomCursor的index
+    const indexBottomCursorNow =
+      chatRoomMessagesListAndRealtime.value.findIndex(
+        (i) => i.id === chatRoomMessagesLimitBottomCursor.value
+      )
+    // 未找到 BottomCursor 对应的item，这是不正常的，返回
+    if (indexBottomCursorNow === -1) {
+      return
+    }
+    // 新的BottomCursor的index
+    const indexBottomCursorNew = (() => {
+      // 底部增加 cRMLLMMINC 个消息
+      const newIndex =
+        indexBottomCursorNow + chatRoomMessagesLimitLoadMoreMaxItemNumberConfig
+      // 避免index不合法，增加后可能会超出数组长度，返回最大的index即可，即代表数组最后一个元素
+      if (
+        newIndex < 0 ||
+        newIndex > chatRoomMessagesListAndRealtime.value.length - 1
+      ) {
+        return chatRoomMessagesListAndRealtime.value.length - 1
+      }
+      return newIndex
+    })()
+    // 新的TopCursor的index
+    const indexTopCursorNew = (() => {
+      // 计算将增加的数量 indexBottomCursorNew 的值大于 indexBottomCursorNow
+      const willAddItemNumber = indexBottomCursorNew - indexBottomCursorNow
+      // 计算增加后的总数量
+      const AddedArrayLength =
+        chatRoomMessagesLimitList.value.length + willAddItemNumber
+      // 判断是否超出，未超出，返回 'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      if (AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig) {
+        return 'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      }
+      // 超出，根据indexBottomCursorNew计算indexTopCursorNew，index肯定不会小于0，其实不必担心index不合法
+      const newIndex =
+        indexBottomCursorNew -
+        (chatRoomMessagesLimitShowItemMaxNumberConfig - 1)
+      if (
+        newIndex < 0 ||
+        newIndex > chatRoomMessagesListAndRealtime.value.length - 1
+      ) {
+        return 0
+      }
+      return newIndex
+    })()
+
+    // 获取游标值
+    const valTopCursorNew = (() => {
+      // 未超出，则 chatRoomMessagesLimitTopCursor 不用改，返回当前值即可
+      if (
+        indexTopCursorNew ===
+        'AddedArrayLength <= chatRoomMessagesLimitShowItemMaxNumberConfig'
+      ) {
+        return chatRoomMessagesLimitTopCursor.value
+      }
+      // 超出，即根据刚刚得到indexTopCursorNew获取
+      return chatRoomMessagesListAndRealtime.value[indexTopCursorNew].id
+    })()
+    const valBottomCursorNew = (() => {
+      // indexBottomCursorNew 为数组中最后一个，则返回null
+      if (
+        indexBottomCursorNew ===
+        chatRoomMessagesListAndRealtime.value.length - 1
+      ) {
+        return null
+      }
+      // 正常，即根据刚刚得到indexBottomCursorNew获取
+      return chatRoomMessagesListAndRealtime.value[indexBottomCursorNew].id
+    })()
+
+    console.log(props.refScrollWarp?.scrollHeight)
+    console.log(props.refScrollWarp?.scrollTop)
+
+    // 调用回调函数 beforeLimitCursorUpdate
+    data.beforeLimitCursorUpdate()
+
+    // 为显示限制游标赋值
+    chatRoomMessagesLimitTopCursor.value = valTopCursorNew
+    chatRoomMessagesLimitBottomCursor.value = valBottomCursorNew
+  })({
+    // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
+    beforeLimitCursorUpdate: () => {
+      chatScrollCaptureSnapshot = chatScrollCaptureSnapshotBeforeMessageChange()
+    },
+  })
+
+  if (chatScrollCaptureSnapshot == null) {
+    return
+  }
   // 处理聊天滚动（在消息变动后）
   chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
 }
@@ -397,6 +535,7 @@ const {
               "
             ></ChatMessage>
           </div>
+          <ElButton @click="testPbPageBottom">pb分页测试</ElButton>
         </div>
       </template>
       <template #bar>
