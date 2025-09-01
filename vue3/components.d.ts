@@ -26,6 +26,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
+    PocketTitle: typeof import('./src/components/pocket/PocketTitle.vue')['default']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
     RiMailLine: typeof import('@remixicon/vue')['RiMailLine']
     RiMoonLine: typeof import('@remixicon/vue')['RiMoonLine']

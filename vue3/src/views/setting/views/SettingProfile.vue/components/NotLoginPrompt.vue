@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
+import PocketTitle from '@/components/pocket/PocketTitle.vue'
 
 defineProps<{
   showContentTrueCol2FalseCol1: boolean
@@ -17,9 +18,8 @@ const i18nStore = useI18nStore()
         'mt-16 text-5xl': showContentTrueCol2FalseCol1,
         'mt-10 text-3xl': !showContentTrueCol2FalseCol1,
       }"
-      class="gradient-text wrap-long-text mb-3 select-none py-2 text-center font-bold"
     >
-      {{ i18nStore.t('appNameI18n')() }}
+      <PocketTitle></PocketTitle>
     </div>
     <div class="wrap-long-text my-5 text-center text-lg font-bold">
       <!-- 当前未登录，登录后可查看更多内容 -->
