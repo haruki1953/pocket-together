@@ -2,80 +2,16 @@
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
 import { layoutSettingPageConfig } from '@/config'
-// 监视 DOM，检测尺寸
-import { useWindowSize, useIntersectionObserver } from '@vueuse/core'
+import { useWindowSize } from '@vueuse/core'
 import type { HomeCardType } from './types'
 // 瀑布流
 import MasonryWall from '@yeger/vue-masonry-wall'
 
+// 实现无限滚动的 hooks
+import { useHomeScroll } from '@/composables/Home-CardScroll'
+
 // 全部卡片
 const AllCard = ref<HomeCardType[]>([])
-const DisplayCards = ref<HomeCardType[]>([])
-// 每次显示数量
-const PAGE_SIZE = 9
-// 绑定哨兵
-const loadMoreCards = ref(null)
-// 加载锁，为了在 DOM 出现前加载出图片
-const cardImgLoading = ref(false)
-
-// 辅助函数，为每个图片创建加载任务，待所有任务完成后再统一返回
-const loadImage = (urls: string[]) => {
-  // 为每个链接创建一个承诺总和成一个组
-  const promises = urls.map((url) => {
-    return new Promise((resolve) => {
-      const imgdesu = new Image()
-      imgdesu.onload = resolve
-      imgdesu.onerror = resolve
-      imgdesu.src = url
-    })
-  })
-  return Promise.all(promises)
-}
-
-// 加载更多卡片，异步
-const loadMore = async () => {
-  // 在加载图片就别执行 DOM 加载操作
-  if (cardImgLoading.value) return
-  // 检查是否还有更多卡片可以加载
-  if (DisplayCards.value.length >= AllCard.value.length) {
-    stop()
-    return
-  }
-  // 满足以上条件，加载中，上锁
-  cardImgLoading.value = true
-  // 头索引
-  const statCards = DisplayCards.value.length
-  // 尾索引
-  const endCards = statCards + PAGE_SIZE
-  // 添加新卡片(根据头尾索引)
-  const nextCards = AllCard.value.slice(statCards, endCards)
-  if (nextCards.length > 0) {
-    const imageUrlsLoad = nextCards
-      .map((carddesu) => carddesu.coverUrl)
-      .filter(Boolean)
-    await loadImage(imageUrlsLoad)
-  }
-  // DisplayCards.value.push(...nextCards)
-  // 数组覆盖
-  DisplayCards.value = [...DisplayCards.value, ...nextCards]
-  cardImgLoading.value = false
-}
-
-// 调用 useIntersectionObserver
-const { stop } = useIntersectionObserver(
-  loadMoreCards,
-  // 监视 DOM 进入屏幕回调
-  ([{ isIntersecting }]) => {
-    if (isIntersecting) {
-      loadMore()
-    }
-  }
-)
-
-onMounted(() => {
-  DisplayCards.value = AllCard.value.slice(0, PAGE_SIZE)
-  // loadMore()
-})
 
 // 导入本地图片
 import cover1 from './img/cover1.jpg'
@@ -95,9 +31,7 @@ const titles = [
   '测试标题：这是一个精心设计的、用来占据更多垂直空间的、长度适中的测试专用描述性文字。',
   '测试标题：我很短很短很短',
   '测试标题：短',
-  '测试标题：这个标题特别长，长到需要换好几行才能显示得下，就是为了测试瀑布流的错落效果而存在的，它存在的唯一目的就是尽可能地拉长这个卡片的高度',
   '测试标题：这是一个比大多数标题都要长一些的描述，我们期望它能有效测试出自适应能力',
-  '测试标题：这是一个非常非常非常非常长的、专门用来撑开卡片高度的、毫无实际意义的、特别特别无聊的、不建议你读下去的、纯粹为了前端布局测试而存在的字符串，它应该会占据大量的空间。',
   '测试标题：普普通通的标题长度而已',
   '测试标题：不是最短吧',
 ]
@@ -153,6 +87,8 @@ for (let i = 0; i < 40; i++) {
     isFavorited: false, // 初始化收藏状态
   })
 }
+
+const { DisplayCards, loadMoreCards } = useHomeScroll(AllCard)
 
 // 切换收藏状态的函数
 const toggleFavorite = (room: HomeCardType) => {
@@ -219,7 +155,7 @@ const smallScreenCards = computed(() => {
     <MasonryWall
       class="px-2"
       :items="smallScreenCards"
-      :columnWidth="200"
+      :columnWidth="210"
       :gap="6"
       :keyMapper="(item) => item.id"
     >

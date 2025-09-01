@@ -430,3 +430,18 @@ export function imageLoadImageFromBlobService(
     img.src = fileUrl
   })
 }
+
+// 函数12：预加载一组图片 URL
+export const imagePreloadFromUrlsService = (
+  urls: string[]
+): Promise<void[]> => {
+  const promises = urls.map((url) => {
+    return new Promise<void>((resolve) => {
+      const img = new Image()
+      img.onload = () => resolve()
+      img.onerror = () => resolve() // Resolve on error as well to not break Promise.all
+      img.src = url
+    })
+  })
+  return Promise.all(promises)
+}

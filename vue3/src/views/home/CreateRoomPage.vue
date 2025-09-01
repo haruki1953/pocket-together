@@ -125,6 +125,7 @@ function removeTag(index: number) {
           <!-- 编辑标题 -->
           <input
             v-model="roomTitle"
+            maxlength="60"
             type="text"
             placeholder="单击此处输入标题"
             class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"

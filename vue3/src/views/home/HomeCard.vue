@@ -26,9 +26,9 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
     </div>
     <!-- 底部 -->
     <div
-      class="relative h-max w-full bg-color-background-soft p-4 group-hover/card:bg-gray-100 dark:group-hover/card:bg-neutral-800"
+      class="relative h-max w-full bg-color-background-soft p-4 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] group-hover/card:bg-gray-100 dark:group-hover/card:bg-neutral-800"
     >
-      <h3 class="font-bold text-gray-800 dark:text-gray-100">
+      <h3 class="line-clamp-3 font-bold text-gray-800 dark:text-gray-100">
         {{ home.title }}
       </h3>
 
