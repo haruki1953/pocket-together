@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import PocketTitle from '@/components/pocket/PocketTitle.vue'
+import { useI18nStore } from '@/stores'
 
-const menuItems = ref([
-  { id: 'all', text: '全部房间' },
-  { id: 'search', text: '搜索房间' },
-  { id: 'favorites', text: '收藏房间' },
+const i18nStore = useI18nStore()
+
+const menuItems = computed(() => [
+  { id: 'all', text: i18nStore.t('homeMenuAllRooms')() },
+  { id: 'search', text: i18nStore.t('homeMenuSearchRooms')() },
+  { id: 'favorites', text: i18nStore.t('homeMenuFavoriteRooms')() },
 ])
 </script>
 
@@ -44,7 +47,7 @@ const menuItems = ref([
           <div
             class="mt-2 text-sm font-medium text-gray-500 transition-colors group-hover/add:text-blue-500 dark:text-gray-400"
           >
-            创建新房间
+            {{ i18nStore.t('homeMenuCreateRoom')() }}
           </div>
         </div>
       </div>

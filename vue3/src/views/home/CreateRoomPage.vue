@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RiArrowLeftSLine } from '@remixicon/vue'
+import { useI18nStore } from '@/stores'
+
+const i18nStore = useI18nStore()
 
 const roomTitle = ref('')
 const roomDescription = ref('')
@@ -40,7 +43,9 @@ function removeTag(index: number) {
       >
         <RiArrowLeftSLine class="h-6 w-6" />
       </button>
-      <h1 class="text-lg font-semibold">创建房间</h1>
+      <h1 class="text-lg font-semibold">
+        {{ i18nStore.t('createRoomTitle')() }}
+      </h1>
       <div class="w-8" />
     </header>
 
@@ -50,10 +55,10 @@ function removeTag(index: number) {
         <div class="space-y-5">
           <div>
             <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-300">
-              信息编辑
+              {{ i18nStore.t('createRoomEditInfo')() }}
             </h2>
             <p class="text-gray-500 dark:text-gray-400">
-              这是您的房间被其他人看到的样子
+              {{ i18nStore.t('createRoomEditInfoDesc')() }}
             </p>
           </div>
 
@@ -118,8 +123,12 @@ function removeTag(index: number) {
                 />
               </circle>
             </svg>
-            <p class="mt-2 text-lg font-semibold">请上传封面图片</p>
-            <p class="text-sm">支持 JPG, PNG, WEBP 等多种格式</p>
+            <p class="mt-2 text-lg font-semibold">
+              {{ i18nStore.t('createRoomUploadCover')() }}
+            </p>
+            <p class="text-sm">
+              {{ i18nStore.t('createRoomUploadCoverDesc')() }}
+            </p>
           </div>
 
           <!-- 编辑标题 -->
@@ -127,14 +136,14 @@ function removeTag(index: number) {
             v-model="roomTitle"
             maxlength="60"
             type="text"
-            placeholder="单击此处输入标题"
+            :placeholder="i18nStore.t('createRoomPlaceholderTitle')()"
             class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
 
           <!-- 编辑简介 -->
           <textarea
             v-model="roomDescription"
-            placeholder="单击此处输入简介"
+            :placeholder="i18nStore.t('createRoomPlaceholderDesc')()"
             rows="5"
             class="w-full resize-none rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
           />
@@ -144,7 +153,7 @@ function removeTag(index: number) {
             <input
               v-model="newTag"
               type="text"
-              placeholder="单击输入文本后按 Enter 创建标签"
+              :placeholder="i18nStore.t('createRoomPlaceholderTags')()"
               class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"
               @keydown.enter.prevent="addTag"
             />
@@ -171,10 +180,10 @@ function removeTag(index: number) {
           <!-- 房间预览文本 -->
           <div>
             <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-300">
-              预览
+              {{ i18nStore.t('createRoomPreview')() }}
             </h2>
             <p class="text-gray-500 dark:text-gray-400">
-              这是您的房间被其他人看到的样子
+              {{ i18nStore.t('createRoomEditInfoDesc')() }}
             </p>
             <!-- 视觉上的区域限制容器 -->
             <div
@@ -224,24 +233,26 @@ function removeTag(index: number) {
             <h2
               class="mt-4 text-2xl font-bold text-cyan-600 dark:text-gray-300"
             >
-              房间设置
+              {{ i18nStore.t('createRoomRoomSettings')() }}
             </h2>
             <div class="mt-4">
               <div
                 class="mt-4 flex items-center justify-between rounded-lg bg-blue-100 p-4 shadow-sm dark:bg-gray-800"
               >
-                <span>人数限制</span>
-                <span class="text-gray-500 dark:text-gray-400"
-                  >不限制 | 7人</span
-                >
+                <span>{{ i18nStore.t('createRoomLimitUsers')() }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{
+                  i18nStore.t('createRoomUserLimitStatus')(7)
+                }}</span>
               </div>
               <div
                 class="mt-4 flex items-center justify-between rounded-lg bg-blue-100 p-4 shadow-sm dark:bg-gray-800"
               >
-                <span>密码限制</span>
-                <span class="text-gray-500 dark:text-gray-400"
-                  >已设置四位密码</span
-                >
+                <span>{{ i18nStore.t('createRoomLimitPassword')() }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{
+                  i18nStore.t('createRoomPasswordStatus')(
+                    i18nStore.t('passwordStatusSet')()
+                  )
+                }}</span>
               </div>
             </div>
           </div>
@@ -258,7 +269,7 @@ function removeTag(index: number) {
             "
             class="mt-6 py-4 text-white shadow-lg"
           >
-            创建房间 &gt;
+            {{ i18nStore.t('createRoomSubmitButton')() }}
           </ElButton>
         </div>
       </div>

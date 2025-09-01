@@ -1,11 +1,13 @@
 import { i18nMessagesDatePart } from './date'
 import { appNameI18n } from './dependencies'
 import type { I18nLocaleType } from './dependencies'
+import { i18nMessagesHomePart } from './home'
 import { i18nMessagesLoginPart } from './login'
 import { i18nMessagesNotificationPart } from './notification'
 import { i18nMessagesPagePart } from './page'
 import { i18nMessagesRegisterPart } from './register'
 import { i18nMessagesSettingPart } from './setting'
+import { i18nMessagesTagsPart } from './tags'
 
 export type I18nMessagesSatisfiesType = Record<
   string,
@@ -19,6 +21,10 @@ export type I18nMessagesSatisfiesType = Record<
 // 还需要确保每组函数类型是一样的，这个只能自己注意了
 export const i18nMessages = {
   appNameI18n,
+  // 主页相关部分
+  ...i18nMessagesHomePart,
+  // 标签相关部分
+  ...i18nMessagesTagsPart,
   // 页面相关部分
   ...i18nMessagesPagePart,
   // 登录相关部分

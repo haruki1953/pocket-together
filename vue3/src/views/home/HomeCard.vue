@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { HomeCardType } from './types'
+import { useI18nStore } from '@/stores'
+import type { I18nMessagesKeyType } from '@/config/i18n'
+
+const i18nStore = useI18nStore()
 
 const emit = defineEmits<{
   (e: 'toggleFavorite', home: HomeCardType): void
@@ -50,12 +54,12 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
           size="small"
           effect="light"
         >
-          {{ tag }}
+          {{ i18nStore.t(tag as I18nMessagesKeyType)() }}
         </ElTag>
       </div>
       <!-- 在线人数 -->
       <div class="mb-1 mt-3 flex items-center font-bold text-gray-400">
-        0 人在线
+        {{ i18nStore.t('homeCardPeopleOnline')(0) }}
       </div>
     </div>
 

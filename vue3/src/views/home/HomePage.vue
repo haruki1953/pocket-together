@@ -38,14 +38,14 @@ const titles = [
 
 // 2. 补充测试数据
 const sampleTags = [
-  '电影',
-  '游戏',
-  '学习',
-  '音乐',
-  '旅行',
-  '动漫',
-  '助眠',
-  '聊天',
+  'tagMovie',
+  'tagGame',
+  'tagStudy',
+  'tagMusic',
+  'tagTravel',
+  'tagAnime',
+  'tagASMR',
+  'tagChat',
 ]
 
 // 使用导入的本地图片
