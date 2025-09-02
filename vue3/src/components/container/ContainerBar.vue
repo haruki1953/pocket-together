@@ -5,7 +5,7 @@
 import { useElementSize, useWindowSize } from '@vueuse/core'
 
 const props = defineProps<{
-  /** bottomHeight测量的高度会有延时，如果需要立即测量滚动高度旧会导致问题，此时可以通过此参数指定默认高度 */
+  /** bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 */
   defaultBarHeight?: number
 }>()
 
