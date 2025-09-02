@@ -14,7 +14,7 @@ const menuItems = computed(() => [
 
 <template>
   <div
-    class="group transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
+    class="group h-max w-full transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft p-4 shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100"
   >
     <!-- 标题 -->
     <!-- 虽然反直觉，但我让他在小屏模式下字体更大了一点 -->

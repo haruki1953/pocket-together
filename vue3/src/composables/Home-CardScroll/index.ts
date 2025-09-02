@@ -6,7 +6,7 @@ import type { HomeCardType } from '@/views/home/types'
 export function useHomeScroll(AllCard: Ref<HomeCardType[]>) {
   const DisplayCards = ref<HomeCardType[]>([])
   // 每次显示数量
-  const PAGE_SIZE = 8
+  const PAGE_SIZE = 9
   // 绑定哨兵
   const loadMoreCards = ref<HTMLElement | null>(null)
   // 加载锁，为了在 DOM 出现前加载出图片
