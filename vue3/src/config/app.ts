@@ -30,6 +30,17 @@ export const chatRoomMessagesLimitLoadMoreMaxItemNumberConfig = 40 as const
 /** 聊天页消息显示数量限制，显示消息的最大数量 */
 export const chatRoomMessagesLimitShowItemMaxNumberConfig = 80 as const
 
+/** 聊天页加载更多，滚动顶部触发阈值（单位：px） */
+export const chatRoomMessagesShowMoreTopThresholdConfig = 10 as const
+/** 聊天页加载更多，滚动底部触发阈值（单位：px） */
+export const chatRoomMessagesShowMoreBottomThresholdConfig = 10 as const
+/** 聊天页加载更多，滚动触发监视间隔控制，单位毫秒 */
+export const chatRoomMessagesShowMoreWatchScrollIntervalMsConfig = 100 as const
+/** 聊天页加载更多，显示更多处理之前的延迟，单位毫秒 */
+export const chatRoomMessagesShowMoreBeforeDelayMsConfig = 100 as const
+/** 聊天页加载更多，显示更多处理之后的延迟，单位毫秒 */
+export const chatRoomMessagesShowMoreAfterDelayMsConfig = 100 as const
+
 /**
  * 聊天页 消息合并显示 消息的最大时间差（单位秒）
  * 10分钟

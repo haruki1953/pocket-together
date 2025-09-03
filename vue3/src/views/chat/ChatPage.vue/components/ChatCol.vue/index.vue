@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { useChatRoomMessagesInfiniteQuery } from '@/queries'
-import {
-  generateRandomIntegerBetween,
-  generateRandomKey,
-  watchUntilSourceCondition,
-} from '@/utils'
+import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
 import { pbMessagesSendChatApi } from '@/api'
-import { useScroll } from '@vueuse/core'
 import { ChatInputBar, ChatMessage } from './dependencies'
 import {
   useChatDataProcessMessages,
   useChatScrollMessageChange,
+  useChatScrollToShowMore,
   useChatShowLimitControl,
   useChatShowMoreOnTopOrBottom,
 } from './composables'
+import { useI18nStore } from '@/stores'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -86,6 +82,12 @@ const {
   chatShowMoreOnTop,
   // 聊天底部加载更多
   chatShowMoreOnBottom,
+  // 是否正在加载更多
+  isShowMoreRunning,
+  // 聊天顶部是否有未显示的
+  isChatTopHasMore,
+  // 聊天底部是否有未显示的
+  isChatBottomHasMore,
 } = useChatShowMoreOnTopOrBottom({
   chatRoomMessagesListAndRealtime,
   chatRoomMessagesLimitList,
@@ -96,15 +98,14 @@ const {
   chatScrollAdjustPositionAfterMessageChange,
 })
 
-// 测试，查询下一页
-const testPbPage = async () => {
-  chatShowMoreOnTop()
-}
+/** 封装了聊天页滚动触发在顶部或底部显示更多的功能 */
+useChatScrollToShowMore({
+  props,
+  chatShowMoreOnTop,
+  chatShowMoreOnBottom,
+})
 
-// 测试，查询上一页（控制显示限制）
-const testPbPageBottom = async () => {
-  chatShowMoreOnBottom()
-}
+const i18nStore = useI18nStore()
 
 // 测试批量添加消息
 const testPbSend = async () => {
@@ -126,8 +127,29 @@ const testPbSend = async () => {
     <ContainerBar :defaultBarHeight="72">
       <template #default>
         <div class="mb-1 mt-6">
-          <ElButton @click="testPbPage">pb分页测试</ElButton>
-          <ElButton @click="testPbSend">pb批量消息</ElButton>
+          <!-- <ElButton @click="testPbPage">pb分页测试</ElButton> -->
+          <!-- <ElButton @click="testPbSend">pb批量消息</ElButton> -->
+          <div
+            v-if="isChatTopHasMore"
+            class="mt-[-24px] flex items-center justify-center"
+          >
+            <ElButton
+              class="chat-show-more-button top"
+              round
+              size="small"
+              text
+              type="primary"
+              :loading="isShowMoreRunning"
+              @click="chatShowMoreOnTop"
+            >
+              <template v-if="isShowMoreRunning">
+                {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
+              </template>
+              <template v-else>
+                {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
+              </template>
+            </ElButton>
+          </div>
           <!-- 聊天栏 -->
           <div v-if="chatRoomMessagesForShow != null">
             <!-- 消息 -->
@@ -159,7 +181,28 @@ const testPbSend = async () => {
               "
             ></ChatMessage>
           </div>
-          <ElButton @click="testPbPageBottom">pb分页测试</ElButton>
+          <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->
+          <div
+            v-if="isChatBottomHasMore"
+            class="flex items-center justify-center"
+          >
+            <ElButton
+              class="chat-show-more-button bottom"
+              round
+              size="small"
+              text
+              type="primary"
+              :loading="isShowMoreRunning"
+              @click="chatShowMoreOnBottom"
+            >
+              <template v-if="isShowMoreRunning">
+                {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
+              </template>
+              <template v-else>
+                {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
+              </template>
+            </ElButton>
+          </div>
         </div>
       </template>
       <template #bar>
@@ -172,4 +215,15 @@ const testPbSend = async () => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.chat-show-more-button {
+  min-width: 50%;
+  &.is-loading:before {
+    // background-color: transparent;
+    background-color: var(--color-background-a30);
+  }
+  &.top {
+    border-radius: 0 0 20px 20px;
+  }
+}
+</style>

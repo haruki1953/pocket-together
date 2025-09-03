@@ -1,6 +1,8 @@
 import {
   chatRoomMessagesLimitLoadMoreMaxItemNumberConfig,
   chatRoomMessagesLimitShowItemMaxNumberConfig,
+  chatRoomMessagesShowMoreAfterDelayMsConfig,
+  chatRoomMessagesShowMoreBeforeDelayMsConfig,
 } from '@/config'
 import type {
   ChatRoomMessagesInfiniteQueryType,
@@ -53,7 +55,6 @@ export const useChatShowMoreOnTopOrBottom = (data: {
    * 计算限制游标，赋值
    * ```
    */
-
   // 控制显示限制，让聊天顶部加载更多
   const controlLimitToShowMoreOnTop = async (data: {
     /**
@@ -295,54 +296,126 @@ export const useChatShowMoreOnTopOrBottom = (data: {
     chatRoomMessagesLimitBottomCursor.value = valBottomCursorNew
   }
 
-  /** 聊天顶部加载更多 */
-  const chatShowMoreOnTop = async () => {
-    // TODO: 防止多次调用或 chatRoomMessagesInfiniteQuery.isFetching
+  /** 聊天顶部是否有未显示的 */
+  const isChatTopHasMore = computed(() => {
+    // 没有消息数据，直接返回 false
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      return false
+    }
+    if (chatRoomMessagesLimitList.value == null) {
+      return false
+    }
+    if (
+      chatRoomMessagesInfiniteQuery.hasNextPage.value === false &&
+      chatRoomMessagesLimitList.value.length > 0 &&
+      chatRoomMessagesListAndRealtime.value.length > 0 &&
+      chatRoomMessagesLimitList.value[0].id ===
+        chatRoomMessagesListAndRealtime.value[0].id
+    ) {
+      return false
+    }
+    return true
+  })
+  /** 聊天底部是否有未显示的 */
+  const isChatBottomHasMore = computed(() => {
+    // 已显示最底部的数据，返回
+    if (chatRoomMessagesLimitBottomCursor.value == null) {
+      return false
+    }
+    return true
+  })
 
-    // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
-    let chatScrollCaptureSnapshot = null as ReturnType<
-      typeof chatScrollCaptureSnapshotBeforeMessageChange
-    > | null
-
-    await controlLimitToShowMoreOnTop({
-      // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
-      beforeLimitCursorUpdate: () => {
-        chatScrollCaptureSnapshot =
-          chatScrollCaptureSnapshotBeforeMessageChange()
-      },
-    })
-
-    if (chatScrollCaptureSnapshot == null) {
+  /** 是否正在加载更多 */
+  const isShowMoreRunning = ref(false)
+  // 防止多次调用或 chatRoomMessagesInfiniteQuery.isFetching
+  const preventShowMoreMultipleCalls = async (
+    callback: () => Promise<void>
+  ) => {
+    // 防止多次调用或 chatRoomMessagesInfiniteQuery.isFetching
+    if (chatRoomMessagesInfiniteQuery.isFetching.value === true) {
       return
     }
-    // 处理聊天滚动（在消息变动后）
-    chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
+    if (isShowMoreRunning.value === true) {
+      return
+    }
+    isShowMoreRunning.value = true
+
+    try {
+      // 等待几百毫秒
+      await new Promise((resolve) =>
+        setTimeout(resolve, chatRoomMessagesShowMoreBeforeDelayMsConfig)
+      )
+
+      await callback()
+
+      // 等待几百毫秒
+      await new Promise((resolve) =>
+        setTimeout(resolve, chatRoomMessagesShowMoreAfterDelayMsConfig)
+      )
+    } finally {
+      isShowMoreRunning.value = false
+    }
+  }
+
+  /** 聊天顶部加载更多 */
+  const chatShowMoreOnTop = async () => {
+    await preventShowMoreMultipleCalls(async () => {
+      // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
+      let chatScrollCaptureSnapshot = null as ReturnType<
+        typeof chatScrollCaptureSnapshotBeforeMessageChange
+      > | null
+
+      // 控制显示限制，让聊天顶部加载更多
+      await controlLimitToShowMoreOnTop({
+        // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
+        beforeLimitCursorUpdate: () => {
+          chatScrollCaptureSnapshot =
+            chatScrollCaptureSnapshotBeforeMessageChange()
+        },
+      })
+
+      if (chatScrollCaptureSnapshot == null) {
+        return
+      }
+      // 处理聊天滚动（在消息变动后）
+      await chatScrollAdjustPositionAfterMessageChange(
+        chatScrollCaptureSnapshot
+      )
+    })
   }
 
   /** 聊天底部加载更多 */
   const chatShowMoreOnBottom = async () => {
-    // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
-    let chatScrollCaptureSnapshot = null as ReturnType<
-      typeof chatScrollCaptureSnapshotBeforeMessageChange
-    > | null
+    await preventShowMoreMultipleCalls(async () => {
+      // 处理聊天滚动（在消息变动前），将在下面的回调中被赋值
+      let chatScrollCaptureSnapshot = null as ReturnType<
+        typeof chatScrollCaptureSnapshotBeforeMessageChange
+      > | null
 
-    await controlLimitToShowMoreOnBottom({
-      // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
-      beforeLimitCursorUpdate: () => {
-        chatScrollCaptureSnapshot =
-          chatScrollCaptureSnapshotBeforeMessageChange()
-      },
+      // 控制显示限制，让聊天顶部加载更多
+      await controlLimitToShowMoreOnBottom({
+        // 在显示限制游标被赋值的前一刻，会调用这个函数 也就是显示内容改变的前一刻
+        beforeLimitCursorUpdate: () => {
+          chatScrollCaptureSnapshot =
+            chatScrollCaptureSnapshotBeforeMessageChange()
+        },
+      })
+
+      if (chatScrollCaptureSnapshot == null) {
+        return
+      }
+      // 处理聊天滚动（在消息变动后）
+      await chatScrollAdjustPositionAfterMessageChange(
+        chatScrollCaptureSnapshot
+      )
     })
-
-    if (chatScrollCaptureSnapshot == null) {
-      return
-    }
-    // 处理聊天滚动（在消息变动后）
-    chatScrollAdjustPositionAfterMessageChange(chatScrollCaptureSnapshot)
   }
 
   return {
     chatShowMoreOnTop,
     chatShowMoreOnBottom,
+    isShowMoreRunning,
+    isChatTopHasMore,
+    isChatBottomHasMore,
   }
 }

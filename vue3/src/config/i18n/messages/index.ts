@@ -1,3 +1,4 @@
+import { i18nMessagesChatPart } from './chat'
 import { i18nMessagesDatePart } from './date'
 import { appNameI18n } from './dependencies'
 import type { I18nLocaleType } from './dependencies'
@@ -27,10 +28,12 @@ export const i18nMessages = {
   ...i18nMessagesRegisterPart,
   // 提示信息相关部分
   ...i18nMessagesNotificationPart,
-  // 设置页相关部分
-  ...i18nMessagesSettingPart,
   // 日期相关部分
   ...i18nMessagesDatePart,
+  // 设置页相关部分
+  ...i18nMessagesSettingPart,
+  // 聊天页相关部分
+  ...i18nMessagesChatPart,
 } as const satisfies I18nMessagesSatisfiesType
 
 // 通过类型体操，获取i18nMessages键的类型
