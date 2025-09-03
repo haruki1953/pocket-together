@@ -54,6 +54,7 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
           size="small"
           effect="light"
         >
+          <!-- 暂时不确定 tag 是否要做固定化，忽略此报错 -->
           {{ i18nStore.t(tag as I18nMessagesKeyType)() }}
         </ElTag>
       </div>
