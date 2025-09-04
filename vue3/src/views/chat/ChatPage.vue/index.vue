@@ -34,6 +34,7 @@ const refContainerCol2 = ref<InstanceType<
 <template>
   <div class="chat-page">
     <div v-if="showCol2TrueCol1False" class="container-col2-box">
+      <!-- <div v-if="true" class="container-col2-box"> -->
       <ContainerCol2
         ref="refContainerCol2"
         col1Position="right"

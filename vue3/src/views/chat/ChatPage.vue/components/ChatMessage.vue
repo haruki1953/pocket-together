@@ -9,7 +9,7 @@ import type { ChatRoomMessagesItem } from './ChatCol.vue'
 import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
-import { useTimeAgo } from '@vueuse/core'
+import { onLongPress, useTimeAgo } from '@vueuse/core'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -201,7 +201,7 @@ const messageUserAvatarUrl = computed(() => {
   return pb.files.getURL(
     props.chatRoomMessagesItem.expand.author,
     props.chatRoomMessagesItem.expand.author.avatar,
-    { thumb: fileUserAvatarConfig.thumb100x100f }
+    { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
 
@@ -232,6 +232,27 @@ const timeAgo = useTimeAgo(
     messages: i18nStore.t('useTimeAgoMessages')(),
   }
 )
+
+// 打开消息详情对话框
+const openMessageInfoDialog = () => {
+  console.log('openMessageInfoDialog')
+}
+
+// 处理消息行的长按
+const onLongPressTargetRef = ref<HTMLElement | null>(null)
+onLongPress(
+  onLongPressTargetRef,
+  () => {
+    openMessageInfoDialog()
+  },
+  {
+    delay: 500, // 默认是 1000ms，可自定义
+    modifiers: {
+      prevent: false, // 阻止默认行为，取消，避免影响文字赋值
+      stop: true, // 阻止事件冒泡
+    },
+  }
+)
 </script>
 
 <template>
@@ -246,14 +267,15 @@ const timeAgo = useTimeAgo(
     <div class="mt-1">
       <!-- 头像与消息 -->
       <div
-        class="flex items-stretch gap-1"
+        ref="onLongPressTargetRef"
+        class="avatar-message-box"
         :class="{
           // 消息为当前用户发送，flex-row-reverse使其靠右显示
           'flex-row-reverse': isMessageCurrentUser,
         }"
       >
         <!-- 头像列 -->
-        <div class="min-h-[40px] w-[40px]">
+        <div class="col-avatar">
           <div class="flex h-full flex-col-reverse items-center">
             <!-- 头像 -->
             <div
@@ -271,7 +293,7 @@ const timeAgo = useTimeAgo(
           </div>
         </div>
         <!-- 消息列 -->
-        <div class="flex-1">
+        <div class="col-message">
           <div
             class="flex"
             :class="{
@@ -304,8 +326,17 @@ const timeAgo = useTimeAgo(
             </div>
           </div>
         </div>
-        <!-- 占位 -->
-        <div class="w-[40px]"></div>
+        <!-- 图标列（详情按钮） -->
+        <div class="col-icon">
+          <div class="flex h-full flex-col-reverse items-center justify-center">
+            <div
+              class="more-button cursor-pointer"
+              @click="openMessageInfoDialog"
+            >
+              <RiMoreFill></RiMoreFill>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 用户名与时间 -->
       <div
@@ -336,4 +367,53 @@ const timeAgo = useTimeAgo(
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.avatar-message-box {
+  --avatar-width: 40px;
+  --icon-width: 40px;
+  --gap: 4px;
+
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap);
+
+  .col-avatar {
+    width: var(--avatar-width);
+    min-height: var(--avatar-width);
+  }
+
+  .col-icon {
+    width: var(--icon-width);
+    min-height: var(--icon-width);
+  }
+
+  .col-message {
+    // 限制消息列最大宽度， 40px 为头像列和图标列的宽度， 4px 为间隔宽度
+    max-width: calc(
+      100% - var(--avatar-width) - var(--icon-width) - var(--gap) - var(--gap)
+    );
+  }
+
+  // more-button 默认不显示
+  // 鼠标悬停在整个头像消息行时，会显示 more-button
+  .more-button {
+    // display: none;
+    opacity: 0;
+    transition:
+      opacity 150ms,
+      color 150ms;
+    color: var(--color-text);
+    // 这个是消息按钮的悬停
+    &:hover {
+      color: var(--color-text-soft);
+    }
+  }
+  // 这个是整个头像消息行的悬停
+  &:hover {
+    .more-button {
+      // display: block;
+      opacity: 1;
+    }
+  }
+}
+</style>
