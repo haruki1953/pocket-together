@@ -5,7 +5,7 @@ import { useI18nStore } from '@/stores'
 
 const i18nStore = useI18nStore()
 
-const isSearching = ref(false)
+const isSearching = ref(true)
 
 function isSearchChenging() {
   isSearching.value = !isSearching.value
@@ -34,8 +34,12 @@ const menuItems = computed(() => [
           @click="isSearchChenging"
         >
           <span
-            class="text-base font-semibold transition-all duration-500 ease-in-out"
-            :class="isSearching ? 'opacity-100' : 'opacity-0'"
+            class="text-base font-semibold transition-all duration-700 ease-in-out"
+            :class="
+              isSearching
+                ? 'translate-x-0 opacity-100'
+                : 'translate-x-40 opacity-0'
+            "
             >{{ i18nStore.t('homeMenuSearchRooms')() }}</span
           >
           <div
@@ -45,7 +49,7 @@ const menuItems = computed(() => [
             <i class="ri-search-line"></i>
           </div>
           <input
-            class="absolute h-full flex-1 cursor-pointer bg-white/0 caret-gray-200 transition-all duration-500 ease-in-out placeholder:text-[16px] focus:outline-none"
+            class="absolute h-full w-full flex-1 cursor-pointer bg-white/0 pl-16 caret-gray-200 transition-all duration-700 ease-in-out placeholder:text-[16px] focus:outline-none"
             :class="isSearching ? 'opacity-0' : 'opacity-100'"
             type="text"
             placeholder="Search..."
