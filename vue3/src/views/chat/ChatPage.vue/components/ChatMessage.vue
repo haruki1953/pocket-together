@@ -10,6 +10,7 @@ import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -233,9 +234,22 @@ const timeAgo = useTimeAgo(
   }
 )
 
+const router = useRouter()
+const route = useRoute()
+
+const key = 'dialogMessageId'
+
 // 打开消息详情对话框
 const openMessageInfoDialog = () => {
   console.log('openMessageInfoDialog')
+  router.replace({
+    path: route.path,
+    query: {
+      ...route.query,
+      // 【动态键名】动态设置 query 参数的 key 为 dialogMessageId
+      [key]: props.chatRoomMessagesItem.id,
+    },
+  })
 }
 
 // 处理消息行的长按
