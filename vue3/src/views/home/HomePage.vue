@@ -155,15 +155,15 @@ const smallScreenCards = computed(() => {
     <div ref="loadMoreCards"></div>
   </div>
 
-  <div v-else class="min-h-screen">
+  <div v-else class="min-h-screen p-2">
     <div>
-      <HomeMenu class="mx-2 my-4"></HomeMenu>
+      <HomeMenu class=""></HomeMenu>
     </div>
     <!-- 瀑布流容器 -->
     <MasonryWall
-      class="px-2"
+      class="mt-2"
       :items="smallScreenCards"
-      :columnWidth="210"
+      :columnWidth="190"
       :gap="6"
       :keyMapper="(item) => item.id"
     >

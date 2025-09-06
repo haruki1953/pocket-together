@@ -64,7 +64,7 @@ const menuItems = computed(() => [
         <button
           v-for="item in menuItems"
           :key="item.id"
-          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-900"
+          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
         >
           {{ item.text }}
         </button>
