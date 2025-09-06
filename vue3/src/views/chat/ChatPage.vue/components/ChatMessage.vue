@@ -5,7 +5,10 @@ import {
   chatRoomMessagesDispalyTogetherMaxSecondsConfig,
   fileUserAvatarConfig,
 } from '@/config'
-import type { ChatRoomMessagesItem } from './ChatCol.vue'
+import type {
+  ChatRoomMessagesItem,
+  OpenMessageInfoDialogType,
+} from './ChatCol.vue'
 import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
@@ -22,6 +25,8 @@ const props = defineProps<{
   chatRoomMessagesItemPrevious: ChatRoomMessagesItem | null
   /** 下一条消息 */
   chatRoomMessagesItemNext: ChatRoomMessagesItem | null
+  /** 打开消息详情对话框 */
+  openMessageInfoDialog: OpenMessageInfoDialogType
 }>()
 
 // 响应式的 pb.authStore
@@ -50,32 +55,6 @@ const determineMessageCurrentUserFn = (
 const isMessageCurrentUser = computed(() =>
   determineMessageCurrentUserFn(props.chatRoomMessagesItem)
 )
-
-// /** 上一条消息是否消息为当前用户发送 */
-// const isMessagePreviousCurrentUser = computed(() =>
-//   determineMessageCurrentUserFn(props.chatRoomMessagesItemPrevious)
-// )
-
-// /** 下一条消息是否消息为当前用户发送 */
-// const isMessageNextCurrentUser = computed(() =>
-//   determineMessageCurrentUserFn(props.chatRoomMessagesItemNext)
-// )
-
-// /** 上一条消息的时间间隔 */
-// const messagePreviousBetweenSeconds = computed(() =>
-//   compareDatesSafeGetSecondsBetween(
-//     props.chatRoomMessagesItemPrevious?.created,
-//     props.chatRoomMessagesItem.created
-//   )
-// )
-
-// /** 下一条消息的时间间隔 */
-// const messageNextBetweenSeconds = computed(() =>
-//   compareDatesSafeGetSecondsBetween(
-//     props.chatRoomMessagesItem.created,
-//     props.chatRoomMessagesItemNext?.created
-//   )
-// )
 
 /**
  * 判断两条消息是否一起显示
@@ -234,22 +213,12 @@ const timeAgo = useTimeAgo(
   }
 )
 
-const router = useRouter()
-const route = useRoute()
-
-const key = 'dialogMessageId'
-
-// 打开消息详情对话框
-const openMessageInfoDialog = () => {
-  console.log('openMessageInfoDialog')
-  router.replace({
-    path: route.path,
-    query: {
-      ...route.query,
-      // 【动态键名】动态设置 query 参数的 key 为 dialogMessageId
-      [key]: props.chatRoomMessagesItem.id,
-    },
-  })
+// 打开消息详情对话框函数
+const openMessageInfoDialogFn = () => {
+  props.openMessageInfoDialog(
+    props.chatRoomMessagesItem.id,
+    props.chatRoomMessagesItem
+  )
 }
 
 // 处理消息行的长按
@@ -257,7 +226,7 @@ const onLongPressTargetRef = ref<HTMLElement | null>(null)
 onLongPress(
   onLongPressTargetRef,
   () => {
-    openMessageInfoDialog()
+    openMessageInfoDialogFn()
   },
   {
     delay: 500, // 默认是 1000ms，可自定义
@@ -345,7 +314,7 @@ onLongPress(
           <div class="flex h-full flex-col-reverse items-center justify-center">
             <div
               class="more-button cursor-pointer"
-              @click="openMessageInfoDialog"
+              @click="openMessageInfoDialogFn"
             >
               <RiMoreFill></RiMoreFill>
             </div>

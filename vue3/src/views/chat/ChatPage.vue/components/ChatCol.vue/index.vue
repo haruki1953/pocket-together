@@ -119,12 +119,26 @@ const testPbSend = async () => {
     })
   }
 }
+
+// 消息详情对话框
+const refMessageInfoDialog = ref<InstanceType<typeof MessageInfoDialog> | null>(
+  null
+)
+
+// 打开消息详情对话框，类型和refMessageInfoDialog导出的一致
+const openMessageInfoDialog: NonNullable<
+  typeof refMessageInfoDialog.value
+>['openMessageInfoDialog'] = (messageId, messageQueryData) => {
+  refMessageInfoDialog.value?.openMessageInfoDialog(messageId, messageQueryData)
+}
+// eslint-disable-next-line prettier/prettier
+export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
 </script>
 
 <template>
   <div>
     <!-- 消息详情对话框 -->
-    <MessageInfoDialog></MessageInfoDialog>
+    <MessageInfoDialog ref="refMessageInfoDialog"></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
     <ContainerBar :defaultBarHeight="72">
@@ -159,6 +173,7 @@ const testPbSend = async () => {
             <ChatMessage
               v-for="(item, index) in chatRoomMessagesForShow"
               :key="item.id"
+              :openMessageInfoDialog="openMessageInfoDialog"
               :chatRoomMessagesItem="item"
               :chatRoomMessagesItemPrevious="
                 (() => {

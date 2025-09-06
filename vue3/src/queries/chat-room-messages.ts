@@ -1,6 +1,6 @@
-import { useInfiniteQuery } from '@tanstack/vue-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/vue-query'
 import { type MessagesResponse } from '@/lib'
-import { pbMessagesListRoomCursorApi } from '@/api'
+import { pbMessagesGetOneApi, pbMessagesListRoomCursorApi } from '@/api'
 import { queryKeys } from './query-keys'
 import { queryConfig } from '@/config'
 import { queryRetryPbNetworkError } from './query-retry'
@@ -34,4 +34,37 @@ export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
   })
 
   return infiniteQuery
+}
+
+/** 聊天页消息 GetOne */
+export const useChatRoomMessagesGetOneQuery = (data: {
+  messageId: ComputedRef<string | null | undefined>
+}) => {
+  const { messageId } = data
+
+  const query = useQuery({
+    // 查询依赖，需 messageId
+    enabled: computed(() => messageId.value != null),
+    // 查询键（响应式）
+    queryKey: computed(() => queryKeys.chatRoomMessagesGetOne(messageId.value)),
+    queryFn: async () => {
+      // 无消息id，抛出错误
+      if (messageId.value == null) {
+        throw new Error('dialogMessageId.value == null')
+      }
+      // pb请求
+      const pbRes = await pbMessagesGetOneApi(messageId.value)
+
+      // TODO 持久化
+
+      return pbRes
+    },
+    // TODO 占位数据
+    // 缓存时间
+    staleTime: queryConfig.staleTimeLong,
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
+  })
+
+  return query
 }

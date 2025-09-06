@@ -1,78 +1,14 @@
 <script setup lang="ts">
+import { pbMessagesGetOneApi } from '@/api'
 import { useDialogOptimization } from '@/composables'
+import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
 import { generateRandomClassName } from '@/utils'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useWindowSize } from '@vueuse/core'
-import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute()
-const router = useRouter()
-
-// URL查询参数，将查看的消息的id，将控制对话框的显示
-const dialogMessageId = computed(() => {
-  const queryDialogMessageId = route.query['dialogMessageId']
-  if (queryDialogMessageId == null) {
-    return null
-  }
-  if (typeof queryDialogMessageId === 'string') {
-    return queryDialogMessageId
-  }
-  if (queryDialogMessageId.length > 0) {
-    if (queryDialogMessageId[0] != null) {
-      return queryDialogMessageId[0]
-    }
-  }
-  return null
-})
-
+// 还是通过普通的ref设置dialogMessageId比较好
+const dialogMessageId = ref<string | null>(null)
 const dialogVisible = ref(false)
-
-const closeRunning = ref(false)
-
-watch(
-  dialogMessageId,
-  () => {
-    if (closeRunning.value === true) {
-      return
-    }
-    if (dialogMessageId.value != null) {
-      dialogVisible.value = true
-    }
-  },
-  {
-    immediate: true,
-  }
-)
-
-const key = 'dialogMessageId'
-
-watch(dialogVisible, async () => {
-  if (dialogVisible.value === false) {
-    if (closeRunning.value === true) {
-      return
-    }
-    closeRunning.value = true
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
-      router.replace({
-        path: route.path,
-        query: {
-          ...route.query,
-          // 【动态键名】动态设置 query 参数的 key 为 dialogMessageId
-          [key]: undefined,
-        },
-      })
-    } finally {
-      closeRunning.value = false
-    }
-  }
-})
-
-// const dialogVisible = computed(() => {
-//   if (dialogMessageId.value == null) {
-//     return false
-//   }
-//   return true
-// })
 
 const windowSize = useWindowSize()
 const dialogWidth = computed(() => {
@@ -88,6 +24,40 @@ const { open, close } = useDialogOptimization({
   dialogVisible,
   overlayClass,
 })
+
+const queryClient = useQueryClient()
+const openMessageInfoDialog = (
+  messageId: string,
+  // 支持预填数据
+  messageQueryData?: NonNullable<typeof chatRoomMessagesGetOneQuery.data.value>
+) => {
+  // 预填数据
+  if (messageQueryData != null) {
+    // 设置数据
+    queryClient.setQueryData(
+      queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
+      // 确保类型正确
+      messageQueryData satisfies NonNullable<
+        typeof chatRoomMessagesGetOneQuery.data.value
+      >
+    )
+    // // 立即标记为过期，可选。会使打开对话框时再重新请求数据
+    // queryClient.invalidateQueries({
+    //   queryKey: queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
+    // })
+  }
+  dialogMessageId.value = messageId
+  open()
+}
+
+defineExpose({
+  openMessageInfoDialog,
+  close,
+})
+
+const chatRoomMessagesGetOneQuery = useChatRoomMessagesGetOneQuery({
+  messageId: computed(() => dialogMessageId.value),
+})
 </script>
 
 <template>
@@ -102,6 +72,15 @@ const { open, close } = useDialogOptimization({
       <div>
         {{ dialogMessageId }}
       </div>
+      <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
+        {{ chatRoomMessagesGetOneQuery.data.value }}
+      </template>
+      <template v-else>
+        <template v-if="chatRoomMessagesGetOneQuery.isFetching.value === true">
+          获取中
+        </template>
+        <template v-else> 消息不存在 </template>
+      </template>
     </ElDialog>
   </div>
 </template>

@@ -211,3 +211,19 @@ export const pbMessagesSubscribeAllApi = async (
       }
     )
 }
+
+/** messages集合 getOne */
+export const pbMessagesGetOneApi = async (messageId: string) => {
+  // expand 字符串
+  const expand = messagesExpand
+
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .getOne<MessagesResponseWidthExpand>(messageId, {
+      expand,
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+  console.log(pbRes)
+  return pbRes
+}

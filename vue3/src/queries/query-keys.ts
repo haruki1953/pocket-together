@@ -10,4 +10,9 @@ export const queryKeys = {
     'chatRoomMessagesInfinite',
     roomId,
   ],
+  /** chatRoomMessagesGetOne */
+  chatRoomMessagesGetOne: (messageId?: string | null) => [
+    'chatRoomMessagesGetOne',
+    messageId,
+  ],
 }
