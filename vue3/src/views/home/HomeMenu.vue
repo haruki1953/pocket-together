@@ -2,14 +2,19 @@
 import { ref, computed } from 'vue'
 import PocketTitle from '@/components/pocket/PocketTitle.vue'
 import { useI18nStore } from '@/stores'
+import { onClickOutside } from '@vueuse/core'
 
 const i18nStore = useI18nStore()
 
 const isSearching = ref(true)
+const searchStatus = ref(null)
 
-function isSearchChenging() {
-  isSearching.value = !isSearching.value
-}
+// function isSearchChenging() {
+//   isSearching.value = !isSearching.value
+// }
+onClickOutside(searchStatus, () => {
+  isSearching.value = true
+})
 
 const menuItems = computed(() => [
   { id: 'all', text: i18nStore.t('homeMenuAllRooms')() },
@@ -30,8 +35,9 @@ const menuItems = computed(() => [
     <div class="mb-4 flex items-center justify-between">
       <div class="flex h-full w-full flex-col gap-4">
         <div
+          ref="searchStatus"
           class="relative flex flex-1 cursor-pointer flex-row items-center justify-center overflow-hidden rounded-3xl bg-gray-100 py-2 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-900"
-          @click="isSearchChenging"
+          @click="isSearching = false"
         >
           <span
             class="text-base font-semibold transition-all duration-700 ease-in-out"
