@@ -114,6 +114,7 @@ const isDrawerOpen = ref(false)
 // 我现在看到你了！
 const isHomeMenu = ref(null)
 let menuKieruTimer: number | null = null
+let inRTimer: number | null = null // 新增：用于 inR 的计时器
 
 // 左侧按钮
 useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
@@ -128,12 +129,19 @@ useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
 })
 
 function inL() {
+  // 如果 inR 的计时器正在运行，则清除它
+  if (inRTimer !== null) {
+    clearTimeout(inRTimer)
+    inRTimer = null
+  }
+
   menuKieru.value = true
 }
 
 function inR() {
-  setTimeout(() => {
+  inRTimer = setTimeout(() => {
     menuKieru.value = false
+    inRTimer = null // 计时器执行完毕后，将 ID 设为 null
   }, 2000)
 }
 
