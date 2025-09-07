@@ -2,6 +2,7 @@
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
 import LeftMenuTab from './LeftMenuTab.vue'
+import LeftHomeMenu from './LeftHomeMenu.vue'
 import { layoutSettingPageConfig } from '@/config'
 import { useWindowSize } from '@vueuse/core'
 import { useIntersectionObserver } from '@vueuse/core'
@@ -22,7 +23,6 @@ import cover3 from './img/cover3.jpg'
 import cover4 from './img/cover4.jpg'
 import cover5 from './img/cover5.jpg'
 import cover6 from './img/blood.png'
-import { set } from 'zod/v4'
 
 const titles = [
   '测试标题：极短',
@@ -99,6 +99,12 @@ const toggleFavorite = (room: HomeCardType) => {
   room.isFavorited = !room.isFavorited
 }
 
+// 左侧菜单的开关
+const isLeftMenuOpen = ref(false)
+function onLeftMenuDisplay() {
+  isLeftMenuOpen.value = !isLeftMenuOpen.value
+}
+
 // 检测进入页面
 const isReady = ref(false)
 // 检测 Menu 离开页面
@@ -128,7 +134,7 @@ function inL() {
 function inR() {
   setTimeout(() => {
     menuKieru.value = false
-  }, 1000)
+  }, 2000)
 }
 
 onMounted(() => {
@@ -157,22 +163,43 @@ const smallScreenCards = computed(() => {
 
 <template>
   <div v-if="showContentTrueCol2FalseCol1" class="min-h-screen p-4 pt-6 sm:p-6">
-    <!-- 左侧按钮 -->
+    <!-- 左侧 -->
     <div
-      class="fixed left-0 top-0 z-50 flex h-screen w-16 items-center pl-8"
+      class="fixed left-0 top-0 z-50 flex h-screen w-6 items-center"
       @mouseover="inL"
       @mouseleave="inR"
     >
-      <Transition
-        enterActiveClass="transition-all duration-500 ease-out"
-        enterFromClass="-translate-x-full opacity-0"
-        enterToClass="translate-x-0 opacity-100"
-        leaveActiveClass="transition-all duration-200 ease-in"
-        leaveFromClass="translate-x-0 opacity-100"
-        leaveToClass="-translate-x-full opacity-0"
+      <div
+        class="absolute left-6 flex h-16 w-20 items-center justify-center rounded-r-full pl-4"
       >
-        <LeftMenuTab v-if="menuKieru" :isDrawerOpen></LeftMenuTab>
-      </Transition>
+        <Transition
+          enterActiveClass="transition-all duration-500 ease-out"
+          enterFromClass="-translate-x-full opacity-0"
+          enterToClass="translate-x-0 opacity-100"
+          leaveActiveClass="transition-all duration-200 ease-in"
+          leaveFromClass="translate-x-0 opacity-100"
+          leaveToClass="-translate-x-full opacity-0"
+        >
+          <LeftMenuTab
+            v-show="menuKieru"
+            :isDrawerOpen
+            class="z-50 transition-all duration-500 ease-in-out"
+            :class="{ 'translate-x-[320px]': isLeftMenuOpen }"
+            :isMenuOpen="isLeftMenuOpen"
+            @on-left-menu-display="onLeftMenuDisplay"
+          ></LeftMenuTab>
+        </Transition>
+        <Transition
+          enterActiveClass="transition-all duration-500 ease-out"
+          enterFromClass="-translate-x-full opacity-0"
+          enterToClass="translate-x-0 opacity-100"
+          leaveActiveClass="transition-all duration-200 ease-in"
+          leaveFromClass="translate-x-0 opacity-100"
+          leaveToClass="-translate-x-full opacity-0"
+        >
+          <LeftHomeMenu v-if="isLeftMenuOpen"></LeftHomeMenu>
+        </Transition>
+      </div>
     </div>
     <!-- 瀑布流容器 -->
     <MasonryWall
