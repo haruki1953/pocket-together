@@ -32,8 +32,8 @@ const profileAvatarUrl = computed(() => {
   }
   return pb.files.getURL(
     profileQuery.data.value,
-    profileQuery.data.value.avatar,
-    { thumb: fileUserAvatarConfig.thumb200x200f }
+    profileQuery.data.value.avatar
+    // { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
 
