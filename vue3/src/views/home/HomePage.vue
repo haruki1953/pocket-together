@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
+import LeftMenuTab from './LeftMenuTab.vue'
 import { layoutSettingPageConfig } from '@/config'
 import { useWindowSize } from '@vueuse/core'
+import { useIntersectionObserver } from '@vueuse/core'
 import type { HomeCardType } from './types'
 // 瀑布流
 import MasonryWall from '@yeger/vue-masonry-wall'
@@ -88,6 +90,7 @@ for (let i = 0; i < 40; i++) {
   })
 }
 
+// 把分配好的 AllCard 发给解析函数
 const { DisplayCards, loadMoreCards } = useHomeScroll(AllCard)
 
 // 切换收藏状态的函数
@@ -97,6 +100,24 @@ const toggleFavorite = (room: HomeCardType) => {
 
 // 检测进入页面
 const isReady = ref(false)
+// 检测 Menu 离开页面
+const menuKieru = ref(false)
+// 抽屉按钮
+const isDrawerOpen = ref(false)
+// 我现在看到你了！
+const isHomeMenu = ref(null)
+let menuKieruTimer: number | null = null
+
+useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
+  if (menuKieruTimer !== null) {
+    clearTimeout(menuKieruTimer)
+  }
+  menuKieru.value = !isIntersecting
+  // 2秒后隐藏它
+  menuKieruTimer = setTimeout(() => {
+    menuKieru.value = false
+  }, 2000)
+})
 
 onMounted(() => {
   setTimeout(() => {
@@ -124,6 +145,17 @@ const smallScreenCards = computed(() => {
 
 <template>
   <div v-if="showContentTrueCol2FalseCol1" class="min-h-screen p-4 pt-6 sm:p-6">
+    <!-- 左侧按钮 -->
+    <Transition
+      enterActiveClass="transition-all duration-500 ease-out"
+      enterFromClass="-translate-x-full opacity-0"
+      enterToClass="translate-x-0 opacity-100"
+      leaveActiveClass="transition-all duration-200 ease-in"
+      leaveFromClass="translate-x-0 opacity-100"
+      leaveToClass="-translate-x-full opacity-0"
+    >
+      <LeftMenuTab v-if="menuKieru" :isDrawerOpen></LeftMenuTab>
+    </Transition>
     <!-- 瀑布流容器 -->
     <MasonryWall
       :items="DisplayCards"
@@ -135,6 +167,7 @@ const smallScreenCards = computed(() => {
         <!-- 菜单卡片 -->
         <HomeMenu
           v-if="item.type === 'menu'"
+          ref="isHomeMenu"
           :key="item.id"
           class="transition-all duration-700 ease-in-out"
           :class="isReady ? 'opacity-100' : 'opacity-0'"
@@ -157,7 +190,7 @@ const smallScreenCards = computed(() => {
 
   <div v-else class="min-h-screen p-2">
     <div>
-      <HomeMenu class=""></HomeMenu>
+      <HomeMenu></HomeMenu>
     </div>
     <!-- 瀑布流容器 -->
     <MasonryWall
