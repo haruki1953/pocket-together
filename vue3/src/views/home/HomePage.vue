@@ -22,6 +22,7 @@ import cover3 from './img/cover3.jpg'
 import cover4 from './img/cover4.jpg'
 import cover5 from './img/cover5.jpg'
 import cover6 from './img/blood.png'
+import { set } from 'zod/v4'
 
 const titles = [
   '测试标题：极短',
@@ -108,6 +109,7 @@ const isDrawerOpen = ref(false)
 const isHomeMenu = ref(null)
 let menuKieruTimer: number | null = null
 
+// 左侧按钮
 useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
   if (menuKieruTimer !== null) {
     clearTimeout(menuKieruTimer)
@@ -118,6 +120,16 @@ useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
     menuKieru.value = false
   }, 2000)
 })
+
+function inL() {
+  menuKieru.value = true
+}
+
+function inR() {
+  setTimeout(() => {
+    menuKieru.value = false
+  }, 1000)
+}
 
 onMounted(() => {
   setTimeout(() => {
@@ -146,16 +158,22 @@ const smallScreenCards = computed(() => {
 <template>
   <div v-if="showContentTrueCol2FalseCol1" class="min-h-screen p-4 pt-6 sm:p-6">
     <!-- 左侧按钮 -->
-    <Transition
-      enterActiveClass="transition-all duration-500 ease-out"
-      enterFromClass="-translate-x-full opacity-0"
-      enterToClass="translate-x-0 opacity-100"
-      leaveActiveClass="transition-all duration-200 ease-in"
-      leaveFromClass="translate-x-0 opacity-100"
-      leaveToClass="-translate-x-full opacity-0"
+    <div
+      class="fixed left-0 top-0 z-50 flex h-screen w-16 items-center pl-8"
+      @mouseover="inL"
+      @mouseleave="inR"
     >
-      <LeftMenuTab v-if="menuKieru" :isDrawerOpen></LeftMenuTab>
-    </Transition>
+      <Transition
+        enterActiveClass="transition-all duration-500 ease-out"
+        enterFromClass="-translate-x-full opacity-0"
+        enterToClass="translate-x-0 opacity-100"
+        leaveActiveClass="transition-all duration-200 ease-in"
+        leaveFromClass="translate-x-0 opacity-100"
+        leaveToClass="-translate-x-full opacity-0"
+      >
+        <LeftMenuTab v-if="menuKieru" :isDrawerOpen></LeftMenuTab>
+      </Transition>
+    </div>
     <!-- 瀑布流容器 -->
     <MasonryWall
       :items="DisplayCards"

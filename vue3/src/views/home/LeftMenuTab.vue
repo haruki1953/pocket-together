@@ -1,24 +1,9 @@
-<script setup lang="ts">
-const emit = defineEmits(['hoverChange'])
-
-// 2. 定义鼠标进入时要调用的函数
-function inL() {
-  emit('hoverChange', true)
-}
-
-function inR() {
-  emit('hoverChange', false)
-}
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div
-    class="fixed left-0 top-0 z-50 flex h-screen w-28 items-center"
-    @mouseover="inL"
-    @mouseleave="inR"
+  <button
+    class="group/left absolute flex h-16 w-16 items-center justify-center rounded-full bg-gray-700/60 backdrop-blur-none transition-all duration-200 ease-in-out hover:backdrop-blur-sm"
   >
-    <div
-      class="h-full w-20 bg-gradient-to-r from-[#181818] via-[#181818]/30 to-[#181818]/0 dark:from-white dark:via-white/30 dark:to-white/0"
-    ></div>
-  </div>
+    <i class="ri-arrow-right-s-line text-4xl"></i>
+  </button>
 </template>
