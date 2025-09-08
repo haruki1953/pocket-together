@@ -27,6 +27,8 @@ declare module 'vue' {
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     RiCircleFill: typeof import('@remixicon/vue')['RiCircleFill']
     RiCloseFill: typeof import('@remixicon/vue')['RiCloseFill']
+    RiEdit2Fill: typeof import('@remixicon/vue')['RiEdit2Fill']
+    RiEditFill: typeof import('@remixicon/vue')['RiEditFill']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
     RiMailLine: typeof import('@remixicon/vue')['RiMailLine']
     RiMoonLine: typeof import('@remixicon/vue')['RiMoonLine']

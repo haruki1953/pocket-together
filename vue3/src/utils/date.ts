@@ -1,6 +1,7 @@
 import { i18nMessages } from '@/config'
 import type { useI18nStore } from '@/stores'
 import type { ConvertSecondsToTimeDurationMessages } from '@/types'
+import { formatDate, useDateFormat, type DateLike } from '@vueuse/core'
 
 /**
  * 比较两个日期字符串，返回先后关系
@@ -199,4 +200,11 @@ export const convertSecondsToTimeDuration = (data: {
   }
 
   return result.length > 0 ? result.join(' ') : `0 ${messages.second}`
+}
+
+/** 格式化时间 'YYYY-MM-DD HH:mm:ss' */
+export const useDateFormatYYYYMMDDHHmmss = (
+  date: MaybeRefOrGetter<DateLike>
+) => {
+  return useDateFormat(date, 'YYYY-MM-DD HH:mm:ss')
 }

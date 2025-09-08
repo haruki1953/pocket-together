@@ -4,7 +4,7 @@ import { useDialogOptimization } from '@/composables'
 import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
 import { pb } from '@/lib'
 import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
-import { generateRandomClassName } from '@/utils'
+import { generateRandomClassName, useDateFormatYYYYMMDDHHmmss } from '@/utils'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { useWindowSize } from '@vueuse/core'
 
@@ -121,13 +121,13 @@ const messageUserName = computed(() => {
       <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
         <!-- {{ chatRoomMessagesGetOneQuery.data.value }} -->
         <!-- 用户信息 + 关闭按钮 -->
-        <div class="flex items-center justify-between">
+        <div class="ml-[15px] flex items-center justify-between">
           <!-- 头像 名称 用户名 -->
           <div class="flex-1 truncate">
             <div class="flex items-center">
               <!-- 头像 -->
               <div
-                class="h-[40px] w-[40px] rounded-full bg-color-background-soft"
+                class="h-[40px] w-[40px] rounded-full border-[2px] border-color-background-soft bg-color-background-soft"
                 :style="{
                   backgroundImage: `url('${messageUserAvatarUrl}')`,
                   backgroundSize: 'cover',
@@ -156,7 +156,53 @@ const messageUserName = computed(() => {
           </div>
         </div>
         <!-- 消息卡片 -->
-        <!-- 操作按钮 -->
+        <div class="mt-[10px]">
+          <div class="flow-root rounded-[20px] bg-color-background-soft">
+            <div class="wrap-long-text mx-[15px] my-[10px]">
+              <!-- 消息 -->
+              <div class="wrap-long-text">
+                {{ chatRoomMessagesGetOneQuery.data.value.content }}
+              </div>
+              <!-- 时间 -->
+              <div class="mt-[5px] flex items-center justify-end">
+                <!-- 已修改图标 是否已修改 -->
+                <div
+                  v-if="
+                    chatRoomMessagesGetOneQuery.data.value.created !==
+                    chatRoomMessagesGetOneQuery.data.value.updated
+                  "
+                  class="mr-[6px] mt-[1px]"
+                >
+                  <ElTooltip
+                    :content="
+                      useDateFormatYYYYMMDDHHmmss(
+                        chatRoomMessagesGetOneQuery.data.value.updated
+                      ).value
+                    "
+                    placement="top"
+                    effect="light"
+                  >
+                    <div>
+                      <RiEditFill
+                        size="12px"
+                        class="text-color-text-soft"
+                      ></RiEditFill>
+                    </div>
+                  </ElTooltip>
+                </div>
+                <!-- 时间 -->
+                <div class="text-[12px] text-color-text-soft">
+                  {{
+                    useDateFormatYYYYMMDDHHmmss(
+                      chatRoomMessagesGetOneQuery.data.value.created
+                    ).value
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 操作按钮 TODO -->
       </template>
       <template v-else>
         <!-- 显示获取中 -->

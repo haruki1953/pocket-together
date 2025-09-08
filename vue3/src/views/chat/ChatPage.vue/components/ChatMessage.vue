@@ -204,9 +204,7 @@ const i18nStore = useI18nStore()
 
 // 时间
 const timeAgo = useTimeAgo(
-  computed(() => {
-    return new Date(props.chatRoomMessagesItem.created)
-  }),
+  computed(() => props.chatRoomMessagesItem.created),
   {
     // i18n
     messages: i18nStore.t('useTimeAgoMessages')(),
