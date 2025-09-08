@@ -24,9 +24,11 @@ const menuItems = computed(() => [
 
 <template>
   <div
-    class="fixed left-0 top-0 z-40 h-screen w-screen bg-gray-800/10 bg-white shadow-xl shadow-black/40 backdrop-blur-sm"
+    class="fixed left-0 top-0 z-40 h-screen w-screen bg-gray-800/10 shadow-xl shadow-black/40 backdrop-blur-sm"
   >
-    <div class="h-full w-[350px] bg-gray-800/90 p-4 backdrop-blur-md">
+    <div
+      class="h-full w-[360px] bg-gray-200/90 p-4 shadow-xl shadow-black/30 backdrop-blur-md dark:bg-gray-800/90"
+    >
       <div
         class="flex flex-col text-[46px] md:text-[40px] lg:text-[40px] xl:text-[42px]"
       >
@@ -73,16 +75,16 @@ const menuItems = computed(() => [
       <RouterLink :to="{ name: 'CreateRoomPage' }">
         <!-- 添加房间 -->
         <div
-          class="group/add mt-10 transform-gpu cursor-pointer break-inside-avoid rounded-2xl border-2 border-dashed border-gray-300 p-6 transition-all hover:border-blue-400 hover:bg-gray-100 hover:shadow-xl dark:border-gray-500 dark:hover:border-blue-500 dark:hover:bg-gray-800/50"
+          class="group/add mt-10 transform-gpu cursor-pointer break-inside-avoid rounded-2xl border-2 border-dashed border-gray-400 bg-gray-200/0 p-6 transition-all duration-200 ease-in hover:border-blue-300 hover:bg-gray-200/50 hover:shadow-xl dark:border-gray-500 dark:hover:border-blue-500 dark:hover:bg-gray-800/50"
         >
           <div class="flex flex-col items-center justify-center">
             <div
-              class="text-4xl text-gray-400 transition-colors group-hover/add:text-blue-500"
+              class="text-4xl text-gray-500 transition-colors group-hover/add:text-blue-500 dark:text-gray-400"
             >
               +
             </div>
             <div
-              class="mt-2 text-lg font-medium text-gray-500 transition-colors group-hover/add:text-blue-500 dark:text-gray-400"
+              class="mt-2 text-lg font-medium text-gray-600 transition-colors group-hover/add:text-blue-500 dark:text-gray-400"
             >
               {{ i18nStore.t('homeMenuCreateRoom')() }}
             </div>

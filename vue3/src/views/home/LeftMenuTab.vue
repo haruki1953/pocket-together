@@ -9,7 +9,7 @@ const emit = defineEmits(['onLeftMenuDisplay'])
 <template>
   <div class="">
     <button
-      class="group/left flex h-16 w-16 items-center justify-center rounded-full bg-gray-700/60 backdrop-blur-none transition-all duration-200 ease-in-out hover:backdrop-blur-sm"
+      class="group/left flex h-16 w-16 items-center justify-center rounded-full bg-gray-300/60 backdrop-blur-none transition-all duration-200 ease-in-out hover:backdrop-blur-sm dark:bg-gray-700/60"
       @click="emit('onLeftMenuDisplay')"
     >
       <i

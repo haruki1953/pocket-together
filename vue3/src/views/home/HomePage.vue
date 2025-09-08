@@ -192,7 +192,7 @@ const smallScreenCards = computed(() => {
             v-show="menuKieru || isLeftMenuOpen"
             :isDrawerOpen
             class="z-50 transition-all duration-500 ease-in-out"
-            :class="{ 'translate-x-[320px]': isLeftMenuOpen }"
+            :class="{ 'translate-x-[340px]': isLeftMenuOpen }"
             :isMenuOpen="isLeftMenuOpen"
             @on-left-menu-display="onLeftMenuDisplay"
           ></LeftMenuTab>
