@@ -16,44 +16,6 @@ import { useHomeScroll } from '@/composables/Home-CardScroll'
 // 全部卡片
 const AllCard = ref<HomeCardType[]>([])
 
-// 导入本地图片
-import cover1 from './img/cover1.jpg'
-import cover2 from './img/cover2.jpg'
-import cover3 from './img/cover3.jpg'
-import cover4 from './img/cover4.jpg'
-import cover5 from './img/cover5.jpg'
-import cover6 from './img/blood.png'
-
-const titles = [
-  '测试标题：极短',
-  '测试标题：这是一个中等长度的描述，我就想看看换行表现',
-  '测试标题：那很短了',
-  '测试标题：这是一个为了测试而存在的三行长度的标题，目的是观察其在瀑布流布局更好的错落表现',
-  '测试标题：这是一个稍微长一点的，就长了那么一点点而已',
-  '测试标题：我还没那么短但还是稍微短点',
-  '测试标题：这是一个精心设计的、用来占据更多垂直空间的、长度适中的测试专用描述性文字。',
-  '测试标题：我很短很短很短',
-  '测试标题：短',
-  '测试标题：这是一个比大多数标题都要长一些的描述，我们期望它能有效测试出自适应能力',
-  '测试标题：普普通通的标题长度而已',
-  '测试标题：不是最短吧',
-]
-
-// 2. 补充测试数据
-const sampleTags = [
-  'tagMovie',
-  'tagGame',
-  'tagStudy',
-  'tagMusic',
-  'tagTravel',
-  'tagAnime',
-  'tagASMR',
-  'tagChat',
-]
-
-// 使用导入的本地图片
-const imageUrls = [cover1, cover2, cover3, cover4, cover5, cover6]
-
 // 先添加菜单卡片
 AllCard.value.push({
   id: 'menu-card',
@@ -66,30 +28,18 @@ AllCard.value.push({
   isFavorited: false,
 })
 
-for (let i = 0; i < 40; i++) {
-  // 随机生成几个标签
-  const tags = []
-  const tagsCount = Math.floor(Math.random() * 4)
-  const availableTags = [...sampleTags]
-  for (let j = 0; j < tagsCount; j++) {
-    const randomIndex = Math.floor(Math.random() * availableTags.length)
-    tags.push(availableTags.splice(randomIndex, 1)[0])
-  }
-
-  // 随机选择一个标题
-  const randomTitleIndex = Math.floor(Math.random() * titles.length)
-
-  AllCard.value.push({
-    id: i,
-    type: 'card',
-    coverUrl: imageUrls[i % 6],
-    title: titles[randomTitleIndex],
-    creator: `用户-${i + 1}`,
-    avatarUrl: `https://i.pravatar.cc/40?u=b${i + 1}`,
-    tags: tags,
-    isFavorited: false, // 初始化收藏状态
-  })
-}
+// TODO: 接入 PocketBase 获取房间数据
+// const rooms = await pb.collection('rooms').getFullList();
+// AllCard.value.push(...rooms.map(room => ({
+//   id: room.id,
+//   type: 'card',
+//   coverUrl: room.coverUrl,
+//   title: room.title,
+//   creator: room.creator,
+//   avatarUrl: room.avatarUrl,
+//   tags: room.tags,
+//   isFavorited: room.isFavorited,
+// })));
 
 // 把分配好的 AllCard 发给解析函数
 const { DisplayCards, loadMoreCards } = useHomeScroll(AllCard)
@@ -100,21 +50,21 @@ const toggleFavorite = (room: HomeCardType) => {
 }
 
 // 左侧菜单的开关
-const isLeftMenuOpen = ref(false)
+const isLeftMenuOpen = ref<boolean>(false)
 function onLeftMenuDisplay() {
   isLeftMenuOpen.value = !isLeftMenuOpen.value
 }
 
 // 检测进入页面
-const isReady = ref(false)
+const isReady = ref<boolean>(false)
 // 检测 Menu 离开页面
-const menuKieru = ref(false)
+const menuKieru = ref<boolean>(false)
 // 抽屉按钮
-const isDrawerOpen = ref(false)
+const isDrawerOpen = ref<boolean>(false)
 // 我现在看到你了！
-const isHomeMenu = ref(null)
+const isHomeMenu = ref<HTMLElement | null>(null)
 let menuKieruTimer: number | null = null
-let inRTimer: number | null = null // 新增：用于 inR 的计时器
+let inRTimer: number | null = null
 
 // 左侧按钮
 useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
