@@ -4,8 +4,16 @@ import { useDialogOptimization } from '@/composables'
 import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
 import { pb } from '@/lib'
 import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
+import { useAuthStore } from '@/stores'
 import { generateRandomClassName, useDateFormatYYYYMMDDHHmmss } from '@/utils'
+import {
+  RiBookmarkLine,
+  RiDiscussLine,
+  RiEditLine,
+  RiLink,
+} from '@remixicon/vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
+import { propsToString } from '@unhead/vue/server'
 import { useWindowSize } from '@vueuse/core'
 
 // 还是通过普通的ref设置dialogMessageId比较好
@@ -57,6 +65,7 @@ defineExpose({
   close,
 })
 
+// 当前消息数据 useChatRoomMessagesGetOneQuery
 const chatRoomMessagesGetOneQuery = useChatRoomMessagesGetOneQuery({
   messageId: computed(() => dialogMessageId.value),
 })
@@ -105,6 +114,27 @@ const messageUserName = computed(() => {
   }
   // 有名称，返回名称
   return chatRoomMessagesGetOneQuery.data.value.expand.author.name
+})
+
+// 响应式的 pb.authStore
+const authStore = useAuthStore()
+
+// 消息是否由当前用户发送
+const isMessageSendByCurrentUser = computed(() => {
+  // 未登录，直接返回false
+  if (!authStore.isValid || authStore.record?.id == null) {
+    return false
+  }
+  // 无消息数据，直接返回false
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    return false
+  }
+  // author === authStore.record.id 即为当前用户，返回true
+  if (chatRoomMessagesGetOneQuery.data.value.author === authStore.record.id) {
+    return true
+  }
+  // 否则返回false
+  return false
 })
 </script>
 
@@ -203,6 +233,52 @@ const messageUserName = computed(() => {
           </div>
         </div>
         <!-- 操作按钮 TODO -->
+        <div class="mr-[10px] mt-[5px]">
+          <div class="flex items-center justify-end">
+            <!-- 复制消息链接 -->
+            <div
+              class="flow-root cursor-pointer transition-colors hover:text-el-primary"
+            >
+              <div class="m-[5px]">
+                <RiLink size="24px"></RiLink>
+              </div>
+            </div>
+            <!-- 收藏 -->
+            <div
+              class="flow-root cursor-pointer transition-colors hover:text-el-warning"
+            >
+              <div class="m-[5px]">
+                <RiBookmarkLine size="24px"></RiBookmarkLine>
+              </div>
+            </div>
+            <!-- 回复 -->
+            <div
+              class="flow-root cursor-pointer transition-colors hover:text-el-success"
+            >
+              <div class="m-[5px]">
+                <RiDiscussLine size="24px"></RiDiscussLine>
+              </div>
+            </div>
+            <template v-if="isMessageSendByCurrentUser">
+              <!-- 修改 -->
+              <div
+                class="flow-root cursor-pointer transition-colors hover:text-el-info"
+              >
+                <div class="m-[5px]">
+                  <RiEditLine size="24px"></RiEditLine>
+                </div>
+              </div>
+              <!-- 删除 -->
+              <div
+                class="flow-root cursor-pointer transition-colors hover:text-el-danger"
+              >
+                <div class="m-[5px]">
+                  <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
       </template>
       <template v-else>
         <!-- 显示获取中 -->
