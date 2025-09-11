@@ -32,6 +32,7 @@ export const useListAuthMethodsQuery = () => {
       return undefined
     }),
     // 缓存时间
+    gcTime: queryConfig.gcTimeLong,
     staleTime: queryConfig.staleTimeLong,
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,

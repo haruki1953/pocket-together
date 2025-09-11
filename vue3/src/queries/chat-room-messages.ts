@@ -27,8 +27,10 @@ export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
       return lastPage.items[lastPage.items.length - 1]
     },
     // 缓存时间
-    staleTime: queryConfig.staleTimeLong,
-    // staleTime: 10,
+    // gcTimeInfinity staleTimeStatic 避免useInfiniteQuery的多页refetch
+    // note\笔记\250911-避免useInfiniteQuery的多页refetch.md
+    gcTime: queryConfig.gcTimeInfinity,
+    staleTime: queryConfig.staleTimeStatic,
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,
   })
@@ -61,6 +63,7 @@ export const useChatRoomMessagesGetOneQuery = (data: {
     },
     // TODO 占位数据
     // 缓存时间
+    gcTime: queryConfig.gcTimeLong,
     staleTime: queryConfig.staleTimeLong,
     // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,

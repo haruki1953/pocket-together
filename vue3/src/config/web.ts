@@ -39,20 +39,37 @@ export const fetchConfig = {
 } as const
 
 export const queryConfig = {
+  /** 30秒 */
+  staleTimeShort: 30 * 1000,
+  /** 5分钟 */
+  staleTimeMedium: 5 * 60 * 1000,
+  /** 1小时 */
+  staleTimeLong: 60 * 60 * 1000,
   /**
-   * 30秒
+   * 将 staleTime 设置为 Infinity 直到查询被 手动失效 之前，都不会触发重新获取。
    */
-  staleTimeShort: 30000,
+  staleTimeInfinity: Infinity,
   /**
-   * 5分钟 1000 * 60 * 5
+   * 将 staleTime 设置为 'static'，即使查询被 手动失效，也永远不会触发重新获取。
+   * 即使调用 `invalidateQueries()` 或 `refetch()`，也不会触发请求，
+   * 应调用 `removeQueries()` 再调用 `refetch()` 来重新请求。
+   * 主要用于避免useInfiniteQuery的多页refetch。
    */
-  staleTimeMedium: 300000,
+  staleTimeStatic: 'static',
+  // gcTime 比 staleTime 长一些比较好
+  /** 60秒 */
+  gcTimeShort: 60 * 1000,
+  /** 10分钟 */
+  gcTimeMedium: 10 * 60 * 1000,
+  /** 2小时 */
+  gcTimeLong: 2 * 60 * 60 * 1000,
   /**
-   * 1小时 1000 * 60 * 60
+   * 将 gcTime 设置为 Infinity ，将禁用垃圾回收。
    */
-  staleTimeLong: 3600000,
+  gcTimeInfinity: Infinity,
+
   /**
    * 重试2次（共请求3次）
    */
   retry: 2,
-}
+} as const

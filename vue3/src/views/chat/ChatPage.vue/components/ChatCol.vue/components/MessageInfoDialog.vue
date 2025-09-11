@@ -52,9 +52,9 @@ const openMessageInfoDialog = (
       >
     )
     // // 立即标记为过期，可选。会使打开对话框时再重新请求数据
-    // queryClient.invalidateQueries({
-    //   queryKey: queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
-    // })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
+    })
   }
   dialogMessageId.value = messageId
   open()
