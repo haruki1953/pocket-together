@@ -157,7 +157,7 @@ const isMessageSendByCurrentUser = computed(() => {
             <div class="flex items-center">
               <!-- 头像 -->
               <div
-                class="h-[40px] w-[40px] rounded-full border-[2px] border-color-background-soft bg-color-background-soft"
+                class="h-[44px] w-[44px] rounded-full border-[2px] border-color-background-soft bg-color-background-soft"
                 :style="{
                   backgroundImage: `url('${messageUserAvatarUrl}')`,
                   backgroundSize: 'cover',
@@ -190,7 +190,7 @@ const isMessageSendByCurrentUser = computed(() => {
           <div class="flow-root rounded-[20px] bg-color-background-soft">
             <div class="wrap-long-text mx-[15px] my-[10px]">
               <!-- 消息 -->
-              <div class="wrap-long-text">
+              <div class="wrap-long-text text-[16px]">
                 {{ chatRoomMessagesGetOneQuery.data.value.content }}
               </div>
               <!-- 时间 -->

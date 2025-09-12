@@ -300,7 +300,7 @@ onLongPress(
               }"
             >
               <div class="flex-1">
-                <div class="wrap-long-text mx-3 my-2">
+                <div class="wrap-long-text mx-3 my-2 text-[15px]">
                   {{ chatRoomMessagesItem.content }}
                 </div>
               </div>
