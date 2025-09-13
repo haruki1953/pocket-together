@@ -230,3 +230,8 @@ $dark-steps: 1, 2, 3, 4, 5, 6, 7, 8, 9;
     color: var(--color-text);
   }
 }
+
+// // 对话框始终保留滚动条，避免内容高度改变滚动条出现导致的位移（暂不必要，对于内容高度会变化的对话框才需要）
+// .el-overlay-dialog.el-overlay-dialog {
+//   overflow-y: scroll;
+// }
