@@ -1188,7 +1188,7 @@
                 "hidden": false,
                 "id": "file2366146245",
                 "maxSelect": 1,
-                "maxSize": 500000,
+                "maxSize": 5000000,
                 "mimeTypes": [
                     "image/jpeg",
                     "image/png",
@@ -1201,30 +1201,6 @@
                 "system": false,
                 "thumbs": [],
                 "type": "file"
-            },
-            {
-                "hidden": false,
-                "id": "number606229465",
-                "max": null,
-                "min": 1,
-                "name": "coverWidth",
-                "onlyInt": true,
-                "presentable": false,
-                "required": true,
-                "system": false,
-                "type": "number"
-            },
-            {
-                "hidden": false,
-                "id": "number2705033776",
-                "max": null,
-                "min": 1,
-                "name": "coverHeight",
-                "onlyInt": true,
-                "presentable": false,
-                "required": true,
-                "system": false,
-                "type": "number"
             },
             {
                 "cascadeDelete": false,

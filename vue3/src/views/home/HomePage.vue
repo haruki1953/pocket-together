@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// ---
+// 位于: /Users/kippu/KIPPU-Code/GitHub/pocket-together/vue3/src/views/home/HomePage.vue
+
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
 import LeftMenuTab from './LeftMenuTab.vue'
@@ -10,44 +13,90 @@ import type { HomeCardType } from './types'
 // 瀑布流
 import MasonryWall from '@yeger/vue-masonry-wall'
 
-// 实现无限滚动的 hooks
-import { useHomeScroll } from '@/composables/Home-CardScroll'
+// 导入我们创建的查询钩子和 pocketbase 实例
+import { useRoomsInfiniteQuery } from '@/queries/rooms'
+import { pb } from '@/lib'
+import { computed, ref, onMounted } from 'vue'
 
-// 全部卡片
-const AllCard = ref<HomeCardType[]>([])
+// 1. 调用无限查询钩子
+const roomsQuery = useRoomsInfiniteQuery()
 
-// 先添加菜单卡片
-AllCard.value.push({
-  id: 'menu-card',
-  type: 'menu',
-  title: '',
-  coverUrl: '',
-  creator: '',
-  avatarUrl: '',
-  tags: [],
-  isFavorited: false,
+// 2. 使用 computed 属性来处理和转换数据
+const DisplayCards = computed<HomeCardType[]>(() => {
+  // 菜单卡片，我们手动将它放在列表的最前面
+  const menuCard: HomeCardType = {
+    id: 'menu-card',
+    type: 'menu',
+    title: '',
+    coverUrl: '',
+    creator: '',
+    avatarUrl: '',
+    tags: [],
+    isFavorited: false,
+  }
+
+  // 如果 roomsQuery.data.value 不存在 (比如还在加载中)，则只返回菜单卡片
+  if (!roomsQuery.data.value) {
+    return [menuCard]
+  }
+
+  // 3. 扁平化和映射数据
+  const roomCards = roomsQuery.data.value.pages.flatMap((page) =>
+    // 遍历每一页中的 'items' (即房间记录)
+    page.items.map((room) => {
+      return {
+        id: room.id,
+        type: 'card',
+        // 修正: 使用最严格、最显式的检查，避免任何lint错误
+        coverUrl:
+          room.cover != null && room.cover !== ''
+            ? pb.files.getURL(room, room.cover)
+            : '',
+        title: room.title,
+        // 修正: 对 any 类型使用 typeof 进行显式检查
+        creator:
+          typeof room.expand?.author?.name === 'string' &&
+          room.expand.author.name !== ''
+            ? room.expand.author.name
+            : '未知用户',
+        // 修正: 对 avatar 也使用最严格的检查
+        avatarUrl:
+          room.expand?.author?.avatar != null &&
+          room.expand.author.avatar !== ''
+            ? pb.files.getURL(room.expand.author, room.expand.author.avatar)
+            : '',
+        // 修正: rooms 集合中没有 tags 字段，因此直接提供一个空数组
+        tags: [],
+        isFavorited: false,
+      } satisfies HomeCardType
+    })
+  )
+
+  // 将菜单卡片和从服务器获取的房间卡片组合在一起返回
+  return [menuCard, ...roomCards]
 })
 
-// TODO: 接入 PocketBase 获取房间数据
-// const rooms = await pb.collection('rooms').getFullList();
-// AllCard.value.push(...rooms.map(room => ({
-//   id: room.id,
-//   type: 'card',
-//   coverUrl: room.coverUrl,
-//   title: room.title,
-//   creator: room.creator,
-//   avatarUrl: room.avatarUrl,
-//   tags: room.tags,
-//   isFavorited: room.isFavorited,
-// })));
+// 4. 实现无限滚动
+// 保留你原有的变量名 loadMoreCards，并用它作为触发器
+const loadMoreCards = ref<HTMLElement | null>(null)
 
-// 把分配好的 AllCard 发给解析函数
-const { DisplayCards, loadMoreCards } = useHomeScroll(AllCard)
+// 使用 useIntersectionObserver 来观察这个 div 元素是否进入了视口。
+useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
+  if (
+    isIntersecting &&
+    roomsQuery.hasNextPage.value &&
+    !roomsQuery.isFetchingNextPage.value
+  ) {
+    roomsQuery.fetchNextPage()
+  }
+})
 
-// 切换收藏状态的函数
+// 切换收藏状态的函数 (这个保持不变)
 const toggleFavorite = (room: HomeCardType) => {
   room.isFavorited = !room.isFavorited
 }
+
+// --- 以下是原有的UI交互逻辑，保持不变 ---
 
 // 左侧菜单的开关
 const isLeftMenuOpen = ref<boolean>(false)
@@ -79,7 +128,6 @@ useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
 })
 
 function inL() {
-  // 如果 inR 的计时器正在运行，则清除它
   if (inRTimer !== null) {
     clearTimeout(inRTimer)
     inRTimer = null
