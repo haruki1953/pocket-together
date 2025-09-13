@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
-import { pbMessagesSendChatApi } from '@/api'
+import {
+  pbMessagesSendChatApi,
+  type PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import {
   useChatDataProcessMessages,
   useChatScrollMessageChange,
@@ -9,9 +12,14 @@ import {
   useChatShowMoreOnTopOrBottom,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
+
 const props = defineProps<{
   /** 滚动容器元素 */
   refScrollWarp?: HTMLDivElement
+  twowayPositioningCursorData: PMLRCApiParameters0DataPageParamNonNullable | null
+  twowayPositioningCursorDataSet: (
+    data: PMLRCApiParameters0DataPageParamNonNullable | null
+  ) => void
 }>()
 // 供封装的组件或组合式函数使用
 export type PropsType = typeof props

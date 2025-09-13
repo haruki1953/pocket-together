@@ -6,7 +6,7 @@ export const queryKeys = {
   /** usePbCollectionConfigQuery */
   pbCollectionConfig: () => ['pbCollectionConfig'] as const,
   /** useChatRoomMessagesInfiniteQuery */
-  chatRoomMessagesInfinite: (roomId: string) => [
+  chatRoomMessagesInfinite: (roomId: string | null) => [
     'chatRoomMessagesInfinite',
     roomId,
   ],

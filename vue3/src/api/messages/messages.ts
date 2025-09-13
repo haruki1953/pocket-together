@@ -1,0 +1,82 @@
+import { chatRoomMessagesInfiniteQueryPerPageNumberConfig } from '@/config'
+import {
+  Collections,
+  onPbResErrorStatus401AuthClear,
+  pb,
+  type Create,
+  type FilesResponse,
+  type MessagesRecord,
+  type MessagesResponse,
+  type RoomsResponse,
+  type UsersResponse,
+} from '@/lib'
+import type { Group, KeyValueMirror } from '@/types'
+import { fetchWithTimeoutPreferred } from '@/utils'
+import type { RecordSubscription } from 'pocketbase'
+import { messagesExpand, type MessagesResponseWidthExpand } from './base'
+
+/** messages集合 发送消息 需登录 */
+export const pbMessagesSendChatApi = async (data: { content: string }) => {
+  // 未登录，抛出错误
+  if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+    throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
+  }
+
+  // 准备数据
+  const createData: Create<Collections.Messages> = {
+    author: pb.authStore.record.id,
+    content: data.content,
+  }
+
+  // 通过 pocketbase SDK 请求
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .create(createData, {
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+    .catch((error) => {
+      // 出现鉴权失败则清除authStore
+      onPbResErrorStatus401AuthClear(error)
+      throw error
+    })
+  return pbRes
+}
+
+/** messages集合 消息实时订阅 */
+export const pbMessagesSubscribeAllApi = async (
+  callback: (data: RecordSubscription<MessagesResponseWidthExpand>) => void
+) => {
+  // expand 字符串
+  const expand = messagesExpand
+
+  return pb
+    .collection(Collections.Messages)
+    .subscribe<MessagesResponseWidthExpand>(
+      '*',
+      (e) => {
+        callback(e)
+      },
+      {
+        expand,
+        // timeout为5000
+        fetch: fetchWithTimeoutPreferred,
+      }
+    )
+}
+
+/** messages集合 getOne */
+export const pbMessagesGetOneApi = async (messageId: string) => {
+  // expand 字符串
+  const expand = messagesExpand
+
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .getOne<MessagesResponseWidthExpand>(messageId, {
+      expand,
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+  console.log(pbRes)
+  return pbRes
+}

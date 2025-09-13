@@ -1,19 +1,36 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/vue-query'
 import { type MessagesResponse } from '@/lib'
-import { pbMessagesGetOneApi, pbMessagesListRoomCursorApi } from '@/api'
+import {
+  pbMessagesGetOneApi,
+  pbMessagesListRoomCursorApi,
+  type PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import { queryKeys } from './query-keys'
 import { queryConfig } from '@/config'
 import { queryRetryPbNetworkError } from './query-retry'
 
 /** 聊天页消息 游标分页无限查询 */
-export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
+export const useChatRoomMessagesInfiniteQuery = (data: {
+  roomId: ComputedRef<string | null>
+}) => {
   const { roomId } = data
 
   const infiniteQuery = useInfiniteQuery({
-    queryKey: queryKeys.chatRoomMessagesInfinite(roomId),
-    queryFn: async ({ pageParam }: { pageParam: MessagesResponse | null }) => {
+    // 查询依赖，需 roomId
+    enabled: computed(() => roomId.value != null),
+    queryKey: computed(() => queryKeys.chatRoomMessagesInfinite(roomId.value)),
+    queryFn: async ({
+      pageParam,
+    }: {
+      pageParam: PMLRCApiParameters0DataPageParamNonNullable | null
+    }) => {
+      // 无 roomId ，抛出错误
+      if (roomId.value == null) {
+        throw new Error('dialogMessageId.value == null')
+      }
+
       const pbRes = await pbMessagesListRoomCursorApi({
-        roomId,
+        roomId: roomId.value,
         pageParam,
       })
 
@@ -40,7 +57,7 @@ export const useChatRoomMessagesInfiniteQuery = (data: { roomId: string }) => {
 
 /** 聊天页消息 GetOne */
 export const useChatRoomMessagesGetOneQuery = (data: {
-  messageId: ComputedRef<string | null | undefined>
+  messageId: ComputedRef<string | null>
 }) => {
   const { messageId } = data
 

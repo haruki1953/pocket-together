@@ -149,7 +149,11 @@ const isMessageSendByCurrentUser = computed(() => {
     >
       <!-- 显示消息数据 -->
       <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
-        <!-- {{ chatRoomMessagesGetOneQuery.data.value }} -->
+        <!-- 测试 数据显示 -->
+        <div class="wrap-long-text font-mono">
+          {{ JSON.stringify(chatRoomMessagesGetOneQuery.data.value, null, 2) }}
+        </div>
+
         <!-- 用户信息 + 关闭按钮 -->
         <div class="ml-[15px] flex items-center justify-between">
           <!-- 头像 名称 用户名 -->
