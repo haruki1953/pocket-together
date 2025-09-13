@@ -10,15 +10,16 @@ import { layoutSettingPageConfig } from '@/config'
 import { useWindowSize } from '@vueuse/core'
 import { useIntersectionObserver } from '@vueuse/core'
 import type { HomeCardType } from './types'
-// 瀑布流
+// 瀑布流库
 import MasonryWall from '@yeger/vue-masonry-wall'
 
-// 导入我们创建的查询钩子和 pocketbase 实例
+// 导入钩子和 pocketbase 实例
 import { useRoomsInfiniteQuery } from '@/queries/rooms'
-import { pb } from '@/lib'
 import { computed, ref, onMounted } from 'vue'
+import type { RoomsResponse, UsersResponse } from '@/lib'
+import { pb } from '@/lib'
 
-// 1. 调用无限查询钩子
+// 调用勾子命名为 roomsQuery
 const roomsQuery = useRoomsInfiniteQuery()
 
 // 2. 使用 computed 属性来处理和转换数据
@@ -40,36 +41,41 @@ const DisplayCards = computed<HomeCardType[]>(() => {
     return [menuCard]
   }
 
-  // 3. 扁平化和映射数据
+  // 扁平化和映射数据
   const roomCards = roomsQuery.data.value.pages.flatMap((page) =>
-    // 遍历每一页中的 'items' (即房间记录)
-    page.items.map((room) => {
-      return {
-        id: room.id,
-        type: 'card',
-        // 修正: 使用最严格、最显式的检查，避免任何lint错误
-        coverUrl:
-          room.cover != null && room.cover !== ''
-            ? pb.files.getURL(room, room.cover)
-            : '',
-        title: room.title,
-        // 修正: 对 any 类型使用 typeof 进行显式检查
-        creator:
-          typeof room.expand?.author?.name === 'string' &&
-          room.expand.author.name !== ''
-            ? room.expand.author.name
-            : '未知用户',
-        // 修正: 对 avatar 也使用最严格的检查
-        avatarUrl:
-          room.expand?.author?.avatar != null &&
-          room.expand.author.avatar !== ''
-            ? pb.files.getURL(room.expand.author, room.expand.author.avatar)
-            : '',
-        // 修正: rooms 集合中没有 tags 字段，因此直接提供一个空数组
-        tags: [],
-        isFavorited: false,
-      } satisfies HomeCardType
-    })
+    // 遍历每一页中的 'items' ，为 room 加上类型判断
+    page.items.map(
+      // (room: RoomsResponse & { expand: { author: UsersResponse } }) => {
+      // 舍弃手动拼接，使用范型传参（规避类型报错）
+      (room: RoomsResponse<unknown, { author: UsersResponse }>) => {
+        // 把复杂的前缀封装进 author
+        const author = room.expand?.author
+        return {
+          id: room.id,
+          type: 'card',
+          // 使用最严格、最显式的检查，避免 lint 错误
+          coverUrl:
+            room.cover != null && room.cover !== ''
+              ? pb.files.getURL(room, room.cover)
+              : '',
+          title: room.title,
+          // 在 HomePage 的 map 回调中，room参数的类型可能被推断为没有 expand 的通用信息的类型
+          // 需要重新显式提供类型
+          creator:
+            typeof author?.name === 'string' && author.name !== ''
+              ? author.name
+              : '未知用户',
+          // 对 avatar 也使用最严格的检查
+          avatarUrl:
+            author != null && author.avatar != null && author.avatar !== ''
+              ? pb.files.getURL(author, author.avatar)
+              : '',
+          // rooms 集合中没有 tags 字段，直接提供一个空数组
+          tags: [],
+          isFavorited: false,
+        } satisfies HomeCardType
+      }
+    )
   )
 
   // 将菜单卡片和从服务器获取的房间卡片组合在一起返回
@@ -91,12 +97,10 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
   }
 })
 
-// 切换收藏状态的函数 (这个保持不变)
+// 切换收藏状态的函数
 const toggleFavorite = (room: HomeCardType) => {
   room.isFavorited = !room.isFavorited
 }
-
-// --- 以下是原有的UI交互逻辑，保持不变 ---
 
 // 左侧菜单的开关
 const isLeftMenuOpen = ref<boolean>(false)
@@ -112,37 +116,42 @@ const menuKieru = ref<boolean>(false)
 const isDrawerOpen = ref<boolean>(false)
 // 我现在看到你了！
 const isHomeMenu = ref<HTMLElement | null>(null)
-let menuKieruTimer: number | null = null
-let inRTimer: number | null = null
+// 清除倒计时
+let autoHideMenuTimer: number | null = null
 
 // 左侧按钮
 useIntersectionObserver(isHomeMenu, ([{ isIntersecting }]) => {
-  if (menuKieruTimer !== null) {
-    clearTimeout(menuKieruTimer)
+  if (autoHideMenuTimer !== null) {
+    clearTimeout(autoHideMenuTimer)
+    autoHideMenuTimer = null
   }
   menuKieru.value = !isIntersecting
   // 2秒后隐藏它
-  menuKieruTimer = setTimeout(() => {
+  autoHideMenuTimer = setTimeout(() => {
     menuKieru.value = false
+    autoHideMenuTimer = null
   }, 2000)
 })
 
+// 鼠标移入，如果存在消失计时就清除 inretimer
 function inL() {
-  if (inRTimer !== null) {
-    clearTimeout(inRTimer)
-    inRTimer = null
+  if (autoHideMenuTimer !== null) {
+    clearTimeout(autoHideMenuTimer)
+    autoHideMenuTimer = null
   }
 
   menuKieru.value = true
 }
 
+// 鼠标离开，开始计时，把清除 timeout 命名为 inretimer
 function inR() {
-  inRTimer = setTimeout(() => {
+  autoHideMenuTimer = setTimeout(() => {
     menuKieru.value = false
-    inRTimer = null // 计时器执行完毕后，将 ID 设为 null
+    autoHideMenuTimer = null
   }, 2000)
 }
 
+// 入场
 onMounted(() => {
   setTimeout(() => {
     isReady.value = true

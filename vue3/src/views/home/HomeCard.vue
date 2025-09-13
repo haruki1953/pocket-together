@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HomeCardType } from './types'
 import { useI18nStore } from '@/stores'
-import type { I18nMessagesKeyType } from '@/config/i18n'
+// import type { I18nMessagesKeyType } from '@/config/i18n'
 
 const i18nStore = useI18nStore()
 
@@ -9,7 +9,7 @@ const emit = defineEmits<{
   (e: 'toggleFavorite', home: HomeCardType): void
 }>()
 
-const props = defineProps<{
+defineProps<{
   home: HomeCardType
 }>()
 
@@ -55,7 +55,7 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
           effect="light"
         >
           <!-- 暂时不确定 tag 是否要做固定化，忽略此报错 -->
-          {{ i18nStore.t(tag as I18nMessagesKeyType)() }}
+          <!-- {{ i18nStore.t(tag as I18nMessagesKeyType)() }} -->
         </ElTag>
       </div>
       <!-- 在线人数 -->

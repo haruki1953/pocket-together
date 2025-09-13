@@ -158,7 +158,8 @@ export type UsersRecord<Tinfo = unknown> = {
 	verified?: boolean
 }
 
-// Response types include system fields and match responses from the PocketBase API
+// 它首先获取 Record 的所有字段，并用 Required<> 工具类型把所有可选字段都变成必选字段 
+// BaseSystemFields<Texpand>: 然后，它通过 & (交叉类型) 将 RoomsRecord 与 BaseSystemFields 这个类型合并在一起
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
