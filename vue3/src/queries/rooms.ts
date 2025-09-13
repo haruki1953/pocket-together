@@ -5,19 +5,22 @@ import { queryRetryPbNetworkError } from './query-retry'
 
 export const useRoomsInfiniteQuery = () => {
   const query = useInfiniteQuery({
-    // queryKey: 查询的唯一标识符。vue-query会用它来缓存数据。
+    // queryKey: 查询的唯一标识符，vue-query用它来缓存数据
+    // 最终这个 key 会被命名为 ['rooms','list','infinite']
+    // 以后可以扩展相关的 key（详情在 query-keys.ts），此处我们暂时只获取卡片列表（list）
     queryKey: queryKeys.rooms('list', 'infinite'),
 
-    // queryFn: 这是实际执行数据请求的函数。
+    // 实际执行数据请求的函数。
     queryFn: async ({ pageParam }) => {
-      const perPage = 10
-      // 修正: 在调用 getList 时，通过泛型传入 expand 的确切类型
+      const perPage = 8
+      // 调用 getList 时，通过泛型传入 expand 的确切类型
       const result = await pb
         .collection(Collections.Rooms)
+        // author 字段会展开为完整用户信息 UsersResponse（编译类型安全）
         .getList<RoomsResponse<{ author: UsersResponse }>>(pageParam, perPage, {
-          // 根据数据结构，关联用户的字段 author，所以我们 expand 'author'
+          // 关联用户的字段 author
           expand: 'author',
-          sort: '-created', // 按创建时间倒序排列，新的在前面
+          sort: '-created',
         })
       return result
     },
@@ -25,7 +28,7 @@ export const useRoomsInfiniteQuery = () => {
     // initialPageParam: 初始页码。
     initialPageParam: 1,
 
-    // getNextPageParam: 告诉 vue-query 如何计算下一页的页码。
+    // lastPage.page 是当前页码，lastPage.totalPages 是总页数
     getNextPageParam: (lastPage) => {
       if (lastPage.page < lastPage.totalPages) {
         return lastPage.page + 1

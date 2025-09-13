@@ -124,15 +124,15 @@ export type MessagesRecord = {
 	updated?: IsoDateString
 }
 
-export type RoomsRecord = {
+export type RoomsRecord<Ttags = unknown> = {
 	author: RecordIdString
 	cover?: string
-	coverHeight: number
-	coverWidth: number
 	created?: IsoDateString
 	description?: string
 	id: string
+	password?: string
 	playlist?: RecordIdString[]
+	tags?: null | Ttags
 	title: string
 	updated?: IsoDateString
 }
@@ -167,7 +167,7 @@ export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> &
 export type ConfigResponse<Tvalue = unknown, Texpand = unknown> = Required<ConfigRecord<Tvalue>> & BaseSystemFields<Texpand>
 export type FilesResponse<Texpand = unknown> = Required<FilesRecord> & BaseSystemFields<Texpand>
 export type MessagesResponse<Texpand = unknown> = Required<MessagesRecord> & BaseSystemFields<Texpand>
-export type RoomsResponse<Texpand = unknown> = Required<RoomsRecord> & BaseSystemFields<Texpand>
+export type RoomsResponse<Ttags = unknown, Texpand = unknown> = Required<RoomsRecord<Ttags>> & BaseSystemFields<Texpand>
 export type UsersResponse<Tinfo = unknown, Texpand = unknown> = Required<UsersRecord<Tinfo>> & AuthSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
