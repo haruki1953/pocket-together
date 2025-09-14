@@ -9,7 +9,7 @@ import { queryKeys } from './query-keys'
 import { queryConfig } from '@/config'
 import { queryRetryPbNetworkError } from './query-retry'
 
-/** 聊天页消息 游标分页无限查询 */
+/** 聊天页消息 游标分页无限查询 单向 */
 export const useChatRoomMessagesInfiniteQuery = (data: {
   roomId: ComputedRef<string | null>
 }) => {
@@ -54,6 +54,11 @@ export const useChatRoomMessagesInfiniteQuery = (data: {
 
   return infiniteQuery
 }
+
+/** 聊天页消息 游标分页无限查询 双向 TODO */
+export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
+  roomId: ComputedRef<string | null>
+}) => {}
 
 /** 聊天页消息 GetOne */
 export const useChatRoomMessagesGetOneQuery = (data: {

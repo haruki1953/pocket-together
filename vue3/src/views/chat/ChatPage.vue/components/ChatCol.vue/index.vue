@@ -40,14 +40,14 @@ twowayPositioningCursorDataSet({
 <template>
   <div>
     <!-- 双向 -->
-    <template v-if="twowayPositioningCursorData != null">
-      <!-- 双向定位无限查询消息列组件 TODO -->
-    </template>
+    <!-- <template v-if="twowayPositioningCursorData != null"> -->
+    <!-- 双向定位无限查询消息列组件 TODO -->
+    <!-- </template> -->
     <!-- 单向 -->
-    <template v-else>
-      <!-- 单向最新无限查询消息列组件 -->
-      <ChatColOnewayNewest :refScrollWarp="refScrollWarp"></ChatColOnewayNewest>
-    </template>
+    <!-- <template v-else> -->
+    <!-- 单向最新无限查询消息列组件 -->
+    <!-- <ChatColOnewayNewest :refScrollWarp="refScrollWarp"></ChatColOnewayNewest> -->
+    <!-- </template> -->
   </div>
 </template>
 
