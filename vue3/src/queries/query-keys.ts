@@ -1,3 +1,5 @@
+import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
+
 export const queryKeys = {
   /** useProfileQuery */
   profile: (id: string) => ['profile', id] as const,
@@ -10,6 +12,12 @@ export const queryKeys = {
     'chatRoomMessagesInfinite',
     roomId,
   ],
+  /** useChatRoomMessagesInfiniteTwowayQuery */
+  chatRoomMessagesInfiniteTwoway: (
+    roomId: string | null,
+    twowayPositioningCursorData: PMLRCApiParameters0DataPageParamNonNullable | null
+  ) => ['chatRoomMessagesInfiniteTwoway', roomId, twowayPositioningCursorData],
+
   /** chatRoomMessagesGetOne */
   chatRoomMessagesGetOne: (messageId?: string | null) => [
     'chatRoomMessagesGetOne',

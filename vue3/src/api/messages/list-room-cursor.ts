@@ -122,22 +122,47 @@ export const pbMessagesListRoomCursorApi = async (data: {
 export type PMLRCApiParameters0DataPageParamNonNullable = NonNullable<
   Parameters<typeof pbMessagesListRoomCursorApi>[0]['pageParam']
 >
+/**
+ * 将 pbMessagesListRoomCursorApi 的返回值类型导出以便使用
+ */
+export type PMLRCApiReturnType = Awaited<
+  ReturnType<typeof pbMessagesListRoomCursorApi>
+>
+/**
+ * 将 pbMessagesListRoomCursorApi 的返回值中的items的item类型导出以便使用
+ */
+export type PMLRCApiReturnTypeItem = PMLRCApiReturnType['items'][number]
 
-// 上面的是用于单向的，下面的是用于双向的
+// 上面的是用于单向的（基础的），下面的是用于双向的
+
+/** messages集合 游标分页查询 Next 向更旧的查询 pageParam 为 null 即从最新消息开始查询的第一次查询（和 pbMessagesListRoomCursorApi 逻辑一样） */
+export const pbMessagesListRoomCursorNextPageParamNullApi = async (data: {
+  roomId: string
+}): Promise<PMLRCApiReturnType> => {
+  const { roomId } = data
+  return pbMessagesListRoomCursorApi({
+    roomId,
+    pageParam: null,
+  })
+}
 
 /** messages集合 游标分页查询 Next 向更旧的查询 不包括游标所指的（和 pbMessagesListRoomCursorApi 逻辑一样） */
 export const pbMessagesListRoomCursorNextNotIncludeCursorApi = async (data: {
   roomId: string
   pageParam: Pick<MessagesResponse, 'id' | 'created'>
-}) => {
-  return pbMessagesListRoomCursorApi(data)
+}): Promise<PMLRCApiReturnType> => {
+  const { roomId, pageParam } = data
+  return pbMessagesListRoomCursorApi({
+    roomId,
+    pageParam,
+  })
 }
 
 /** messages集合 游标分页查询 Next 向更旧的查询 包括游标所指的（将用于双向查询的首次） */
 export const pbMessagesListRoomCursorNextIncludeCursorApi = async (data: {
   roomId: string
   pageParam: Pick<MessagesResponse, 'id' | 'created'>
-}) => {
+}): Promise<PMLRCApiReturnType> => {
   const { roomId, pageParam } = data
 
   // expand 字符串
@@ -227,7 +252,7 @@ export const pbMessagesListRoomCursorPreviousNotIncludeCursorApi =
   async (data: {
     roomId: string
     pageParam: Pick<MessagesResponse, 'id' | 'created'>
-  }) => {
+  }): Promise<PMLRCApiReturnType> => {
     const { roomId, pageParam } = data
 
     // expand 字符串
