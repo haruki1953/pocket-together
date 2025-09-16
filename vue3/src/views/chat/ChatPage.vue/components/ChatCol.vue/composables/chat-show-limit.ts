@@ -3,7 +3,10 @@ import type {
   ChatRoomMessagesListAndRealtimeType,
   TwowayPositioningCursorDataType,
 } from './dependencies'
-import { chatRoomMessagesLimitInitShowItemNumberConfig } from '@/config'
+import {
+  chatRoomMessagesLimitInitShowItemNumberConfig,
+  chatRoomMessagesLimitShowItemMaxNumberConfig,
+} from '@/config'
 
 /** 封装了聊天页消息显示数量限制控制相关的内容 */
 export const useChatShowLimitControl = (data: {
@@ -130,8 +133,14 @@ export const useChatShowLimitControlTwoway = (data: {
     twowayPositioningCursorData,
   } = data
   // 限制消息显示数量，顶部游标与底部游标
-  const chatRoomMessagesLimitTopCursor = ref<string | null>(null)
-  const chatRoomMessagesLimitBottomCursor = ref<string | null>(null)
+  // null 为初始值，将会被初始化，如果为null就不显示所有消息
+  // 'no-limit' 为不限制
+  const chatRoomMessagesLimitTopCursor = ref<'no-limit' | (string & {}) | null>(
+    null
+  )
+  const chatRoomMessagesLimitBottomCursor = ref<
+    'no-limit' | (string & {}) | null
+  >(null)
 
   // 已限制数量的消息列表
   const chatRoomMessagesLimitList = computed(() => {
@@ -139,9 +148,9 @@ export const useChatShowLimitControlTwoway = (data: {
     if (chatRoomMessagesListAndRealtime.value == null) {
       return null
     }
-    // 都为默认值，限制数量功能还未初始化，返回null
+    // 任意一个为默认值，即限制数量功能还未初始化，返回null
     if (
-      chatRoomMessagesLimitTopCursor.value == null &&
+      chatRoomMessagesLimitTopCursor.value == null ||
       chatRoomMessagesLimitBottomCursor.value == null
     ) {
       return null
@@ -149,28 +158,32 @@ export const useChatShowLimitControlTwoway = (data: {
 
     // 找到两个Cursor所对应的序列值
     const indexTopCursor = (() => {
-      // 未找到则默认为第一个
+      // defaultIndex = 0 即第一个
       const defaultIndex = 0
-      if (chatRoomMessagesLimitTopCursor.value == null) {
+      // TopCursor = 'no-limit' 则默认为最后一个
+      if (chatRoomMessagesLimitTopCursor.value === 'no-limit') {
         return defaultIndex
       }
       const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
         (i) => i.id === chatRoomMessagesLimitTopCursor.value
       )
+      // 未找到则默认为第一个
       if (findIndex === -1) {
         return defaultIndex
       }
       return findIndex
     })()
     const indexBottomCursor = (() => {
-      // 未找到则默认为最后一个
+      // defaultIndex = Array.length - 1 即最后一个
       const defaultIndex = chatRoomMessagesListAndRealtime.value.length - 1
-      if (chatRoomMessagesLimitBottomCursor.value == null) {
+      // BottomCursor = 'no-limit' 则默认为最后一个
+      if (chatRoomMessagesLimitBottomCursor.value === 'no-limit') {
         return defaultIndex
       }
       const findIndex = chatRoomMessagesListAndRealtime.value.findIndex(
         (i) => i.id === chatRoomMessagesLimitBottomCursor.value
       )
+      // 未找到则默认为最后一个
       if (findIndex === -1) {
         return defaultIndex
       }
@@ -184,7 +197,6 @@ export const useChatShowLimitControlTwoway = (data: {
     )
     return limitList
   })
-
   // 初始化显示限制，setup时就可以进行
   ;(async () => {
     // 等待存在消息数据
@@ -199,10 +211,16 @@ export const useChatShowLimitControlTwoway = (data: {
       console.error('chatRoomMessagesListAndRealtime.value == null')
       return
     }
+    // 消息为空数组，将限制游标初始化为 'no-limit' 并返回
+    if (chatRoomMessagesListAndRealtime.value.length === 0) {
+      chatRoomMessagesLimitTopCursor.value = 'no-limit'
+      chatRoomMessagesLimitBottomCursor.value = 'no-limit'
+      return
+    }
 
     // 【双向】
     // twowayPositioningCursorData.value == null
-    // 双向定位游标为 null，即其为从最新的消息开始查询（和单向一样），初始化限制游标，使其从最底部开始显示
+    // 双向定位游标为 null，即其为从最新的消息开始查询（和单向一样），初始化限制游标，使其从最底部开始显示，显示个个数为 cRMLISINC
     if (twowayPositioningCursorData.value == null) {
       // chatRoomMessagesLimitInitShowItemNumberConfig 简称为 cRMLISINC
       // 从后往前限制 cRMLISINC 个，也就是找到从后往前第 cRMLISINC 个的item
@@ -221,19 +239,57 @@ export const useChatShowLimitControlTwoway = (data: {
         return index
       })()
 
-      const idTopCursor =
-        chatRoomMessagesListAndRealtime.value[indexTopCursor].id
-      const idBottomCursor = null
-
       // 为用于显示数量限制的游标赋值
-      chatRoomMessagesLimitTopCursor.value = idTopCursor
-      chatRoomMessagesLimitBottomCursor.value = idBottomCursor
+      chatRoomMessagesLimitTopCursor.value =
+        chatRoomMessagesListAndRealtime.value[indexTopCursor].id
+      chatRoomMessagesLimitBottomCursor.value = 'no-limit'
     }
     // twowayPositioningCursorData.value != null
-    // 双向定位游标有值，即其为正常的双向定位查询，初始化限制游标，使其显示当前全部数据
+    // 双向定位游标有值，即其为正常的双向定位查询，初始化限制游标，使其显示当前游标范围内的数据，根据显示消息的最大数量处理
     else {
-      // 如果没有更新的消息，则BottomCursor为null
-      // 【TODO】需要一些处理，可能使其显示当前全部数据并不合适，要限制数量
+      // 找到双向定位游标所对应的索引
+      const twowayPositioningCursorDataId = twowayPositioningCursorData.value.id
+      const twowayPositioningCursorIndex = (() => {
+        const index = chatRoomMessagesListAndRealtime.value.findIndex(
+          (i) => i.id === twowayPositioningCursorDataId
+        )
+        // 未找到，这是异常情况，暂时返回0
+        if (index === -1) {
+          console.error('index === -1')
+          return 0
+        }
+        return index
+      })()
+
+      // 计算新的顶部限制游标对应的索引
+      const newLimitTopCursorIndex = (() => {
+        // 将双向定位游标对应索引 减 一半的 chatRoomMessagesLimitShowItemMaxNumberConfig 显示消息的最大数量
+        const index =
+          twowayPositioningCursorIndex -
+          Math.abs(Math.round(chatRoomMessagesLimitShowItemMaxNumberConfig / 2))
+        // index < 0 即超出，返回0
+        if (index < 0) {
+          return 0
+        }
+        return index
+      })()
+      // 计算新的底部限制游标对应的索引
+      const newLimitBottomCursorIndex = (() => {
+        // 将新的顶部限制游标对应的索引 加 chatRoomMessagesLimitShowItemMaxNumberConfig 显示消息的最大数量
+        const index =
+          newLimitTopCursorIndex + chatRoomMessagesLimitShowItemMaxNumberConfig
+        // index > length - 1 即超出，返回 length - 1
+        if (index > chatRoomMessagesListAndRealtime.value.length - 1) {
+          return length - 1
+        }
+        return index
+      })()
+
+      // 为用于显示数量限制的游标赋值
+      chatRoomMessagesLimitTopCursor.value =
+        chatRoomMessagesListAndRealtime.value[newLimitTopCursorIndex].id
+      chatRoomMessagesLimitBottomCursor.value =
+        chatRoomMessagesListAndRealtime.value[newLimitBottomCursorIndex].id
     }
   })()
 
