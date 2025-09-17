@@ -113,3 +113,53 @@ export const generateRandomIntegerBetween = (a: number, b: number): number => {
   const max = Math.max(a, b)
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
+
+/**
+ * 将滚动容器滚动至指定子元素的位置，使其垂直方向进入可视区域。
+ *
+ * 使用 getBoundingClientRect 计算目标元素相对于容器的偏移量，
+ * 然后通过 scrollTo 方法控制容器滚动。支持额外偏移量设置，可用于微调定位。
+ *
+ * @param container - 滚动容器元素，必须是 HTMLDivElement。
+ * @param target - 目标子元素，必须是容器内的 HTMLElement。
+ * @param behavior - 可选的滚动行为，可设置为 "auto"（默认）、"instant"（立即滚动）、"smooth"（平滑滚动）。
+ * @param offset - 可选的额外偏移量（单位 px），用于在滚动定位基础上进行微调。正值向下偏移，负值向上偏移。
+ *
+ * @example
+ * // 默认立即滚动至目标元素顶部
+ * scrollToElementInContainer(container, target);
+ *
+ * // 平滑滚动至目标元素
+ * scrollToElementInContainer(container, target, 'smooth');
+ *
+ * // 平滑滚动至目标元素向下偏移 20px
+ * scrollToElementInContainer(container, target, 'smooth', 20);
+ *
+ * // 立即滚动至目标元素向上偏移 50px
+ * scrollToElementInContainer(container, target, 'instant', -50);
+ */
+
+export const scrollToElementInContainer = (
+  container: HTMLDivElement,
+  target: HTMLElement,
+  behavior?: ScrollBehavior,
+  offset?: number
+): void => {
+  const containerRect = container.getBoundingClientRect()
+  const targetRect = target.getBoundingClientRect()
+
+  const topVal = targetRect.top - containerRect.top + container.scrollTop
+  const topValWidthOffset = (() => {
+    // 未设置 offset ，返回 topVal
+    if (offset == null) {
+      return topVal
+    }
+    // offset 有值，返回 topVal 与 offset 之和
+    return topVal + offset
+  })()
+
+  container.scrollTo({
+    top: topValWidthOffset,
+    behavior,
+  })
+}

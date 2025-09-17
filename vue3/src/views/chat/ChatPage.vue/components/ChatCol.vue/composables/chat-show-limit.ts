@@ -1,5 +1,6 @@
 import { watchUntilSourceCondition } from '@/utils'
 import type {
+  ChatRoomMessagesInfiniteTwowayQueryType,
   ChatRoomMessagesListAndRealtimeType,
   TwowayPositioningCursorDataType,
 } from './dependencies'
@@ -126,11 +127,14 @@ export const useChatShowLimitControlTwoway = (data: {
   // 用于判断消息查询时从最新的开始 twowayPositioningCursorData === null
   // 或是游标定位双向查询 id created
   twowayPositioningCursorData: TwowayPositioningCursorDataType
+  // 数据查询相关信息，用与判断底部（）是否有下一页
+  chatRoomMessagesInfiniteTwowayQuery: ChatRoomMessagesInfiniteTwowayQueryType
 }) => {
   const {
     //
     chatRoomMessagesListAndRealtime,
     twowayPositioningCursorData,
+    chatRoomMessagesInfiniteTwowayQuery,
   } = data
   // 限制消息显示数量，顶部游标与底部游标
   // null 为初始值，将会被初始化，如果为null就不显示所有消息
@@ -288,8 +292,19 @@ export const useChatShowLimitControlTwoway = (data: {
       // 为用于显示数量限制的游标赋值
       chatRoomMessagesLimitTopCursor.value =
         chatRoomMessagesListAndRealtime.value[newLimitTopCursorIndex].id
-      chatRoomMessagesLimitBottomCursor.value =
-        chatRoomMessagesListAndRealtime.value[newLimitBottomCursorIndex].id
+      chatRoomMessagesLimitBottomCursor.value = (() => {
+        // 如果newLimitBottomCursorIndex为最后一个，且底部已没有下一页，则返回 'no-limit'
+        if (
+          newLimitBottomCursorIndex ===
+            chatRoomMessagesListAndRealtime.value.length - 1 &&
+          chatRoomMessagesInfiniteTwowayQuery.hasPreviousPage.value === false
+        ) {
+          return 'no-limit'
+        }
+        // 正常情况
+        return chatRoomMessagesListAndRealtime.value[newLimitBottomCursorIndex]
+          .id
+      })()
     }
   })()
 

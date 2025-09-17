@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
-import { useChatDataProcessMessagesTwoway } from './composables'
+import {
+  useChatDataProcessMessagesTwoway,
+  useChatScrollMessageChangeTwoway,
+  useChatShowLimitControlTwoway,
+} from './composables'
 
 const props = defineProps<{
   /** 滚动容器元素 */
   refScrollWarp?: HTMLDivElement
 }>()
+// 供封装的组件或组合式函数使用
+export type PropsType = typeof props
 
 /**
  * 双向定位无限查询的定位游标数据
@@ -27,6 +33,53 @@ const {
 } = useChatDataProcessMessagesTwoway({
   twowayPositioningCursorData,
 })
+export type ChatRoomMessagesInfiniteTwowayQueryType =
+  typeof chatRoomMessagesInfiniteTwowayQuery
+// 导出一些类型
+export type ChatRoomMessagesListType = typeof chatRoomMessagesList
+export type ChatRoomMessagesItem = NonNullable<
+  typeof chatRoomMessagesList.value
+>[number]
+export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
+export type ChatRoomMessagesListAndRealtimeType =
+  typeof chatRoomMessagesListAndRealtime
+
+/** 封装了聊天页消息显示数量限制控制相关的内容 */
+const {
+  chatRoomMessagesLimitTopCursor,
+  chatRoomMessagesLimitBottomCursor,
+  chatRoomMessagesLimitList,
+} = useChatShowLimitControlTwoway({
+  chatRoomMessagesListAndRealtime,
+  twowayPositioningCursorData,
+  chatRoomMessagesInfiniteTwowayQuery,
+})
+// 导出一些类型
+export type ChatRoomMessagesLimitTopCursorType =
+  typeof chatRoomMessagesLimitTopCursor
+export type ChatRoomMessagesLimitBottomCursorType =
+  typeof chatRoomMessagesLimitBottomCursor
+export type ChatRoomMessagesLimitListType = typeof chatRoomMessagesLimitList
+
+// 最终用于渲染的数据
+const chatRoomMessagesForShow = computed(() => chatRoomMessagesLimitList.value)
+export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
+
+/** 封装了聊天页消息变动时的滚动处理 */
+const {
+  chatScrollCaptureSnapshotBeforeMessageChange,
+  chatScrollAdjustPositionAfterMessageChange,
+} = useChatScrollMessageChangeTwoway({
+  props,
+  chatRoomMessagesForShow,
+  chatRoomMessagesRealtime,
+  chatRoomMessagesLimitBottomCursor,
+  twowayPositioningCursorData,
+})
+export type ChatScrollCaptureSnapshotBeforeMessageChangeType =
+  typeof chatScrollCaptureSnapshotBeforeMessageChange
+export type ChatScrollAdjustPositionAfterMessageChangeType =
+  typeof chatScrollAdjustPositionAfterMessageChange
 
 // TODO
 </script>

@@ -21,8 +21,8 @@ const props = defineProps<{
   //   data: PMLRCApiParameters0DataPageParamNonNullable | null
   // ) => void
 }>()
-// 供封装的组件或组合式函数使用
-export type PropsType = typeof props
+// // 供封装的组件或组合式函数使用
+// export type PropsType = typeof props
 
 /** 封装了聊天页的数据及其处理相关内容 */
 const {
@@ -35,16 +35,16 @@ const {
   // 将 MessagesRealtime 和 MessagesList 融合
   chatRoomMessagesListAndRealtime,
 } = useChatDataProcessMessages()
-// 导出一些类型
 export type ChatRoomMessagesInfiniteQueryType =
   typeof chatRoomMessagesInfiniteQuery
-export type ChatRoomMessagesListType = typeof chatRoomMessagesList
-export type ChatRoomMessagesItem = NonNullable<
-  typeof chatRoomMessagesList.value
->[number]
-export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
-export type ChatRoomMessagesListAndRealtimeType =
-  typeof chatRoomMessagesListAndRealtime
+// // 导出一些类型
+// export type ChatRoomMessagesListType = typeof chatRoomMessagesList
+// export type ChatRoomMessagesItem = NonNullable<
+//   typeof chatRoomMessagesList.value
+// >[number]
+// export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
+// export type ChatRoomMessagesListAndRealtimeType =
+//   typeof chatRoomMessagesListAndRealtime
 
 /** 封装了聊天页消息显示数量限制控制相关的内容 */
 const {
@@ -57,16 +57,16 @@ const {
   //
   chatRoomMessagesListAndRealtime,
 })
-// 导出一些类型
-export type ChatRoomMessagesLimitTopCursorType =
-  typeof chatRoomMessagesLimitTopCursor
-export type ChatRoomMessagesLimitBottomCursorType =
-  typeof chatRoomMessagesLimitBottomCursor
-export type ChatRoomMessagesLimitListType = typeof chatRoomMessagesLimitList
+// // 导出一些类型
+// export type ChatRoomMessagesLimitTopCursorType =
+//   typeof chatRoomMessagesLimitTopCursor
+// export type ChatRoomMessagesLimitBottomCursorType =
+//   typeof chatRoomMessagesLimitBottomCursor
+// export type ChatRoomMessagesLimitListType = typeof chatRoomMessagesLimitList
 
 // 最终用于渲染的数据
 const chatRoomMessagesForShow = computed(() => chatRoomMessagesLimitList.value)
-export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
+// export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
 
 /** 封装了聊天页消息变动时的滚动处理 */
 const {
@@ -77,10 +77,10 @@ const {
   chatRoomMessagesForShow,
   chatRoomMessagesRealtime,
 })
-export type ChatScrollCaptureSnapshotBeforeMessageChangeType =
-  typeof chatScrollCaptureSnapshotBeforeMessageChange
-export type ChatScrollAdjustPositionAfterMessageChangeType =
-  typeof chatScrollAdjustPositionAfterMessageChange
+// export type ChatScrollCaptureSnapshotBeforeMessageChangeType =
+//   typeof chatScrollCaptureSnapshotBeforeMessageChange
+// export type ChatScrollAdjustPositionAfterMessageChangeType =
+//   typeof chatScrollAdjustPositionAfterMessageChange
 
 /** 封装了在聊天顶部或底部显示更多的函数，加载更多，控制显示限制 */
 const {
