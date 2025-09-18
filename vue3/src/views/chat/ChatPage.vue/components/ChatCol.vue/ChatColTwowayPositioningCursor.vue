@@ -3,8 +3,11 @@ import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import {
   useChatDataProcessMessagesTwoway,
   useChatScrollMessageChangeTwoway,
+  useChatScrollToShowMore,
   useChatShowLimitControlTwoway,
+  useChatShowMoreOnTopOrBottomTwoway,
 } from './composables'
+import ChatColTemplateBase from './ChatColTemplateBase.vue'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -19,6 +22,12 @@ export type PropsType = typeof props
 const twowayPositioningCursorData =
   ref<PMLRCApiParameters0DataPageParamNonNullable | null>(null)
 export type TwowayPositioningCursorDataType = typeof twowayPositioningCursorData
+
+// 测试定位
+twowayPositioningCursorData.value = {
+  id: 'bnjqt5mbyk35gsd',
+  created: '2025-09-01 10:46:42.872Z',
+}
 
 /** 封装了聊天页的数据及其处理相关内容 */
 const {
@@ -81,20 +90,47 @@ export type ChatScrollCaptureSnapshotBeforeMessageChangeType =
 export type ChatScrollAdjustPositionAfterMessageChangeType =
   typeof chatScrollAdjustPositionAfterMessageChange
 
-// TODO
+/** 封装了在聊天顶部或底部显示更多的函数，加载更多，控制显示限制 */
+const {
+  // 聊天顶部加载更多
+  chatShowMoreOnTop,
+  // 聊天底部加载更多
+  chatShowMoreOnBottom,
+  // 是否正在加载更多
+  isShowMoreRunning,
+  // 聊天顶部是否有未显示的
+  isChatTopHasMore,
+  // 聊天底部是否有未显示的
+  isChatBottomHasMore,
+} = useChatShowMoreOnTopOrBottomTwoway({
+  chatRoomMessagesListAndRealtime,
+  chatRoomMessagesLimitList,
+  chatRoomMessagesInfiniteTwowayQuery,
+  chatRoomMessagesLimitTopCursor,
+  chatRoomMessagesLimitBottomCursor,
+  chatScrollCaptureSnapshotBeforeMessageChange,
+  chatScrollAdjustPositionAfterMessageChange,
+})
+
+/** 封装了聊天页滚动触发在顶部或底部显示更多的功能 */
+useChatScrollToShowMore({
+  props,
+  chatShowMoreOnTop,
+  chatShowMoreOnBottom,
+})
 </script>
 
 <template>
   <div>
     <!-- ChatCol的主要渲染内容，达到将逻辑和内容分离的效果 -->
-    <!-- <ChatColTemplateBase
+    <ChatColTemplateBase
       :isChatTopHasMore="isChatTopHasMore"
       :isShowMoreRunning="isShowMoreRunning"
       :chatShowMoreOnTop="chatShowMoreOnTop"
       :chatRoomMessagesForShow="chatRoomMessagesForShow"
       :isChatBottomHasMore="isChatBottomHasMore"
       :chatShowMoreOnBottom="chatShowMoreOnBottom"
-    ></ChatColTemplateBase> -->
+    ></ChatColTemplateBase>
   </div>
 </template>
 

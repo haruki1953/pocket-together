@@ -249,7 +249,7 @@ export const useChatShowLimitControlTwoway = (data: {
       chatRoomMessagesLimitBottomCursor.value = 'no-limit'
     }
     // twowayPositioningCursorData.value != null
-    // 双向定位游标有值，即其为正常的双向定位查询，初始化限制游标，使其显示当前游标范围内的数据，根据显示消息的最大数量处理
+    // 双向定位游标有值，即其为正常的双向定位查询，初始化限制游标，使其显示当前游标范围内的数据，根据初始显示的消息数量
     else {
       // 找到双向定位游标所对应的索引
       const twowayPositioningCursorDataId = twowayPositioningCursorData.value.id
@@ -267,10 +267,13 @@ export const useChatShowLimitControlTwoway = (data: {
 
       // 计算新的顶部限制游标对应的索引
       const newLimitTopCursorIndex = (() => {
-        // 将双向定位游标对应索引 减 一半的 chatRoomMessagesLimitShowItemMaxNumberConfig 显示消息的最大数量
+        // 将双向定位游标对应索引 减 一半的 chatRoomMessagesLimitInitShowItemNumberConfig 初始显示的消息数量
         const index =
           twowayPositioningCursorIndex -
-          Math.abs(Math.round(chatRoomMessagesLimitShowItemMaxNumberConfig / 2))
+          (Math.abs(
+            Math.round(chatRoomMessagesLimitInitShowItemNumberConfig / 2)
+          ) -
+            1)
         // index < 0 即超出，返回0
         if (index < 0) {
           return 0
@@ -279,12 +282,12 @@ export const useChatShowLimitControlTwoway = (data: {
       })()
       // 计算新的底部限制游标对应的索引
       const newLimitBottomCursorIndex = (() => {
-        // 将新的顶部限制游标对应的索引 加 chatRoomMessagesLimitShowItemMaxNumberConfig 显示消息的最大数量
+        // 将新的顶部限制游标对应的索引 加 chatRoomMessagesLimitInitShowItemNumberConfig 初始显示的消息数量
         const index =
-          newLimitTopCursorIndex + chatRoomMessagesLimitShowItemMaxNumberConfig
+          newLimitTopCursorIndex + chatRoomMessagesLimitInitShowItemNumberConfig
         // index > length - 1 即超出，返回 length - 1
         if (index > chatRoomMessagesListAndRealtime.value.length - 1) {
-          return length - 1
+          return chatRoomMessagesListAndRealtime.value.length - 1
         }
         return index
       })()
@@ -301,6 +304,7 @@ export const useChatShowLimitControlTwoway = (data: {
         ) {
           return 'no-limit'
         }
+        console.log('newLimitBottomCursorIndex', newLimitBottomCursorIndex)
         // 正常情况
         return chatRoomMessagesListAndRealtime.value[newLimitBottomCursorIndex]
           .id

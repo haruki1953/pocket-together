@@ -42,6 +42,15 @@ export const chatRoomMessagesShowMoreBeforeDelayMsConfig = 100 as const
 export const chatRoomMessagesShowMoreAfterDelayMsConfig = 100 as const
 
 /**
+ * 聊天页双向定位查询模式，滚动到定位的消息，距顶部的偏移量（单位：px）
+ * scrollToElementInContainer offset
+ * 可选的额外偏移量（单位 px），用于在滚动定位基础上进行微调。
+ * 目标位置，正值向下偏移，负值向上偏移。
+ */
+export const chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig =
+  -200 as const
+
+/**
  * 聊天页 消息合并显示 消息的最大时间差（单位秒）
  * 10分钟
  */

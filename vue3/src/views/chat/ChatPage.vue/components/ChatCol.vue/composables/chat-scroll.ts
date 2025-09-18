@@ -13,6 +13,7 @@ import type {
 import {
   chatRoomMessagesScrollCaptureElementNumberConfig,
   chatRoomMessagesScrollRealtimeIsBottomDistanceConfig,
+  chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
 } from '@/config'
 import { useScroll } from '@vueuse/core'
 
@@ -343,7 +344,12 @@ export const useChatScrollMessageChangeTwoway = (data: {
         return
       }
       // 滚动到指定元素，立即滚动
-      scrollToElementInContainer(props.refScrollWarp, cursorElement, 'instant')
+      scrollToElementInContainer(
+        props.refScrollWarp,
+        cursorElement,
+        'instant',
+        chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
+      )
     }
   })
 

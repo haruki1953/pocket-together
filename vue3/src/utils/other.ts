@@ -132,10 +132,10 @@ export const generateRandomIntegerBetween = (a: number, b: number): number => {
  * // 平滑滚动至目标元素
  * scrollToElementInContainer(container, target, 'smooth');
  *
- * // 平滑滚动至目标元素向下偏移 20px
+ * // 平滑滚动至目标元素向下偏移 20px 的位置
  * scrollToElementInContainer(container, target, 'smooth', 20);
  *
- * // 立即滚动至目标元素向上偏移 50px
+ * // 立即滚动至目标元素向上偏移 50px 的位置
  * scrollToElementInContainer(container, target, 'instant', -50);
  */
 
