@@ -55,3 +55,12 @@ export const chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig =
  * 10分钟
  */
 export const chatRoomMessagesDispalyTogetherMaxSecondsConfig = 600 as const
+
+/**
+ * 聊天页 双向定位游标 路由查询参数 键统一管理，以便在多处使用
+ */
+export const chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig =
+  {
+    id: 'id',
+    created: 'created',
+  } as const

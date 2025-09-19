@@ -249,12 +249,12 @@ export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
       if (firstPage.items.length === 0) {
         return undefined
       }
-      // firstPage.queryNextInfo == null ，当前查询是从最新的项开始的会是这种情况，返回 undefined 即没有下一页
-      if (firstPage.queryNextInfo == null) {
+      // firstPage.queryPreviousInfo == null ，当前查询是从最新的项开始的会是这种情况，返回 undefined 即没有下一页
+      if (firstPage.queryPreviousInfo == null) {
         return undefined
       }
-      // firstPage.queryNextInfo.totalPages === 1 即上次查询的总页数只有1页，即没有下一页，返回 undefined
-      if (firstPage.queryNextInfo.totalPages === 1) {
+      // firstPage.queryPreviousInfo.totalPages === 1 即上次查询的总页数只有1页，即没有下一页，返回 undefined
+      if (firstPage.queryPreviousInfo.totalPages === 1) {
         return undefined
       }
       const cursorItem = firstPage.items[0]

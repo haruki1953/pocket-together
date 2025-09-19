@@ -106,18 +106,35 @@ export const useChatDataProcessMessagesTwoway = (data: {
       return null
     }
     // 【双向】如果有更新的数据还没有请求，则不与 MessagesRealtime 融合，这是双向查询需要注意的
+    console.log(chatRoomMessagesInfiniteTwowayQuery.hasPreviousPage.value)
     if (chatRoomMessagesInfiniteTwowayQuery.hasPreviousPage.value === true) {
       return chatRoomMessagesList.value
     }
-    // 将MessagesRealtime与MessagesList重复的删除
-    const messagesRealtimeDeleteDuplicates =
-      chatRoomMessagesRealtime.value.filter(
-        (realtimaeItem) =>
-          chatRoomMessagesList.value?.find(
-            (listItem) => listItem.id === realtimaeItem.id
-          ) == null
-      )
-    return [...chatRoomMessagesList.value, ...messagesRealtimeDeleteDuplicates]
+
+    // // 将MessagesRealtime与MessagesList重复的删除
+    // const messagesRealtimeDeleteDuplicates =
+    //   chatRoomMessagesRealtime.value.filter(
+    //     (realtimaeItem) =>
+    //       chatRoomMessagesList.value?.find(
+    //         (listItem) => listItem.id === realtimaeItem.id
+    //       ) == null
+    //   )
+    // return [...chatRoomMessagesList.value, ...messagesRealtimeDeleteDuplicates]
+
+    // 【250919】更改为过滤出MessagesRealtime中比MessagesList大的（更新的）
+    const messagesRealtimeMoreRecentList = (() => {
+      if (chatRoomMessagesList.value.length === 0) {
+        return chatRoomMessagesRealtime.value
+      }
+      const messagesListLatestItem =
+        chatRoomMessagesList.value[chatRoomMessagesList.value.length - 1]
+
+      return chatRoomMessagesRealtime.value.filter((realtimaeItem) => {
+        // 这个标准时间字符串可以直接比较大小
+        return realtimaeItem.created > messagesListLatestItem.created
+      })
+    })()
+    return [...chatRoomMessagesList.value, ...messagesRealtimeMoreRecentList]
   })
 
   return {

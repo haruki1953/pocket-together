@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { pbMessagesGetOneApi } from '@/api'
 import { useDialogOptimization } from '@/composables'
-import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
+import {
+  appUserDefaultAvatar,
+  chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
+  fileUserAvatarConfig,
+} from '@/config'
 import { pb } from '@/lib'
 import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
-import { useAuthStore } from '@/stores'
-import { generateRandomClassName, useDateFormatYYYYMMDDHHmmss } from '@/utils'
+import { useAuthStore, useI18nStore } from '@/stores'
+import {
+  generateRandomClassName,
+  potoNotification,
+  urlJoinWithOriginUtil,
+  useDateFormatYYYYMMDDHHmmss,
+} from '@/utils'
 import {
   RiBookmarkLine,
   RiDiscussLine,
@@ -14,7 +23,8 @@ import {
 } from '@remixicon/vue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { propsToString } from '@unhead/vue/server'
-import { useWindowSize } from '@vueuse/core'
+import { useClipboard, useWindowSize } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
 
 // 还是通过普通的ref设置dialogMessageId比较好
 const dialogMessageId = ref<string | null>(null)
@@ -136,6 +146,67 @@ const isMessageSendByCurrentUser = computed(() => {
   // 否则返回false
   return false
 })
+
+const router = useRouter()
+const route = useRoute()
+
+const clipboard = useClipboard()
+const i18nStore = useI18nStore()
+
+// 操作按钮 actionButton
+/** 复制消息链接 */
+const actionButtonCopyMessageLink = async () => {
+  // 无数据，时不正常的，返回
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+  const { id: keyId, created: keyCreated } =
+    chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig
+  // 生成链接但不跳转
+  const resolved = router.resolve({
+    path: route.path,
+    query: {
+      [keyId]: chatRoomMessagesGetOneQuery.data.value.id,
+      [keyCreated]: chatRoomMessagesGetOneQuery.data.value.created,
+    },
+  })
+  // 拼接网址链接
+  const link = urlJoinWithOriginUtil(window.location.origin, resolved.href)
+  console.log(link)
+
+  // 浏览支持复制
+  if (clipboard.isSupported.value) {
+    try {
+      await clipboard.copy(link)
+      potoNotification({
+        type: 'success',
+        title: i18nStore.t(
+          'chatMessageInfoDialogCopyMessageLinkSuccessTitle'
+        )(),
+        message: link,
+      })
+    } catch (error) {
+      potoNotification({
+        type: 'warning',
+        title: i18nStore.t(
+          'chatMessageInfoDialogCopyMessageLinkNotSupportedTitle'
+        )(),
+        message: link,
+      })
+    }
+  }
+  // 浏览器不支持复制
+  else {
+    potoNotification({
+      type: 'warning',
+      title: i18nStore.t(
+        'chatMessageInfoDialogCopyMessageLinkNotSupportedTitle'
+      )(),
+      message: link,
+    })
+  }
+}
 </script>
 
 <template>
@@ -150,9 +221,9 @@ const isMessageSendByCurrentUser = computed(() => {
       <!-- 显示消息数据 -->
       <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
         <!-- 测试 数据显示 -->
-        <div class="wrap-long-text font-mono">
+        <!-- <div class="wrap-long-text font-mono">
           {{ JSON.stringify(chatRoomMessagesGetOneQuery.data.value, null, 2) }}
-        </div>
+        </div> -->
 
         <!-- 用户信息 + 关闭按钮 -->
         <div class="ml-[15px] flex items-center justify-between">
@@ -242,6 +313,7 @@ const isMessageSendByCurrentUser = computed(() => {
             <!-- 复制消息链接 -->
             <div
               class="flow-root cursor-pointer transition-colors hover:text-el-primary"
+              @click="actionButtonCopyMessageLink"
             >
               <div class="m-[5px]">
                 <RiLink size="24px"></RiLink>

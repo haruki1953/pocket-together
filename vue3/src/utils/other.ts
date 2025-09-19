@@ -74,9 +74,19 @@ export const formatFileSize = (bytes: number) => {
   return (i < 2 ? size.toFixed(0) : size.toFixed(1)) + sizes[i]
 }
 
-// 拼接 url
+/**
+ * 拼接多个路径片段，确保路径格式正确，避免重复斜杠。
+ * Join multiple URL path segments into a single normalized path string.
+ *
+ * - 自动去除每段路径前后的多余斜杠
+ * - 保留开头斜杠（如果首段以 `/` 开头）
+ * - 忽略空字符串片段
+ *
+ * @param segments - 路径片段数组，例如 ['/', 'user/', '/123'] → '/user/123'
+ * @returns 拼接后的路径字符串，例如 '/user/123'
+ */
 export const urlJoinUtil = (...segments: string[]): string => {
-  // 是否以斜杠开头，是则在最后加上斜杠
+  // 检查首段是否以斜杠开头，用于决定最终是否保留开头斜杠
   const isStartsWithSlash = (() => {
     if (segments.length > 0 && segments[0].startsWith('/')) {
       return true
@@ -84,16 +94,36 @@ export const urlJoinUtil = (...segments: string[]): string => {
     return false
   })()
 
-  // 合并路径并确保正确的斜杠
+  // 清洗每段路径：去除前后斜杠，过滤空值，使用单个斜杠连接
   const joinedStr = segments
     .map((segment) => segment.replace(/(^\/+|\/+$)/g, '')) // 去除前后多余的斜杠
     .filter(Boolean) // 删除空值
     .join('/') // 用单个斜杠连接
 
-  if (isStartsWithSlash) {
-    return '/' + joinedStr
-  }
-  return joinedStr
+  // 根据首段是否以斜杠开头，决定是否添加前缀斜杠
+  return isStartsWithSlash ? '/' + joinedStr : joinedStr
+}
+
+/**
+ * 拼接完整网址，包括 origin 和路径片段，确保格式正确。
+ * Join origin and path segments into a full URL string.
+ *
+ * - 自动去除 origin 末尾斜杠
+ * - 自动补齐路径开头斜杠（如果缺失）
+ * - 使用 urlJoinUtil 处理路径片段
+ *
+ * @param origin - 当前域名或协议地址，例如 'https://example.com'
+ * @param segments - 路径片段，例如 ['user', '123'] → '/user/123'
+ * @returns 完整网址字符串，例如 'https://example.com/user/123'
+ */
+export const urlJoinWithOriginUtil = (
+  origin: string,
+  ...segments: string[]
+): string => {
+  const path = urlJoinUtil(...segments)
+  const safeOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin
+  const safePath = path.startsWith('/') ? path : '/' + path
+  return safeOrigin + safePath
 }
 
 // 将字符串的首字母大写
