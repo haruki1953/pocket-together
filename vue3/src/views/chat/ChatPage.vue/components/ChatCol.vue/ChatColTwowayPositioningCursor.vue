@@ -8,6 +8,8 @@ import {
   useChatShowMoreOnTopOrBottomTwoway,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -22,6 +24,33 @@ export type PropsType = typeof props
 const twowayPositioningCursorData =
   ref<PMLRCApiParameters0DataPageParamNonNullable | null>(null)
 export type TwowayPositioningCursorDataType = typeof twowayPositioningCursorData
+
+// 根据路由查询参数定位消息
+const route = useRoute()
+const routeQueryPositioningCursorData = (() => {
+  const { id: keyId, created: keyCreated } =
+    chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig
+  const id = route.query[keyId]
+  const created = route.query[keyCreated]
+  if (
+    id == null ||
+    created == null ||
+    typeof id !== 'string' ||
+    typeof created !== 'string'
+  ) {
+    return null
+  }
+  return {
+    id,
+    created,
+  }
+})()
+if (routeQueryPositioningCursorData != null) {
+  twowayPositioningCursorData.value = routeQueryPositioningCursorData
+}
+// 清除路由中的查询参数
+const router = useRouter()
+router.replace(route.path)
 
 // // 测试定位
 // twowayPositioningCursorData.value = {
