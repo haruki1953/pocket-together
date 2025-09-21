@@ -82,8 +82,7 @@ const DisplayCards = computed<HomeCardType[]>(() => {
   return [menuCard, ...roomCards]
 })
 
-// 4. 实现无限滚动
-// 保留你原有的变量名 loadMoreCards，并用它作为触发器
+// 滚动触发器
 const loadMoreCards = ref<HTMLElement | null>(null)
 
 // 使用 useIntersectionObserver 来观察这个 div 元素是否进入了视口。

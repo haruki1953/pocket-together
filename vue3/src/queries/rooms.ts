@@ -17,11 +17,15 @@ export const useRoomsInfiniteQuery = () => {
       const result = await pb
         .collection(Collections.Rooms)
         // author 字段会展开为完整用户信息 UsersResponse（编译类型安全）
-        .getList<RoomsResponse<unknown, { author: UsersResponse }>>(pageParam, perPage, {
-          // 关联用户的字段 author
-          expand: 'author',
-          sort: '-created',
-        })
+        .getList<RoomsResponse<unknown, { author: UsersResponse }>>(
+          pageParam,
+          perPage,
+          {
+            // 关联用户的字段 author
+            expand: 'author',
+            sort: '-created',
+          }
+        )
       return result
     },
 

@@ -10,6 +10,7 @@ import NavPage from './views/nav/NavPage.vue'
 import SettingProfile from './views/setting/views/SettingProfile.vue'
 import { routerDict } from './config'
 import CreateRoomPage from './views/home/CreateRoomPage.vue'
+import RoomDetailPage from './views/home/RoomDetailPage.vue'
 
 // 路由
 const router = createRouter({
@@ -23,6 +24,10 @@ const router = createRouter({
         {
           ...routerDict.HomePage,
           component: HomePage,
+        },
+        {
+          ...routerDict.RoomDetailPage,
+          component: RoomDetailPage,
         },
         {
           ...routerDict.ChatPage,
