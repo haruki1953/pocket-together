@@ -2,9 +2,18 @@
 import { ref, onMounted } from 'vue'
 import { RiArrowLeftSLine } from '@remixicon/vue'
 import { useI18nStore } from '@/stores'
+import { useRouter } from 'vue-router'
+import { pb } from '@/lib'
+// 封装的状态管理
+import { useAuthStore } from '@/stores'
 
 const i18nStore = useI18nStore()
 
+// 路由和状态
+const router = useRouter()
+const authStore = useAuthStore()
+
+// 用户输入数据
 const roomTitle = ref('')
 const roomDescription = ref('')
 const newTag = ref('')
@@ -19,6 +28,7 @@ onMounted(() => {
   }, 50)
 })
 
+// tag
 function addTag() {
   if (newTag.value !== '' && !tags.value.includes(newTag.value)) {
     tags.value.push(newTag.value)
@@ -29,6 +39,33 @@ function addTag() {
 function removeTag(index: number) {
   tags.value.splice(index, 1)
 }
+
+async function createRoom() {
+  if (authStore.record == null) {
+    alert('请先登陆喵')
+    return
+  }
+  if (roomTitle.value.trim() == null) {
+    alert('请输入标题喵')
+    return
+  }
+
+  try {
+    const roomData = {
+      title: roomTitle.value,
+      description: roomDescription.value,
+      author: authStore.record.id,
+    }
+
+    console.log('稍等喵，在创建：', roomData, '中喵...')
+    const newRoom = await pb.collection('rooms').create(roomData)
+    console.log('创建成功喵！新房间：', newRoom)
+    router.push({ name: 'RoomDetailPage', params: { id: newRoom.id } })
+  } catch (error) {
+    console.error('创建房间失败喵：', error)
+    alert('创建房间失败喵，请稍后再试喵')
+  }
+}
 </script>
 
 <template>
@@ -37,6 +74,7 @@ function removeTag(index: number) {
     <header
       class="flex h-14 flex-shrink-0 items-center justify-between bg-blue-100 px-4 py-3 dark:bg-[#222222]"
     >
+      <!-- back 键 -->
       <button
         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
         @click="$router.back()"
@@ -268,6 +306,7 @@ function removeTag(index: number) {
               font-size: 18px;
             "
             class="mt-6 py-4 text-white shadow-lg"
+            @click="createRoom"
           >
             {{ i18nStore.t('createRoomSubmitButton')() }}
           </ElButton>
