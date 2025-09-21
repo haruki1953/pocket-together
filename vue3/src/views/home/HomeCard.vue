@@ -25,7 +25,7 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
       <img
         :src="home.coverUrl"
         alt="Room cover"
-        class="h-max w-full transition-all duration-300 ease-in-out group-hover/card:scale-105"
+        class="w-full transition-all duration-300 ease-in-out group-hover/card:scale-105"
       />
     </div>
     <!-- 底部 -->
