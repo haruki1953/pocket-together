@@ -14,6 +14,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 // 用户输入数据
+const roomImageUrl = ref<string | null>(null)
+const roomImage = ref<File | null>(null)
 const roomTitle = ref('')
 const roomDescription = ref('')
 const newTag = ref('')
@@ -40,9 +42,31 @@ function removeTag(index: number) {
   tags.value.splice(index, 1)
 }
 
+const imgInput = ref<HTMLInputElement | null>(null)
+
+// 处理图片上传
+async function onImgFile(event: Event) {
+  const imgInputDesu = event.target as HTMLInputElement
+  if (imgInputDesu.files == null || imgInputDesu.files.length === 0) return
+  const file = imgInputDesu.files[0]
+  // 送给 pocketbase 的
+  roomImage.value = file
+  // 害怕内存泄露
+  if (roomImageUrl.value != null) {
+    URL.revokeObjectURL(roomImageUrl.value)
+  }
+  // 预览
+  roomImageUrl.value = URL.createObjectURL(file)
+}
+
+// 检查必要信息生成 newroom
 async function createRoom() {
   if (authStore.record == null) {
     alert('请先登陆喵')
+    return
+  }
+  if (roomImageUrl.value == null) {
+    alert('请上传封面喵')
     return
   }
   if (roomTitle.value.trim() == null) {
@@ -52,6 +76,7 @@ async function createRoom() {
 
   try {
     const roomData = {
+      cover: roomImage.value,
       title: roomTitle.value,
       description: roomDescription.value,
       author: authStore.record.id,
@@ -101,72 +126,98 @@ async function createRoom() {
           </div>
 
           <!-- 上传封面 -->
+          <input
+            ref="imgInput"
+            type="file"
+            hidden
+            accept="image/*"
+            @change="onImgFile"
+          />
+          <!-- 装饰框 -->
           <div
-            class="flex h-[240px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-8 text-center text-cyan-600 transition-all duration-700 ease-in-out hover:border-cyan-800 hover:bg-cyan-100 dark:bg-gray-800/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
+            class="h-[240px] cursor-pointer rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 p-1 text-center text-cyan-600 transition-all duration-700 ease-in-out hover:border-cyan-800 hover:bg-cyan-100 dark:bg-gray-800/20 dark:text-cyan-400 dark:hover:border-cyan-600 dark:hover:bg-cyan-900/30"
             :class="isReady ? 'opacity-100' : 'opacity-0'"
+            @click="imgInput?.click()"
           >
-            <!-- 动画 svg -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-12"
-              viewBox="0 0 24 24"
+            <!-- 上传提示 -->
+            <div
+              v-if="roomImageUrl == null"
+              class="flex h-full w-full flex-col items-center justify-center rounded-xl"
             >
-              <g
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+              <!-- 动画 svg -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-12"
+                viewBox="0 0 24 24"
               >
-                <path
-                  stroke-dasharray="72"
-                  stroke-dashoffset="72"
-                  d="M3 14v-9h18v14h-18v-5"
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-dasharray="72"
+                    stroke-dashoffset="72"
+                    d="M3 14v-9h18v14h-18v-5"
+                  >
+                    <animate
+                      fill="freeze"
+                      attributeName="stroke-dashoffset"
+                      dur="0.6s"
+                      values="72;0"
+                    />
+                  </path>
+                  <path
+                    stroke-dasharray="24"
+                    stroke-dashoffset="24"
+                    stroke-width="1"
+                    d="M3 16l4 -3l3 2l6 -5l5 4"
+                  >
+                    <animate
+                      fill="freeze"
+                      attributeName="stroke-dashoffset"
+                      begin="0.6s"
+                      dur="0.4s"
+                      values="24;0"
+                    />
+                  </path>
+                </g>
+                <circle
+                  cx="7.5"
+                  cy="9.5"
+                  r="1.5"
+                  fill="currentColor"
+                  fill-opacity="0"
                 >
                   <animate
                     fill="freeze"
-                    attributeName="stroke-dashoffset"
-                    dur="0.6s"
-                    values="72;0"
+                    attributeName="fill-opacity"
+                    begin="1s"
+                    dur="0.2s"
+                    values="0;1"
                   />
-                </path>
-                <path
-                  stroke-dasharray="24"
-                  stroke-dashoffset="24"
-                  stroke-width="1"
-                  d="M3 16l4 -3l3 2l6 -5l5 4"
-                >
-                  <animate
-                    fill="freeze"
-                    attributeName="stroke-dashoffset"
-                    begin="0.6s"
-                    dur="0.4s"
-                    values="24;0"
-                  />
-                </path>
-              </g>
-              <circle
-                cx="7.5"
-                cy="9.5"
-                r="1.5"
-                fill="currentColor"
-                fill-opacity="0"
-              >
-                <animate
-                  fill="freeze"
-                  attributeName="fill-opacity"
-                  begin="1s"
-                  dur="0.2s"
-                  values="0;1"
-                />
-              </circle>
-            </svg>
-            <p class="mt-2 text-lg font-semibold">
-              {{ i18nStore.t('createRoomUploadCover')() }}
-            </p>
-            <p class="text-sm">
-              {{ i18nStore.t('createRoomUploadCoverDesc')() }}
-            </p>
+                </circle>
+              </svg>
+              <p class="mt-2 text-lg font-semibold">
+                {{ i18nStore.t('createRoomUploadCover')() }}
+              </p>
+              <p class="text-sm">
+                {{ i18nStore.t('createRoomUploadCoverDesc')() }}
+              </p>
+            </div>
+            <!-- 预览图 -->
+            <div
+              v-else
+              class="h-full w-full items-center justify-center rounded-xl bg-gray-200"
+            >
+              <img
+                :src="roomImageUrl"
+                alt="封面预览"
+                class="h-full w-full object-cover"
+              />
+            </div>
           </div>
 
           <!-- 编辑标题 -->
