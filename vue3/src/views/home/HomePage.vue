@@ -222,7 +222,7 @@ const smallScreenCards = computed(() => {
       :gap="16"
       :keyMapper="(item) => item.id"
     >
-      <template #default="{ item }">
+      <template #default="{ item, index }">
         <!-- 菜单卡片 -->
         <HomeMenu
           v-if="item.type === 'menu'"
@@ -238,6 +238,7 @@ const smallScreenCards = computed(() => {
           :class="
             isReady ? 'translate-y-0 opacity-100' : 'translate-y-96 opacity-0'
           "
+          :style="{ transitionDelay: `${index * 50}ms` }"
           :home="item"
           @toggleFavorite="toggleFavorite"
         />
@@ -259,12 +260,14 @@ const smallScreenCards = computed(() => {
       :gap="6"
       :keyMapper="(item) => item.id"
     >
-      <template #default="{ item }">
+      <template #default="{ item, index }">
         <!-- 房间卡片 -->
         <HomeCard
+          class="transition-all duration-500 ease-in-out"
           :class="
             isReady ? 'translate-y-0 opacity-100' : 'translate-y-96 opacity-0'
           "
+          :style="{ transitionDelay: `${index * 50}ms` }"
           :home="item"
           @toggleFavorite="toggleFavorite"
         />

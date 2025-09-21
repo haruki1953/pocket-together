@@ -27,10 +27,12 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'RoomDetailPage', params: { id: home.id } }">
+  <RouterLink
+    :to="{ name: 'RoomDetailPage', params: { id: home.id } }"
+    class="block"
+  >
     <div
       class="group/card relative flow-root transform-gpu break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-500 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
-      :class="isReady ? 'translate-y-0' : 'translate-y-100'"
     >
       <!-- 封面 -->
       <div class="max-h-[400px] min-h-[100px] overflow-hidden bg-red-400">
