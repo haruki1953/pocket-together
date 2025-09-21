@@ -17,6 +17,9 @@ const props = defineProps<{
   chatRoomMessagesForShow: MessagesResponseWidthExpand[] | null
   isChatBottomHasMore: boolean
   chatShowMoreOnBottom: () => Promise<void>
+  linkPositioningFlagMessageId: string | null
+  linkPositioningFlagShow: boolean
+  linkPositioningFlagClose: () => void
 }>()
 
 // 消息详情对话框
@@ -96,6 +99,9 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
                   return chatRoomMessagesForShow[index + 1]
                 })()
               "
+              :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
+              :linkPositioningFlagShow="linkPositioningFlagShow"
+              :linkPositioningFlagClose="linkPositioningFlagClose"
             ></ChatMessage>
           </div>
           <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->

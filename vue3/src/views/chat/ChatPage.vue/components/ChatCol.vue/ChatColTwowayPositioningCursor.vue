@@ -45,12 +45,26 @@ const routeQueryPositioningCursorData = (() => {
     created,
   }
 })()
-if (routeQueryPositioningCursorData != null) {
-  twowayPositioningCursorData.value = routeQueryPositioningCursorData
-}
 // 清除路由中的查询参数
 const router = useRouter()
 router.replace(route.path)
+
+// 设置路由定位数据
+if (routeQueryPositioningCursorData != null) {
+  twowayPositioningCursorData.value = routeQueryPositioningCursorData
+}
+
+// 链接定位标记，如果消息id等于此，将显示链接标记
+const linkPositioningFlagMessageId = ref<string | null>(null)
+// 控制链接标记是否显示，消息被点击会使其不显示
+const linkPositioningFlagShow = ref(false)
+const linkPositioningFlagClose = () => {
+  linkPositioningFlagShow.value = false
+}
+if (routeQueryPositioningCursorData != null) {
+  linkPositioningFlagMessageId.value = routeQueryPositioningCursorData.id
+  linkPositioningFlagShow.value = true
+}
 
 // // 测试定位
 // twowayPositioningCursorData.value = {
@@ -159,6 +173,9 @@ useChatScrollToShowMore({
       :chatRoomMessagesForShow="chatRoomMessagesForShow"
       :isChatBottomHasMore="isChatBottomHasMore"
       :chatShowMoreOnBottom="chatShowMoreOnBottom"
+      :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
+      :linkPositioningFlagShow="linkPositioningFlagShow"
+      :linkPositioningFlagClose="linkPositioningFlagClose"
     ></ChatColTemplateBase>
   </div>
 </template>

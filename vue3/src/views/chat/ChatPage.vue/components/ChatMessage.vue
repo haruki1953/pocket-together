@@ -27,6 +27,10 @@ const props = defineProps<{
   chatRoomMessagesItemNext: ChatRoomMessagesItem | null
   /** 打开消息详情对话框 */
   openMessageInfoDialog: OpenMessageInfoDialogType
+  /** 链接定位标记，如果消息id等于此，将显示链接标记 */
+  linkPositioningFlagMessageId: string | null
+  linkPositioningFlagShow: boolean
+  linkPositioningFlagClose: () => void
 }>()
 
 // 响应式的 pb.authStore
@@ -234,6 +238,13 @@ onLongPress(
     },
   }
 )
+
+// 链接定位标记的点击
+const linkPositioningFlagClickFn = async () => {
+  openMessageInfoDialogFn()
+  await new Promise((resolve) => setTimeout(resolve, 300))
+  props.linkPositioningFlagClose()
+}
 </script>
 
 <template>
@@ -310,7 +321,20 @@ onLongPress(
         <!-- 图标列（详情按钮） -->
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
+            <!-- 链接定位标记，如果消息id等于此，将显示链接标记 -->
             <div
+              v-if="
+                linkPositioningFlagMessageId === chatRoomMessagesItem.id &&
+                linkPositioningFlagShow === true
+              "
+              class="cursor-pointer text-el-primary"
+              @click="linkPositioningFlagClickFn"
+            >
+              <RiLink></RiLink>
+            </div>
+            <!-- 普通更多按钮 -->
+            <div
+              v-else
               class="more-button cursor-pointer"
               @click="openMessageInfoDialogFn"
             >
