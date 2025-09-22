@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
 import { ElButton } from 'element-plus'
+import { useI18nStore } from '@/stores'
 
 const router = useRouter()
 const route = useRoute()
+const i18nStore = useI18nStore()
+
 const roomId = route.params.id as string
 
 function goToRoom() {
@@ -13,7 +16,7 @@ function goToRoom() {
 }
 
 function goToHome() {
-  router.push({ name: 'HomePage' }) // 假设您的首页路由名称是 'Home'
+  router.push({ name: 'HomePage' })
 }
 </script>
 
@@ -64,12 +67,14 @@ function goToHome() {
           </g>
         </svg>
         <h1 class="mb-8 text-3xl font-bold text-gray-800 dark:text-gray-200">
-          创建成功喵！
+          {{ i18nStore.t('createRoomOKTitle')() }}
         </h1>
         <div class="flex justify-center space-x-4">
-          <ElButton size="large" @click="goToHome"> 返回首页 </ElButton>
+          <ElButton size="large" @click="goToHome">
+            {{ i18nStore.t('createRoomOKGoToHome')() }}
+          </ElButton>
           <ElButton type="primary" size="large" @click="goToRoom">
-            进入房间
+            {{ i18nStore.t('createRoomOKGoToRoom')() }}
           </ElButton>
         </div>
       </div>

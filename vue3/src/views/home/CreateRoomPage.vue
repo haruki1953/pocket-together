@@ -56,7 +56,7 @@ async function onImgFile(event: Event) {
   const file = imgInputDesu.files[0]
   // 验证大小
   if (file.size > fileRoomImageConfig.roomImageBlobFileMaxSize) {
-    ElMessage.error('图片大小不能超过 10MB 喵，请选择更小的图片喵')
+    ElMessage.error(i18nStore.t('createRoomError_fileTooLarge')())
     imgInputDesu.value = ''
     return
   }
@@ -73,15 +73,15 @@ async function onImgFile(event: Event) {
 // 检查必要信息生成 newroom
 async function createRoom() {
   if (authStore.record == null) {
-    alert('请先登陆喵')
+    ElMessage.error(i18nStore.t('createRoomError_notLoggedIn')())
     return
   }
   if (roomImageUrl.value == null) {
-    alert('请上传封面喵')
+    ElMessage.error(i18nStore.t('createRoomError_noCover')())
     return
   }
   if (roomTitle.value.trim() == null) {
-    alert('请输入标题喵')
+    ElMessage.error(i18nStore.t('createRoomError_noTitle')())
     return
   }
 
@@ -101,9 +101,10 @@ async function createRoom() {
     hideLoadingMask()
     router.push({ name: 'CreateRoomOK', params: { id: newRoom.id } })
   } catch (error) {
+    // 失败也结束动画
     hideLoadingMask()
     console.error('创建房间失败喵：', error)
-    alert('创建房间失败喵，请稍后再试喵')
+    ElMessage.error(i18nStore.t('createRoomError_creationFailed')())
   }
 }
 </script>

@@ -112,4 +112,48 @@ export const i18nMessagesHomePart = {
     'zh-CN': () => '创建房间 >' as const,
     'zh-TW': () => '創建房間 >' as const,
   },
+
+  // CreateRoomOK
+  createRoomOKTitle: {
+    'en-US': () => 'Creation successful, nya!' as const,
+    'zh-CN': () => '创建成功喵！' as const,
+    'zh-TW': () => '創建成功喵！' as const,
+  },
+  createRoomOKGoToHome: {
+    'en-US': () => 'Back to Home' as const,
+    'zh-CN': () => '返回首页' as const,
+    'zh-TW': () => '返回首頁' as const,
+  },
+  createRoomOKGoToRoom: {
+    'en-US': () => 'Enter Room' as const,
+    'zh-CN': () => '进入房间' as const,
+    'zh-TW': () => '進入房間' as const,
+  },
+
+  // CreateRoomPage Errors
+  createRoomError_fileTooLarge: {
+    'en-US': () => 'Image size cannot exceed 10MB, nya! Please select a smaller image, nya!' as const,
+    'zh-CN': () => '图片大小不能超过 10MB 喵，请选择更小的图片喵' as const,
+    'zh-TW': () => '圖片大小不能超過 10MB 喵，請選擇更小的圖片喵' as const,
+  },
+  createRoomError_notLoggedIn: {
+    'en-US': () => 'Please log in first, nya!' as const,
+    'zh-CN': () => '请先登陆喵' as const,
+    'zh-TW': () => '請先登陸喵' as const,
+  },
+  createRoomError_noCover: {
+    'en-US': () => 'Please upload a cover image, nya!' as const,
+    'zh-CN': () => '请上传封面喵' as const,
+    'zh-TW': () => '請上傳封面喵' as const,
+  },
+  createRoomError_noTitle: {
+    'en-US': () => 'Please enter a title, nya!' as const,
+    'zh-CN': () => '请输入标题喵' as const,
+    'zh-TW': () => '請輸入標題喵' as const,
+  },
+  createRoomError_creationFailed: {
+    'en-US': () => 'Failed to create room, nya! Please try again later, nya!' as const,
+    'zh-CN': () => '创建房间失败喵，请稍后再试喵' as const,
+    'zh-TW': () => '創建房間失敗喵，請稍後再試喵' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType
