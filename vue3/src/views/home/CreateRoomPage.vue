@@ -6,6 +6,8 @@ import { useRouter } from 'vue-router'
 import { pb } from '@/lib'
 // 封装的状态管理
 import { useAuthStore } from '@/stores'
+// 文件上传限制
+import { fileRoomImageConfig } from '@/config'
 
 const i18nStore = useI18nStore()
 
@@ -13,7 +15,7 @@ const i18nStore = useI18nStore()
 const router = useRouter()
 const authStore = useAuthStore()
 
-// 用户输入数据
+// 用户输入数据的存储位置
 const roomImageUrl = ref<string | null>(null)
 const roomImage = ref<File | null>(null)
 const roomTitle = ref('')
@@ -47,15 +49,23 @@ const imgInput = ref<HTMLInputElement | null>(null)
 // 处理图片上传
 async function onImgFile(event: Event) {
   const imgInputDesu = event.target as HTMLInputElement
+  // 没文件就出来
   if (imgInputDesu.files == null || imgInputDesu.files.length === 0) return
+  // 拿到第一个文件
   const file = imgInputDesu.files[0]
+  // 验证大小
+  if (file.size > fileRoomImageConfig.roomImageBlobFileMaxSize) {
+    ElMessage.error('图片大小不能超过 10MB 喵，请选择更小的图片喵')
+    imgInputDesu.value = ''
+    return
+  }
   // 送给 pocketbase 的
   roomImage.value = file
   // 害怕内存泄露
   if (roomImageUrl.value != null) {
     URL.revokeObjectURL(roomImageUrl.value)
   }
-  // 预览
+  // 拿来预览的
   roomImageUrl.value = URL.createObjectURL(file)
 }
 
@@ -85,6 +95,7 @@ async function createRoom() {
     console.log('稍等喵，在创建：', roomData, '中喵...')
     const newRoom = await pb.collection('rooms').create(roomData)
     console.log('创建成功喵！新房间：', newRoom)
+    alert('创建成功喵！')
     router.push({ name: 'RoomDetailPage', params: { id: newRoom.id } })
   } catch (error) {
     console.error('创建房间失败喵：', error)
@@ -210,7 +221,7 @@ async function createRoom() {
             <!-- 预览图 -->
             <div
               v-else
-              class="h-full w-full items-center justify-center rounded-xl bg-gray-200"
+              class="h-full w-full items-center justify-center overflow-hidden rounded-xl bg-gray-200"
             >
               <img
                 :src="roomImageUrl"
