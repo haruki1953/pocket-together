@@ -3,6 +3,7 @@ import type { MessagesResponseWidthExpand } from '@/api'
 import { ChatInputBar, ChatMessage } from './dependencies'
 import { useI18nStore } from '@/stores'
 import MessageInfoDialog from './components/MessageInfoDialog.vue'
+import { RiArrowLeftFill, RiArrowLeftSFill, RiMore2Fill } from '@remixicon/vue'
 
 const i18nStore = useI18nStore()
 
@@ -43,88 +44,117 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
     <MessageInfoDialog ref="refMessageInfoDialog"></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
-    <ContainerBar :defaultBarHeight="72">
+    <ContainerBar :defaultBarHeight="64">
       <template #default>
-        <div class="mb-1 mt-6">
-          <!-- <ElButton @click="testPbPage">pb分页测试</ElButton> -->
-          <!-- <ElButton @click="testPbSend">pb批量消息</ElButton> -->
-          <div
-            v-if="isChatTopHasMore"
-            class="mt-[-24px] flex items-center justify-center"
-          >
-            <ElButton
-              class="chat-show-more-button top"
-              round
-              size="small"
-              text
-              type="primary"
-              :loading="isShowMoreRunning"
-              @click="chatShowMoreOnTop"
-            >
-              <template v-if="isShowMoreRunning">
-                {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
-              </template>
-              <template v-else>
-                {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
-              </template>
-            </ElButton>
+        <div class="">
+          <!-- 聊天页顶栏 -->
+          <div class="chat-top-bar sticky top-0 z-[1] flow-root">
+            <div class="top-bar-box flow-root bg-color-background-soft">
+              <div class="">
+                <!-- 顶栏 -->
+                <div class="flex items-center">
+                  <!-- 返回 -->
+                  <div
+                    class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
+                  >
+                    <RiArrowLeftSFill></RiArrowLeftSFill>
+                  </div>
+                  <!-- 标题 -->
+                  <div class="flex-1"></div>
+                  <!-- 更多 -->
+                  <div
+                    class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
+                  >
+                    <RiMore2Fill></RiMore2Fill>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- 聊天栏 -->
-          <div v-if="chatRoomMessagesForShow != null">
-            <!-- 消息 -->
-            <ChatMessage
-              v-for="(item, index) in chatRoomMessagesForShow"
-              :key="item.id"
-              :openMessageInfoDialog="openMessageInfoDialog"
-              :chatRoomMessagesItem="item"
-              :chatRoomMessagesItemPrevious="
-                (() => {
-                  // 上一条消息
-                  // 确保存在
-                  // index === 0
-                  if (index < 1) {
-                    return null
-                  }
-                  return chatRoomMessagesForShow[index - 1]
-                })()
-              "
-              :chatRoomMessagesItemNext="
-                (() => {
-                  // 下一条消息
-                  // 确保存在
-                  // index === chatRoomMessagesForShow.length - 1
-                  if (index > chatRoomMessagesForShow.length - 2) {
-                    return null
-                  }
-                  return chatRoomMessagesForShow[index + 1]
-                })()
-              "
-              :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
-              :linkPositioningFlagShow="linkPositioningFlagShow"
-              :linkPositioningFlagClose="linkPositioningFlagClose"
-            ></ChatMessage>
-          </div>
-          <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->
-          <div
-            v-if="isChatBottomHasMore"
-            class="flex items-center justify-center"
-          >
-            <ElButton
-              class="chat-show-more-button bottom"
-              round
-              size="small"
-              text
-              type="primary"
-              :loading="isShowMoreRunning"
-              @click="chatShowMoreOnBottom"
+          <div class="mx-1 mt-6">
+            <!-- <ElButton @click="testPbPage">pb分页测试</ElButton> -->
+            <!-- <ElButton @click="testPbSend">pb批量消息</ElButton> -->
+            <!-- 加载更多按钮 -->
+            <div
+              v-if="isChatTopHasMore"
+              class="mt-[-24px] flex items-center justify-center"
             >
-              <template v-if="isShowMoreRunning">
-                {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
-              </template>
-              <template v-else>
-                {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
-              </template>
-            </ElButton>
+              <ElButton
+                class="chat-show-more-button top"
+                round
+                size="small"
+                text
+                type="primary"
+                :loading="isShowMoreRunning"
+                @click="chatShowMoreOnTop"
+              >
+                <template v-if="isShowMoreRunning">
+                  {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
+                </template>
+                <template v-else>
+                  {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
+                </template>
+              </ElButton>
+            </div>
+            <!-- 聊天栏 -->
+            <div v-if="chatRoomMessagesForShow != null">
+              <!-- 消息 -->
+              <ChatMessage
+                v-for="(item, index) in chatRoomMessagesForShow"
+                :key="item.id"
+                :openMessageInfoDialog="openMessageInfoDialog"
+                :chatRoomMessagesItem="item"
+                :chatRoomMessagesItemPrevious="
+                  (() => {
+                    // 上一条消息
+                    // 确保存在
+                    // index === 0
+                    if (index < 1) {
+                      return null
+                    }
+                    return chatRoomMessagesForShow[index - 1]
+                  })()
+                "
+                :chatRoomMessagesItemNext="
+                  (() => {
+                    // 下一条消息
+                    // 确保存在
+                    // index === chatRoomMessagesForShow.length - 1
+                    if (index > chatRoomMessagesForShow.length - 2) {
+                      return null
+                    }
+                    return chatRoomMessagesForShow[index + 1]
+                  })()
+                "
+                :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
+                :linkPositioningFlagShow="linkPositioningFlagShow"
+                :linkPositioningFlagClose="linkPositioningFlagClose"
+              ></ChatMessage>
+            </div>
+            <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->
+            <!-- 加载更多按钮 -->
+            <div
+              v-if="isChatBottomHasMore"
+              class="flex items-center justify-center"
+            >
+              <ElButton
+                class="chat-show-more-button bottom"
+                round
+                size="small"
+                text
+                type="primary"
+                :loading="isShowMoreRunning"
+                @click="chatShowMoreOnBottom"
+              >
+                <template v-if="isShowMoreRunning">
+                  {{ i18nStore.t('chatOnTopOrBottomShowMoreRunningText')() }}
+                </template>
+                <template v-else>
+                  {{ i18nStore.t('chatOnTopOrBottomShowMoreText')() }}
+                </template>
+              </ElButton>
+            </div>
+            <div v-else class="h-3"></div>
           </div>
         </div>
       </template>
@@ -145,8 +175,18 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
     // background-color: transparent;
     background-color: var(--color-background-a30);
   }
-  // &.top {
-  //   border-radius: 0 0 20px 20px;
-  // }
+  &.top {
+    border-radius: 0 0 20px 20px;
+  }
+  &.bottom {
+    border-radius: 20px 20px 0 0;
+  }
+}
+
+.chat-top-bar {
+  .top-bar-box {
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 0 6px 6px var(--color-background);
+  }
 }
 </style>

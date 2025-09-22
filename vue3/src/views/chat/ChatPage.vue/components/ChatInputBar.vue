@@ -74,24 +74,24 @@ const messageSendSubmit = async () => {
 
 <template>
   <div class="chat-input-bar flow-root">
-    <div
-      class="chat-input-box mb-3 mt-3 flow-root rounded-3xl bg-color-background-soft"
-    >
+    <div class="chat-input-box flow-root bg-color-background-soft pb-1">
       <!-- <div class="m-3 h-16 bg-red-950">输入框</div> -->
-      <div class="my-2 flex items-center">
+      <div class="my-2 flex items-stretch">
         <!-- 输入框 -->
-        <div class="ml-2 mr-1 flex-1">
-          <ElInput
-            v-model="chatInputContent"
-            size="large"
-            type="textarea"
-            resize="none"
-            :rows="1"
-            :autosize="{ minRows: 1, maxRows: 10 }"
-          />
+        <div class="ml-2 mr-1 flow-root flex-1">
+          <div class="mt-[1px]">
+            <ElInput
+              v-model="chatInputContent"
+              size="large"
+              type="textarea"
+              resize="none"
+              :rows="1"
+              :autosize="{ minRows: 1, maxRows: 10 }"
+            />
+          </div>
         </div>
         <!-- 按钮 -->
-        <div class="mr-2">
+        <div class="mr-2 flex flex-col-reverse">
           <ElButton
             circle
             type="primary"
@@ -112,13 +112,15 @@ const messageSendSubmit = async () => {
 .chat-input-bar {
   // 背景色 --color-background
   // 渐变，透明
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--color-background) 12px
-  );
+  // background: linear-gradient(
+  //   to bottom,
+  //   transparent 0%,
+  //   var(--color-background) 12px
+  // );
 }
 .chat-input-box {
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 0 6px 6px var(--color-background);
   :deep() {
     .el-textarea__inner {
       // color: var(--color-text);
