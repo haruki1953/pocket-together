@@ -100,3 +100,27 @@ export const urlJoinUtil = (...segments: string[]): string => {
 export const capitalizeFirstLetter = (str: string) => {
   return str.replace(/^\S/, (char) => char.toUpperCase())
 }
+
+// 显示加载动画
+export function showLoadingMask() {
+  const mask = document.getElementById('index-mask')
+  if (mask) {
+    mask.style.display = 'flex' // Use flex as defined in the CSS
+    // Use a timeout to ensure the display change has taken effect before changing opacity
+    setTimeout(() => {
+      mask.style.opacity = '1'
+    }, 10)
+  }
+}
+
+// 隐藏加载动画
+export function hideLoadingMask() {
+  const mask = document.getElementById('index-mask')
+  if (mask) {
+    mask.style.opacity = '0'
+    // Hide it completely after the transition
+    setTimeout(() => {
+      mask.style.display = 'none'
+    }, 300) // 300ms matches the transition duration in the CSS
+  }
+}

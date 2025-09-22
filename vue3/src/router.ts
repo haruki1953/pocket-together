@@ -67,6 +67,11 @@ const router = createRouter({
           ...routerDict.CreateRoomPage,
           component: CreateRoomPage,
         },
+        {
+          path: '/room/create/ok/:id',
+          name: 'CreateRoomOK',
+          component: () => import('@/views/home/CreateRoomOK.vue'),
+        },
       ],
     },
   ],

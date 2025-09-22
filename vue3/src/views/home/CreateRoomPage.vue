@@ -8,6 +8,7 @@ import { pb } from '@/lib'
 import { useAuthStore } from '@/stores'
 // 文件上传限制
 import { fileRoomImageConfig } from '@/config'
+import { hideLoadingMask, showLoadingMask } from '@/utils'
 
 const i18nStore = useI18nStore()
 
@@ -91,13 +92,16 @@ async function createRoom() {
       description: roomDescription.value,
       author: authStore.record.id,
     }
-
+    // 加载
+    showLoadingMask()
     console.log('稍等喵，在创建：', roomData, '中喵...')
     const newRoom = await pb.collection('rooms').create(roomData)
     console.log('创建成功喵！新房间：', newRoom)
-    alert('创建成功喵！')
-    router.push({ name: 'RoomDetailPage', params: { id: newRoom.id } })
+    // 结束
+    hideLoadingMask()
+    router.push({ name: 'CreateRoomOK', params: { id: newRoom.id } })
   } catch (error) {
+    hideLoadingMask()
     console.error('创建房间失败喵：', error)
     alert('创建房间失败喵，请稍后再试喵')
   }
