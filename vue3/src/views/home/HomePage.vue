@@ -71,7 +71,7 @@ const DisplayCards = computed<HomeCardType[]>(() => {
               ? pb.files.getURL(author, author.avatar)
               : '',
           // rooms 集合中没有 tags 字段，直接提供一个空数组
-          tags: [],
+          tags: Array.isArray(room.tags) ? room.tags : [],
           isFavorited: false,
         } satisfies HomeCardType
       }

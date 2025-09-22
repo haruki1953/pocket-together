@@ -21,8 +21,9 @@ const roomImageUrl = ref<string | null>(null)
 const roomImage = ref<File | null>(null)
 const roomTitle = ref('')
 const roomDescription = ref('')
-const newTag = ref('')
+const roomTag = ref('')
 const tags = ref(['TEST', 'TEST', 'TEST'])
+const tagNotNew = ref<boolean>(false)
 
 // 检测进入页面
 const isReady = ref(false)
@@ -35,9 +36,15 @@ onMounted(() => {
 
 // tag
 function addTag() {
-  if (newTag.value !== '' && !tags.value.includes(newTag.value)) {
-    tags.value.push(newTag.value)
-    newTag.value = ''
+  const newTag = roomTag.value.trim()
+  if (newTag === '' || tags.value.includes(newTag)) return
+  if (!tagNotNew.value) {
+    tagNotNew.value = true
+    tags.value = [newTag]
+    roomTag.value = ''
+  } else {
+    tags.value.push(newTag)
+    roomTag.value = ''
   }
 }
 
@@ -90,6 +97,7 @@ async function createRoom() {
       cover: roomImage.value,
       title: roomTitle.value,
       description: roomDescription.value,
+      tags: tags.value,
       author: authStore.record.id,
     }
     // 加载
@@ -155,7 +163,7 @@ async function createRoom() {
             :class="isReady ? 'opacity-100' : 'opacity-0'"
             @click="imgInput?.click()"
           >
-            <!-- 上传提示 -->
+            <!-- 图片上传提示 -->
             <div
               v-if="roomImageUrl == null"
               class="flex h-full w-full flex-col items-center justify-center rounded-xl"
@@ -256,7 +264,7 @@ async function createRoom() {
           <!-- 编辑 Tag -->
           <div>
             <input
-              v-model="newTag"
+              v-model="roomTag"
               type="text"
               :placeholder="i18nStore.t('createRoomPlaceholderTags')()"
               class="w-full rounded-lg border-gray-300 bg-gray-100 p-3 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700"

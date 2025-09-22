@@ -70,6 +70,7 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
           >
             <!-- 暂时不确定 tag 是否要做固定化，忽略此报错 -->
             <!-- {{ i18nStore.t(tag as I18nMessagesKeyType)() }} -->
+            {{ home.tags[index] }}
           </ElTag>
         </div>
         <!-- 在线人数 -->
