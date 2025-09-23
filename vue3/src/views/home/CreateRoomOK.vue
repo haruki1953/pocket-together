@@ -2,12 +2,20 @@
 import { useRouter, useRoute } from 'vue-router'
 import { ElButton } from 'element-plus'
 import { useI18nStore } from '@/stores'
+import { onMounted } from 'vue'
+import { useQueryClient } from '@tanstack/vue-query'
+import { queryKeys } from '@/queries/query-keys'
 
 const router = useRouter()
 const route = useRoute()
 const i18nStore = useI18nStore()
+const queryClient = useQueryClient()
 
 const roomId = route.params.id as string
+
+onMounted(() => {
+  queryClient.invalidateQueries({ queryKey: queryKeys.rooms() })
+})
 
 function goToRoom() {
   if (roomId !== '') {
