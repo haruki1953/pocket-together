@@ -12,7 +12,7 @@ export const useRoomsInfiniteQuery = () => {
 
     // 实际执行数据请求的函数。
     queryFn: async ({ pageParam }) => {
-      const perPage = 8
+      const perPage = 7
       // 调用 getList 时，通过泛型传入 expand 的确切类型
       const result = await pb
         .collection(Collections.Rooms)
