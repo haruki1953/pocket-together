@@ -82,7 +82,7 @@ watch(
     // 视图更新
     preloadedRoomCards.value = roomCards
   },
-  { deep: true } // 使用 deep watch 确保能侦测到嵌套数据的变化
+  { deep: true, immediate: true }
 )
 
 // 处理和转换数据
