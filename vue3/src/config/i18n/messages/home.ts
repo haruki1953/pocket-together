@@ -52,7 +52,7 @@ export const i18nMessagesHomePart = {
     'zh-TW': () => '請上傳封面圖片' as const,
   },
   createRoomUploadCoverDesc: {
-    'en-US': () => 'Supports JPG, PNG, WEBP, etc.' as const,
+    'en-US': () => 'Supports JPG, PNG, WEBP.' as const,
     'zh-CN': () => '支持 JPG, PNG, WEBP 等多种格式' as const,
     'zh-TW': () => '支援 JPG, PNG, WEBP 等多種格式' as const,
   },
@@ -132,7 +132,8 @@ export const i18nMessagesHomePart = {
 
   // CreateRoomPage Errors
   createRoomError_fileTooLarge: {
-    'en-US': () => 'Image size cannot exceed 10MB, nya! Please select a smaller image, nya!' as const,
+    'en-US': () =>
+      'Image size cannot exceed 10MB, nya! Please select a smaller image, nya!' as const,
     'zh-CN': () => '图片大小不能超过 10MB 喵，请选择更小的图片喵' as const,
     'zh-TW': () => '圖片大小不能超過 10MB 喵，請選擇更小的圖片喵' as const,
   },
@@ -152,7 +153,8 @@ export const i18nMessagesHomePart = {
     'zh-TW': () => '請輸入標題喵' as const,
   },
   createRoomError_creationFailed: {
-    'en-US': () => 'Failed to create room, nya! Please try again later, nya!' as const,
+    'en-US': () =>
+      'Failed to create room, nya! Please try again later, nya!' as const,
     'zh-CN': () => '创建房间失败喵，请稍后再试喵' as const,
     'zh-TW': () => '創建房間失敗喵，請稍後再試喵' as const,
   },

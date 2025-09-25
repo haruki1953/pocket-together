@@ -102,16 +102,13 @@ async function createRoom() {
     }
     // 加载
     showLoadingMask()
-    console.log('稍等喵，在创建：', roomData, '中喵...')
     const newRoom = await pb.collection('rooms').create(roomData)
-    console.log('创建成功喵！新房间：', newRoom)
     // 结束
     hideLoadingMask()
     router.push({ name: 'CreateRoomOK', params: { id: newRoom.id } })
-  } catch (error) {
+  } catch {
     // 失败也结束动画
     hideLoadingMask()
-    console.error('创建房间失败喵：', error)
     ElMessage.error(i18nStore.t('createRoomError_creationFailed')())
   }
 }
@@ -326,8 +323,46 @@ async function createRoom() {
                 ></div>
                 <!-- 预览卡片 -->
                 <div
-                  class="group relative mb-3 flow-root h-44 break-inside-avoid rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
-                ></div>
+                  class="group/card relative mb-3 flow-root break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
+                >
+                  <div class="max-h-[160px] min-h-[50px] overflow-hidden">
+                    <img
+                      :src="roomImageUrl"
+                      alt="Room cover"
+                      class="h-full w-full object-cover transition-all duration-300 ease-in-out group-hover/card:scale-105"
+                    />
+                  </div>
+                  <!-- 底部 -->
+                  <div
+                    class="relative h-max w-full bg-color-background-soft p-2 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] group-hover/card:bg-gray-100 dark:group-hover/card:bg-neutral-800"
+                  >
+                    <h3
+                      class="line-clamp-3 font-bold text-gray-800 dark:text-gray-100"
+                    >
+                      {{ roomTitle }}
+                    </h3>
+
+                    <!-- 用户 -->
+                    <div class="mt-2 flex items-center">
+                      <span class="text-sm text-gray-500 dark:text-gray-400">
+                        用户
+                      </span>
+                    </div>
+                    <!-- 标签 -->
+                    <div v-if="tags.length" class="mt-1">
+                      <ElTag
+                        v-for="(tag, index) in tags"
+                        :key="tag"
+                        class="mr-2"
+                        round
+                        size="small"
+                        effect="light"
+                      >
+                        {{ tags[index] }}
+                      </ElTag>
+                    </div>
+                  </div>
+                </div>
                 <div
                   class="group relative mb-3 flow-root h-20 break-inside-avoid rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-28"
                 ></div>
