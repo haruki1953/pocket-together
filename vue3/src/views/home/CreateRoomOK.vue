@@ -14,7 +14,9 @@ const queryClient = useQueryClient()
 const roomId = route.params.id as string
 
 onMounted(() => {
-  queryClient.invalidateQueries({ queryKey: queryKeys.rooms() })
+  setTimeout(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.rooms() })
+  }, 1000)
 })
 
 function goToRoom() {

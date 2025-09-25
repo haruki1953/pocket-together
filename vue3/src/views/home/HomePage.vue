@@ -15,16 +15,79 @@ import MasonryWall from '@yeger/vue-masonry-wall'
 
 // 导入钩子和 pocketbase 实例
 import { useRoomsInfiniteQuery } from '@/queries/rooms'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import type { RoomsResponse, UsersResponse } from '@/lib'
 import { pb } from '@/lib'
+// 导入图片预加载组合式函数
+import { useCardImagePreloader } from '@/composables/Home-CardScroll'
 
 // 调用勾子命名为 roomsQuery
 const roomsQuery = useRoomsInfiniteQuery()
 
-// 2. 使用 computed 属性来处理和转换数据
+// 预加载函数
+const { preloadImagesForCards } = useCardImagePreloader()
+// 已预加载图片的卡片数据
+const preloadedRoomCards = ref<HomeCardType[]>([])
+
+// 监听从服务器获取的数据变化
+watch(
+  () => roomsQuery.data.value,
+  async (newData) => {
+    // 如果没有数据，则清空卡片列表
+    if (!newData) {
+      preloadedRoomCards.value = []
+      return
+    }
+
+    // 扁平化和映射数据
+    const roomCards = newData.pages.flatMap((page) =>
+      // 遍历每一页中的 'items' ，为 room 加上类型判断
+      page.items.map(
+        // (room: RoomsResponse & { expand: { author: UsersResponse } }) => {
+        // 舍弃手动拼接，使用范型传参（规避类型报错）
+        (room: RoomsResponse<unknown, { author: UsersResponse }>) => {
+          // 把复杂的前缀封装进 author
+          const author = room.expand?.author
+          return {
+            id: room.id,
+            type: 'card',
+            // 使用最严格、最显式的检查，避免 lint 错误
+            coverUrl:
+              room.cover != null && room.cover !== ''
+                ? pb.files.getURL(room, room.cover)
+                : '',
+            title: room.title,
+            // 在 HomePage 的 map 回调中，room参数的类型可能被推断为没有 expand 的通用信息的类型
+            // 需要重新显式提供类型
+            creator:
+              typeof author?.name === 'string' && author.name !== ''
+                ? author.name
+                : '未知用户',
+            // 对 avatar 也使用最严格的检查
+            avatarUrl:
+              author != null && author.avatar != null && author.avatar !== ''
+                ? pb.files.getURL(author, author.avatar)
+                : '',
+            // tags 字段，直接提供一个空数组
+            tags: Array.isArray(room.tags) ? room.tags : [],
+            isFavorited: false,
+          } satisfies HomeCardType
+        }
+      )
+    )
+
+    // 异步预加载卡片封面图片
+    await preloadImagesForCards(roomCards)
+
+    // 视图更新
+    preloadedRoomCards.value = roomCards
+  },
+  { deep: true } // 使用 deep watch 确保能侦测到嵌套数据的变化
+)
+
+// 处理和转换数据
 const DisplayCards = computed<HomeCardType[]>(() => {
-  // 菜单卡片，我们手动将它放在列表的最前面
+  // 列表的最前面
   const menuCard: HomeCardType = {
     id: 'menu-card',
     type: 'menu',
@@ -36,50 +99,13 @@ const DisplayCards = computed<HomeCardType[]>(() => {
     isFavorited: false,
   }
 
-  // 如果 roomsQuery.data.value 不存在 (比如还在加载中)，则只返回菜单卡片
+  // 如果 roomsQuery.data.value 不存在
   if (!roomsQuery.data.value) {
     return [menuCard]
   }
 
-  // 扁平化和映射数据
-  const roomCards = roomsQuery.data.value.pages.flatMap((page) =>
-    // 遍历每一页中的 'items' ，为 room 加上类型判断
-    page.items.map(
-      // (room: RoomsResponse & { expand: { author: UsersResponse } }) => {
-      // 舍弃手动拼接，使用范型传参（规避类型报错）
-      (room: RoomsResponse<unknown, { author: UsersResponse }>) => {
-        // 把复杂的前缀封装进 author
-        const author = room.expand?.author
-        return {
-          id: room.id,
-          type: 'card',
-          // 使用最严格、最显式的检查，避免 lint 错误
-          coverUrl:
-            room.cover != null && room.cover !== ''
-              ? pb.files.getURL(room, room.cover)
-              : '',
-          title: room.title,
-          // 在 HomePage 的 map 回调中，room参数的类型可能被推断为没有 expand 的通用信息的类型
-          // 需要重新显式提供类型
-          creator:
-            typeof author?.name === 'string' && author.name !== ''
-              ? author.name
-              : '未知用户',
-          // 对 avatar 也使用最严格的检查
-          avatarUrl:
-            author != null && author.avatar != null && author.avatar !== ''
-              ? pb.files.getURL(author, author.avatar)
-              : '',
-          // tags 字段，直接提供一个空数组
-          tags: Array.isArray(room.tags) ? room.tags : [],
-          isFavorited: false,
-        } satisfies HomeCardType
-      }
-    )
-  )
-
-  // 将菜单卡片和从服务器获取的房间卡片组合在一起返回
-  return [menuCard, ...roomCards]
+  // 将菜单卡片和已预加载图片的房间卡片组合在一起
+  return [menuCard, ...preloadedRoomCards.value]
 })
 
 // 滚动触发器

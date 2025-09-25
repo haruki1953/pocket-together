@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RiArrowLeftSLine } from '@remixicon/vue'
 import { useI18nStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { pb } from '@/lib'
-import { useCardImagePreloader } from '@/composables/Home-CardScroll'
-import type { HomeCardType } from '@/views/home/types'
 // 封装的状态管理
 import { useAuthStore } from '@/stores'
 // 文件上传限制
@@ -29,56 +27,6 @@ const tagNotNew = ref<boolean>(false)
 
 // 检测进入页面
 const isReady = ref(false)
-
-// 用于预览的卡片，在图片预加载后填充
-const displayCard = ref<HomeCardType | null>(null)
-
-const { preloadImagesForCards } = useCardImagePreloader()
-
-// 计算属性，用于收集预览卡片的所有数据
-const sourceCard = computed(() => {
-  // 根据 strict-boolean-expressions 规则，明确检查 null 或空字符串
-  if (roomImageUrl.value === null || roomImageUrl.value.trim() === '') {
-    return null
-  }
-
-  // 构建一个尽可能匹配 HomeCardType 结构的卡片对象
-  // 这个对象是临时的，用于预加载，然后用于显示
-  const card: Partial<HomeCardType> = {
-    // 为预览卡片使用一个模拟 ID
-    id: 'preview-card',
-    // coverUrl 是预加载器最重要的部分
-    coverUrl: roomImageUrl.value,
-    title: roomTitle.value,
-    tags: tags.value,
-  }
-  return card
-})
-
-// 侦听源数据（图像、标题等）的更改
-watch(
-  sourceCard,
-  async (newCard) => {
-    // 根据 strict-boolean-expressions 规则，进行更严格的检查
-    if (
-      newCard !== null &&
-      typeof newCard.coverUrl === 'string' &&
-      newCard.coverUrl.trim() !== '' &&
-      newCard.coverUrl.startsWith('blob:')
-    ) {
-      // 卡片对象被包装在一个数组中，正如预加载器所期望的那样
-      // 我们强制转换为 `HomeCardType[]` 以满足类型检查器，
-      // 因为我们只提供了一个部分对象
-      await preloadImagesForCards([newCard] as HomeCardType[])
-      // 图片预加载后，卡片数据就可以显示了
-      displayCard.value = newCard as HomeCardType
-    } else {
-      // 如果没有有效的卡片数据，则清除显示卡片
-      displayCard.value = null
-    }
-  },
-  { deep: true } // 使用深度侦听来检测标签数组中的更改
-)
 
 onMounted(() => {
   setTimeout(() => {
