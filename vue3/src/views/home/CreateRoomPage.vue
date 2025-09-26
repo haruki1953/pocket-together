@@ -323,6 +323,11 @@ async function createRoom() {
                 ></div>
                 <!-- 预览卡片 -->
                 <div
+                  v-if="roomImageUrl == null"
+                  class="group relative mb-3 flow-root h-44 break-inside-avoid rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60 lg:h-60"
+                ></div>
+                <div
+                  v-else
                   class="group/card relative mb-3 flow-root break-inside-avoid overflow-hidden rounded-2xl bg-color-background-soft shadow-lg transition-all duration-300 ease-in-out hover:!opacity-100 hover:shadow-black/20 dark:hover:shadow-black/60"
                 >
                   <div class="max-h-[160px] min-h-[50px] overflow-hidden">
