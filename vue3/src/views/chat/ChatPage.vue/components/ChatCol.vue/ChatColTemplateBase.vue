@@ -3,6 +3,7 @@ import type { MessagesResponseWidthExpand } from '@/api'
 import { ChatInputBar, ChatMessage } from './dependencies'
 import { useI18nStore } from '@/stores'
 import MessageInfoDialog from './components/MessageInfoDialog.vue'
+import ChatTopBar from './components/ChatTopBar.vue'
 import { RiArrowLeftFill, RiArrowLeftSFill, RiMore2Fill } from '@remixicon/vue'
 
 const i18nStore = useI18nStore()
@@ -48,28 +49,8 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
       <template #default>
         <div class="">
           <!-- 聊天页顶栏 -->
-          <div class="chat-top-bar sticky top-0 z-[1] flow-root">
-            <div class="top-bar-box flow-root bg-color-background-soft">
-              <div class="">
-                <!-- 顶栏 -->
-                <div class="flex items-center">
-                  <!-- 返回 -->
-                  <div
-                    class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
-                  >
-                    <RiArrowLeftSFill></RiArrowLeftSFill>
-                  </div>
-                  <!-- 标题 -->
-                  <div class="flex-1"></div>
-                  <!-- 更多 -->
-                  <div
-                    class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
-                  >
-                    <RiMore2Fill></RiMore2Fill>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="sticky top-0 z-[1] flow-root">
+            <ChatTopBar></ChatTopBar>
           </div>
           <div class="mx-1 mt-6">
             <!-- <ElButton @click="testPbPage">pb分页测试</ElButton> -->
@@ -96,7 +77,7 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
                 </template>
               </ElButton>
             </div>
-            <!-- 聊天栏 -->
+            <!-- 聊天内容 -->
             <div v-if="chatRoomMessagesForShow != null">
               <!-- 消息 -->
               <ChatMessage
@@ -180,13 +161,6 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
   }
   &.bottom {
     border-radius: 20px 20px 0 0;
-  }
-}
-
-.chat-top-bar {
-  .top-bar-box {
-    border-radius: 0 0 24px 24px;
-    box-shadow: 0 0 6px 6px var(--color-background);
   }
 }
 </style>
