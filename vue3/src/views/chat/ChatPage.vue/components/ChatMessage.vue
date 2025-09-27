@@ -234,7 +234,7 @@ onLongPress(
     delay: 500, // 默认是 1000ms，可自定义
     modifiers: {
       prevent: false, // 阻止默认行为，取消，避免影响文字赋值
-      stop: true, // 阻止事件冒泡
+      stop: false, // 阻止事件冒泡，取消
     },
   }
 )

@@ -1,9 +1,79 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RiRestartLine } from '@remixicon/vue'
+import { onClickOutside } from '@vueuse/core'
+
+const isShowMoreMenu = ref(false)
+const openMoreMenu = () => {
+  isShowMoreMenu.value = true
+}
+const closeMoreMenu = () => {
+  isShowMoreMenu.value = false
+}
+const toggleShowMoreMenu = () => {
+  isShowMoreMenu.value = !isShowMoreMenu.value
+}
+
+// 当菜单展开时，点击菜单外部可以关闭菜单
+const targetMoreMenu = useTemplateRef<HTMLElement>('targetMoreMenu')
+const targetMoreMenuToggleShowButton = useTemplateRef<HTMLElement>(
+  'targetMoreMenuToggleShowButton'
+)
+onClickOutside(targetMoreMenu, (event) => {
+  console.log(event)
+  // 菜单未打开，直接返回
+  if (targetMoreMenu == null || isShowMoreMenu.value === false) {
+    return
+  }
+  // 点击正好是在菜单开关按钮上，直接返回
+  if (
+    targetMoreMenuToggleShowButton.value != null &&
+    targetMoreMenuToggleShowButton.value?.contains(event.target as Node)
+  ) {
+    return
+  }
+  closeMoreMenu()
+})
+</script>
 
 <template>
   <!-- 聊天页顶栏 -->
-  <div class="chat-top-bar">
-    <div class="top-bar-box flow-root bg-color-background-soft">
+  <div class="chat-top-bar relative">
+    <!-- 展开菜单 -->
+    <Transition name="fade-down-up">
+      <div
+        v-if="isShowMoreMenu"
+        ref="targetMoreMenu"
+        class="more-menu absolute top-0 z-[2] bg-color-background-soft"
+      >
+        <!-- 垫片 -->
+        <div class="h-[50px]"></div>
+        <!-- 菜单项 -->
+        <div class="flow-root cursor-pointer hover:bg-el-primary-light-4">
+          <div class="mx-[15px] my-[6px] flex items-center">
+            <div class="mr-[6px]">
+              <RiRestartLine size="18px"></RiRestartLine>
+            </div>
+            <div class="wrap-long-text text-[14px] font-bold text-color-text">
+              刷新
+            </div>
+          </div>
+        </div>
+        <!-- 菜单项 -->
+        <div class="flow-root cursor-pointer hover:bg-el-primary-light-4">
+          <div class="mx-[15px] my-[6px] flex items-center">
+            <div class="mr-[6px]">
+              <RiRestartLine size="18px"></RiRestartLine>
+            </div>
+            <div class="wrap-long-text text-[14px] font-bold text-color-text">
+              刷新刷新刷新
+            </div>
+          </div>
+          <!-- 垫片 在最后一项出现 -->
+          <div class="h-[4px]"></div>
+        </div>
+      </div>
+    </Transition>
+    <div class="top-bar-box relative z-[3] flow-root bg-color-background-soft">
       <div class="">
         <!-- 顶栏 -->
         <div class="flex items-center">
@@ -17,9 +87,14 @@
           <div class="flex-1"></div>
           <!-- 更多 -->
           <div
-            class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
+            ref="targetMoreMenuToggleShowButton"
+            class="more-menu-toggle-show-button flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
+            :class="{
+              'is-show-more-menu': isShowMoreMenu,
+            }"
+            @click="toggleShowMoreMenu"
           >
-            <RiMore2Fill></RiMore2Fill>
+            <RiMore2Fill class="more-menu-icon"></RiMore2Fill>
           </div>
         </div>
       </div>
@@ -28,10 +103,28 @@
 </template>
 
 <style lang="scss" scoped>
-.chat-top-bar {
-  .top-bar-box {
-    border-radius: 0 0 24px 24px;
-    box-shadow: 0 0 6px 6px var(--color-background);
+.top-bar-box {
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 0 6px 6px var(--color-background);
+}
+.more-menu {
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 0 6px 6px var(--color-background);
+  right: 24px;
+  max-width: calc(100% - (2 * 24px));
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.more-menu-toggle-show-button {
+  .more-menu-icon {
+    transition: all 300ms;
+    transform: rotate(0);
+  }
+  &.is-show-more-menu {
+    .more-menu-icon {
+      transform: rotate(90deg);
+    }
   }
 }
 </style>
