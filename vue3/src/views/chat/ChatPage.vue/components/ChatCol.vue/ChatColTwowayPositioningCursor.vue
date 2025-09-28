@@ -10,6 +10,7 @@ import {
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
+import { useQueryClient } from '@tanstack/vue-query'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -66,6 +67,13 @@ if (routeQueryPositioningCursorData != null) {
   linkPositioningFlagShow.value = true
 }
 
+/** 重置双向定位无限查询的定位游标数据和相关数据 */
+const resetPositioningCursorDataAndRelatedData = () => {
+  twowayPositioningCursorData.value = null
+  linkPositioningFlagMessageId.value = null
+  linkPositioningFlagShow.value = false
+}
+
 // // 测试定位
 // twowayPositioningCursorData.value = {
 //   id: 'bnjqt5mbyk35gsd',
@@ -101,6 +109,7 @@ const {
   chatRoomMessagesLimitTopCursor,
   chatRoomMessagesLimitBottomCursor,
   chatRoomMessagesLimitList,
+  chatRoomMessagesLimitCursorInitFn,
 } = useChatShowLimitControlTwoway({
   chatRoomMessagesListAndRealtime,
   twowayPositioningCursorData,
@@ -121,6 +130,7 @@ export type ChatRoomMessagesForShowType = typeof chatRoomMessagesForShow
 const {
   chatScrollCaptureSnapshotBeforeMessageChange,
   chatScrollAdjustPositionAfterMessageChange,
+  chatRoomMessagesScrollInitFn,
 } = useChatScrollMessageChangeTwoway({
   props,
   chatRoomMessagesForShow,
@@ -161,6 +171,43 @@ useChatScrollToShowMore({
   chatShowMoreOnTop,
   chatShowMoreOnBottom,
 })
+
+const queryClient = useQueryClient()
+/** 聊天刷新（重置）是否正在进行 */
+const chatRoomMessagesRestartFnRunning = ref(false)
+/** 聊天刷新（重置）是否能执行 */
+const chatRoomMessagesRestartFnRunnable = computed(() => {
+  if (chatRoomMessagesRestartFnRunning.value === true) {
+    return false
+  }
+  return true
+})
+/** 聊天刷新（重置） */
+const chatRoomMessagesRestartFn = async () => {
+  if (chatRoomMessagesRestartFnRunning.value === true) {
+    return
+  }
+  chatRoomMessagesRestartFnRunning.value = true
+  try {
+    const { queryKey } = chatRoomMessagesInfiniteTwowayQuery
+    // 移除本房间聊天数据
+    queryClient.removeQueries({
+      // chatRoomMessagesInfiniteTwowayQuery.queryKey.value 是只读的固定长度元组类型，通过索引访问是安全的
+      queryKey: [queryKey.value[0], queryKey.value[1]],
+      exact: false, // 模糊匹配，即不需要CursorData游标数据，移除本房间的所有数据
+    })
+    // 重置双向定位无限查询的定位游标数据和相关数据
+    resetPositioningCursorDataAndRelatedData()
+    // 重新加载数据
+    await chatRoomMessagesInfiniteTwowayQuery.refetch()
+    // 重新初始化显示限制游标
+    await chatRoomMessagesLimitCursorInitFn()
+    // 重新初始化滚动位置
+    await chatRoomMessagesScrollInitFn()
+  } finally {
+    chatRoomMessagesRestartFnRunning.value = false
+  }
+}
 </script>
 
 <template>
@@ -176,6 +223,9 @@ useChatScrollToShowMore({
       :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
       :linkPositioningFlagShow="linkPositioningFlagShow"
       :linkPositioningFlagClose="linkPositioningFlagClose"
+      :chatRoomMessagesRestartFn="chatRoomMessagesRestartFn"
+      :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
+      :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
     ></ChatColTemplateBase>
   </div>
 </template>

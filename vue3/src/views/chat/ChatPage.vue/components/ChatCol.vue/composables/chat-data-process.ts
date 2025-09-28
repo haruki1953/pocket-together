@@ -73,7 +73,10 @@ export const useChatDataProcessMessagesTwoway = (data: {
         () => twowayPositioningCursorData.value
       ),
     })
-
+  console.log(
+    'chatRoomMessagesInfiniteTwowayQuery.data.value',
+    chatRoomMessagesInfiniteTwowayQuery.data.value
+  )
   // 将分页数据处理为消息数组，反转（从旧到新）
   const chatRoomMessagesList = computed(() => {
     if (chatRoomMessagesInfiniteTwowayQuery.data.value == null) {

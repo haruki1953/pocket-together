@@ -93,9 +93,18 @@ export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
 }) => {
   const { roomId, twowayPositioningCursorData } = data
 
+  // queryKey 将被导出以便使用
+  const queryKey = computed(() =>
+    queryKeys.chatRoomMessagesInfiniteTwoway(
+      roomId.value,
+      twowayPositioningCursorData.value
+    )
+  )
+
   const infiniteQuery = useInfiniteQuery({
     // 查询依赖，需 roomId
     enabled: computed(() => roomId.value != null),
+    // 要和上面的queryKey保持一致，这里不直接用queryKey而是再写一遍，是为了符合eslint(@tanstack/query/exhaustive-deps)
     queryKey: computed(() =>
       queryKeys.chatRoomMessagesInfiniteTwoway(
         roomId.value,
@@ -272,7 +281,10 @@ export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
     retry: queryRetryPbNetworkError,
   })
 
-  return infiniteQuery
+  return {
+    ...infiniteQuery,
+    queryKey,
+  }
 }
 
 /** 聊天页消息 GetOne */

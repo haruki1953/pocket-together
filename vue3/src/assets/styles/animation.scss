@@ -1,3 +1,4 @@
+// 闪烁
 .blinking-1s {
   animation: blink 1s infinite;
 }
@@ -6,14 +7,39 @@
   animation: blink 2s infinite;
 }
 
+// 闪烁动画
 @keyframes blink {
 
   0%,
   100% {
     opacity: 1;
   }
-  
+
   50% {
     opacity: 0;
+  }
+}
+
+// 转圈
+.loading-spinner-1s {
+  animation: spin 1s linear infinite;
+}
+.loading-spinner-500ms {
+  animation: spin 500ms linear infinite;
+}
+.loading-spinner-300ms {
+  animation: spin 300ms linear infinite;
+}
+.loading-spinner-100ms {
+  animation: spin 100ms linear infinite;
+}
+// 转圈动画
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }

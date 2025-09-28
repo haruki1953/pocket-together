@@ -201,13 +201,15 @@ export const useChatShowLimitControlTwoway = (data: {
     )
     return limitList
   })
-  // 初始化显示限制，setup时就可以进行
-  ;(async () => {
-    // 等待存在消息数据
-    await watchUntilSourceCondition(
-      chatRoomMessagesListAndRealtime,
-      (val) => val != null
-    )
+  // 显示限制游标初始化函数
+  const chatRoomMessagesLimitCursorInitFn = async () => {
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      // 等待存在消息数据
+      await watchUntilSourceCondition(
+        chatRoomMessagesListAndRealtime,
+        (val) => val != null
+      )
+    }
     // 此时仍不存在消息数据是异常的，直接返回
     // watchUntilSourceCondition 并不能约束类型
     // 主要目的是让下文的 chatRoomMessagesListAndRealtime 类型正确
@@ -310,11 +312,14 @@ export const useChatShowLimitControlTwoway = (data: {
           .id
       })()
     }
-  })()
+  }
+  // 初始化显示限制，setup时就可以进行
+  chatRoomMessagesLimitCursorInitFn()
 
   return {
     chatRoomMessagesLimitTopCursor,
     chatRoomMessagesLimitBottomCursor,
     chatRoomMessagesLimitList,
+    chatRoomMessagesLimitCursorInitFn,
   }
 }

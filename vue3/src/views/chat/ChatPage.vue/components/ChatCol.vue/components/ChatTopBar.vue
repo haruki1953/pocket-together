@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { RiRestartLine } from '@remixicon/vue'
+import { useWatchSourceToHoldTimeAndStep } from '@/utils'
+import { RiArrowUpWideLine, RiLoader4Line, RiRestartLine } from '@remixicon/vue'
 import { onClickOutside } from '@vueuse/core'
+
+const props = defineProps<{
+  chatRoomMessagesRestartFn: () => Promise<void>
+  chatRoomMessagesRestartFnRunning: boolean
+  chatRoomMessagesRestartFnRunnable: boolean
+}>()
 
 const isShowMoreMenu = ref(false)
 const openMoreMenu = () => {
@@ -33,6 +40,50 @@ onClickOutside(targetMoreMenu, (event) => {
   }
   closeMoreMenu()
 })
+
+// 让加载动画至少显示1秒（转一圈），且转的圈数为整数
+const { sourceHaveHold: chatRoomMessagesRestartFnRunningForAni } =
+  useWatchSourceToHoldTimeAndStep({
+    source: computed(() => props.chatRoomMessagesRestartFnRunning),
+    holdMs: 1000,
+    stepMs: 1000,
+  })
+
+// 动画进行时不能刷新
+const chatRoomMessagesRestartFnWithDisableOnAni = () => {
+  if (chatRoomMessagesRestartFnRunningForAni.value === true) {
+    return
+  }
+  props.chatRoomMessagesRestartFn()
+}
+// 控制鼠标光标样式
+const moreMenuItemStyleClass = computed(() => {
+  // 加载中
+  if (chatRoomMessagesRestartFnRunningForAni.value === true) {
+    const cursorTwcss = 'cursor-default'
+    const textTwcss = 'text-color-text-soft'
+    return {
+      cursorTwcss,
+      textTwcss,
+    }
+  }
+  // 不可进行
+  if (props.chatRoomMessagesRestartFnRunnable === false) {
+    const cursorTwcss = 'cursor-not-allowed'
+    const textTwcss = 'text-color-text-soft'
+    return {
+      cursorTwcss,
+      textTwcss,
+    }
+  }
+  // 可点击
+  const cursorTwcss = 'cursor-pointer hover:bg-el-primary-light-4'
+  const textTwcss = 'text-color-text'
+  return {
+    cursorTwcss,
+    textTwcss,
+  }
+})
 </script>
 
 <template>
@@ -47,29 +98,45 @@ onClickOutside(targetMoreMenu, (event) => {
       >
         <!-- 垫片 -->
         <div class="h-[50px]"></div>
-        <!-- 菜单项 -->
-        <div class="flow-root cursor-pointer hover:bg-el-primary-light-4">
-          <div class="mx-[15px] my-[6px] flex items-center">
-            <div class="mr-[6px]">
-              <RiRestartLine size="18px"></RiRestartLine>
+        <!-- 菜单项 刷新 -->
+        <div
+          class="flow-root select-none"
+          :class="moreMenuItemStyleClass.cursorTwcss"
+          @click="chatRoomMessagesRestartFnWithDisableOnAni"
+        >
+          <div
+            class="mx-[15px] my-[6px] flex items-center"
+            :class="moreMenuItemStyleClass.textTwcss"
+          >
+            <div class="mr-[8px]">
+              <!-- <Transition mode="out-in" name="fade-pop">
+                <RiLoader4Line
+                  v-if="chatRoomMessagesRestartFnRunning"
+                  size="18px"
+                  class="loading-spinner-500ms"
+                ></RiLoader4Line>
+                <RiRestartLine v-else size="18px"></RiRestartLine>
+              </Transition> -->
+              <RiRestartLine
+                size="18px"
+                :class="{
+                  'loading-spinner-1s': chatRoomMessagesRestartFnRunningForAni,
+                }"
+              ></RiRestartLine>
             </div>
-            <div class="wrap-long-text text-[14px] font-bold text-color-text">
-              刷新
+            <div class="wrap-long-text text-[14px] font-bold">
+              {{ '刷新' }}
             </div>
           </div>
         </div>
-        <!-- 菜单项 -->
-        <div class="flow-root cursor-pointer hover:bg-el-primary-light-4">
-          <div class="mx-[15px] my-[6px] flex items-center">
-            <div class="mr-[6px]">
-              <RiRestartLine size="18px"></RiRestartLine>
-            </div>
-            <div class="wrap-long-text text-[14px] font-bold text-color-text">
-              刷新刷新刷新
-            </div>
+        <!-- 收起 -->
+        <div
+          class="more-menu-close-button flow-root cursor-pointer select-none hover:bg-el-primary-light-4"
+          @click="closeMoreMenu"
+        >
+          <div class="button-box flex items-center justify-center">
+            <RiArrowUpWideLine size="20px"></RiArrowUpWideLine>
           </div>
-          <!-- 垫片 在最后一项出现 -->
-          <div class="h-[4px]"></div>
         </div>
       </div>
     </Transition>
@@ -125,6 +192,11 @@ onClickOutside(targetMoreMenu, (event) => {
     .more-menu-icon {
       transform: rotate(90deg);
     }
+  }
+}
+.more-menu-close-button {
+  .button-box {
+    height: 24px;
   }
 }
 </style>

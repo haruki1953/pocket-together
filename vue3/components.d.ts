@@ -33,6 +33,7 @@ declare module 'vue' {
     RiEditFill: typeof import('@remixicon/vue')['RiEditFill']
     RiLink: typeof import('@remixicon/vue')['RiLink']
     RiListUnordered: typeof import('@remixicon/vue')['RiListUnordered']
+    RiLoader4Line: typeof import('@remixicon/vue')['RiLoader4Line']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
     RiMailLine: typeof import('@remixicon/vue')['RiMailLine']
     RiMessageLine: typeof import('@remixicon/vue')['RiMessageLine']

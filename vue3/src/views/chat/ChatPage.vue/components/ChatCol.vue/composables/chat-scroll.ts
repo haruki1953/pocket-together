@@ -308,10 +308,8 @@ export const useChatScrollMessageChangeTwoway = (data: {
     twowayPositioningCursorData,
   } = data
 
-  // 初始化时据情况处理滚动
-  // 当前为从最新的消息开始查询的，则滚动到底部
-  // 当前为双向定位查询的，则滚动至定位的消息
-  onMounted(async () => {
+  // 聊天滚动初始化函数
+  const chatRoomMessagesScrollInitFn = async () => {
     // 等待存在消息数据
     await watchUntilSourceCondition(
       chatRoomMessagesForShow,
@@ -351,6 +349,13 @@ export const useChatScrollMessageChangeTwoway = (data: {
         chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
       )
     }
+  }
+
+  // 初始化时据情况处理滚动
+  // 当前为从最新的消息开始查询的，则滚动到底部
+  // 当前为双向定位查询的，则滚动至定位的消息
+  onMounted(async () => {
+    await chatRoomMessagesScrollInitFn()
   })
 
   // 新增实时消息时，如果当前底部显示限制为 no-limit 即显示至底部的所有消息，且贴近底部，则滚到底部（平滑）
@@ -599,5 +604,6 @@ export const useChatScrollMessageChangeTwoway = (data: {
   return {
     chatScrollCaptureSnapshotBeforeMessageChange,
     chatScrollAdjustPositionAfterMessageChange,
+    chatRoomMessagesScrollInitFn,
   }
 }
