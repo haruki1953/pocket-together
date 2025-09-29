@@ -25,4 +25,9 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '当前浏览器不支持，请手动复制' as const,
     'zh-TW': () => '目前瀏覽器不支援，請手動複製' as const,
   },
+  chatTopBarMoreMenuItemRestartText: {
+    'en-US': () => 'Refresh' as const,
+    'zh-CN': () => '刷新' as const,
+    'zh-TW': () => '刷新' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

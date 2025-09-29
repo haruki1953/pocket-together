@@ -68,7 +68,9 @@ export const layoutChatPageConfig = {
    * 导航栏位于底部时（小屏），内容的最大宽度
    */
   contentMaxWidthOnNavBottom: 500,
-}
+  /** 移动端全局聊天页最大宽度 */
+  chatPageMobileMaxWidth: 500,
+} as const
 
 // 参考
 // breakpoints: {

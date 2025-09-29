@@ -14,7 +14,9 @@ import { useQueryClient } from '@tanstack/vue-query'
 
 const props = defineProps<{
   /** 滚动容器元素 */
-  refScrollWarp?: HTMLDivElement
+  refScrollWarp?: HTMLElement
+  /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
+  couldGoBack: boolean
 }>()
 // 供封装的组件或组合式函数使用
 export type PropsType = typeof props
@@ -226,6 +228,7 @@ const chatRoomMessagesRestartFn = async () => {
       :chatRoomMessagesRestartFn="chatRoomMessagesRestartFn"
       :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
       :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
+      :couldGoBack="couldGoBack"
     ></ChatColTemplateBase>
   </div>
 </template>

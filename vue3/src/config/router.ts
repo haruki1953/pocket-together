@@ -27,6 +27,20 @@ export const routerDict = {
     path: '/chat',
     name: 'ChatPage',
   },
+  /**
+   * ChatPageMobile 用于移动端，无导航栏
+   *
+   * 桌面端：
+   * - ChatPage 聊天列 用户列表列
+   *
+   * 移动端：
+   * - ChatPage 用户列表列（包含ChatPageMobile入口）
+   * - ChatPageMobile 聊天列
+   */
+  ChatPageMobile: {
+    path: '/chat-mobile',
+    name: 'ChatPageMobile',
+  },
   FilePage: {
     path: '/file',
     name: 'FilePage',

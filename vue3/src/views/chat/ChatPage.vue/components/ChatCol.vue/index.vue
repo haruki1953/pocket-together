@@ -5,7 +5,9 @@ import ChatColTwowayPositioningCursor from './ChatColTwowayPositioningCursor.vue
 
 const props = defineProps<{
   /** 滚动容器元素 */
-  refScrollWarp?: HTMLDivElement
+  refScrollWarp?: HTMLElement
+  /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
+  couldGoBack: boolean
 }>()
 </script>
 
@@ -14,6 +16,7 @@ const props = defineProps<{
     <!-- <ChatColOnewayNewest :refScrollWarp="refScrollWarp"></ChatColOnewayNewest> -->
     <ChatColTwowayPositioningCursor
       :refScrollWarp="refScrollWarp"
+      :couldGoBack="couldGoBack"
     ></ChatColTwowayPositioningCursor>
   </div>
 </template>

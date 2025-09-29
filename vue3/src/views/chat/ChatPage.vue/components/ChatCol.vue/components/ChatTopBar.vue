@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { useWatchSourceToHoldTimeAndStep } from '@/utils'
+import { routerDict } from '@/config'
+import { useI18nStore } from '@/stores'
+import { potoGoBack, useWatchSourceToHoldTimeAndStep } from '@/utils'
 import { RiArrowUpWideLine, RiLoader4Line, RiRestartLine } from '@remixicon/vue'
 import { onClickOutside } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   chatRoomMessagesRestartFn: () => Promise<void>
   chatRoomMessagesRestartFnRunning: boolean
   chatRoomMessagesRestartFnRunnable: boolean
+  couldGoBack: boolean
 }>()
 
 const isShowMoreMenu = ref(false)
@@ -84,6 +88,17 @@ const moreMenuItemStyleClass = computed(() => {
     textTwcss,
   }
 })
+
+const i18nStore = useI18nStore()
+
+const router = useRouter()
+const chatTopBarBack = () => {
+  // router.back()
+  potoGoBack({
+    router,
+    fallbackPath: routerDict.HomePage.path,
+  })
+}
 </script>
 
 <template>
@@ -125,7 +140,7 @@ const moreMenuItemStyleClass = computed(() => {
               ></RiRestartLine>
             </div>
             <div class="wrap-long-text text-[14px] font-bold">
-              {{ '刷新' }}
+              {{ i18nStore.t('chatTopBarMoreMenuItemRestartText')() }}
             </div>
           </div>
         </div>
@@ -142,16 +157,24 @@ const moreMenuItemStyleClass = computed(() => {
     </Transition>
     <div class="top-bar-box relative z-[3] flow-root bg-color-background-soft">
       <div class="">
-        <!-- 顶栏 -->
+        <!-- 顶栏 v-if="couldGoBack" -->
         <div class="flex items-center">
           <!-- 返回 -->
           <div
+            v-if="couldGoBack"
             class="flex h-[40px] w-[48px] cursor-pointer items-center justify-center"
+            @click="chatTopBarBack"
           >
             <RiArrowLeftSFill></RiArrowLeftSFill>
           </div>
+          <!-- 返回按钮不存在时的垫片 v-else -->
+          <div v-else class="w-[24px]"></div>
           <!-- 标题 -->
-          <div class="flex-1"></div>
+          <div class="flex-1 truncate">
+            <div class="truncate text-[15px] font-bold text-color-text">
+              聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            </div>
+          </div>
           <!-- 更多 -->
           <div
             ref="targetMoreMenuToggleShowButton"

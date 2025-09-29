@@ -31,6 +31,8 @@ const props = defineProps<{
   chatRoomMessagesRestartFn: () => Promise<void>
   chatRoomMessagesRestartFnRunning: boolean
   chatRoomMessagesRestartFnRunnable: boolean
+  /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
+  couldGoBack: boolean
 }>()
 
 // 消息详情对话框
@@ -79,6 +81,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
               :chatRoomMessagesRestartFnRunnable="
                 chatRoomMessagesRestartFnRunnable
               "
+              :couldGoBack="couldGoBack"
             ></ChatTopBar>
           </div>
           <!-- 聊天页内容 -->

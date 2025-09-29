@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
-import { layoutChatPageConfig } from '@/config'
+import { layoutChatPageConfig, routerDict } from '@/config'
 import ChatCol from './components/ChatCol.vue'
 import type { GlobalComponents } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -60,6 +61,7 @@ const refContainerCol2 = ref<InstanceType<
           <div class="ml-6 mr-4">
             <ChatCol
               :refScrollWarp="refContainerCol2?.refElScrollbar?.wrapRef"
+              :couldGoBack="false"
             ></ChatCol>
           </div>
         </template>
@@ -74,7 +76,12 @@ const refContainerCol2 = ref<InstanceType<
           }"
         >
           <div>
-            <div>小屏全局聊天页跳转</div>
+            <!-- <div>小屏全局聊天页跳转</div> -->
+            <div>
+              <ElButton :tag="RouterLink" :to="routerDict.ChatPageMobile.path">
+                跳转移动端全局聊天页（待完善）
+              </ElButton>
+            </div>
             <div>用户列表</div>
             <div class="h-[2000px] bg-red-950"></div>
             <div>用户列表</div>

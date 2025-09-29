@@ -1,4 +1,4 @@
-import { useScroll } from '@vueuse/core'
+import { useScroll, useWindowScroll } from '@vueuse/core'
 import type { PropsType } from './dependencies'
 import {
   chatRoomMessagesShowMoreBottomThresholdConfig,
@@ -20,14 +20,40 @@ export const useChatScrollToShowMore = (data: {
     chatShowMoreOnBottom,
   } = data
   // 滚动触发加载更多
-  const messagesWarpScroll = useScroll(() => props.refScrollWarp)
+  const messagesWarpScroll = useScroll(() => {
+    console.log('props.refScrollWarp?.tagName', props.refScrollWarp?.tagName)
+    if (props.refScrollWarp != null && props.refScrollWarp.tagName === 'HTML') {
+      return window
+    }
+    return props.refScrollWarp
+  })
 
   const topThreshold = chatRoomMessagesShowMoreTopThresholdConfig // 顶部触发阈值（单位：px）
   const bottomThreshold = chatRoomMessagesShowMoreBottomThresholdConfig // 底部触发阈值
 
   const watchScrollRunning = ref(false)
 
+  // ;(async () => {
+  //   while (1) {
+  //     await new Promise((resolve) => setTimeout(resolve, 2000))
+  //     ;(() => {
+  //       if (props.refScrollWarp == null) {
+  //         return
+  //       }
+  //       const scrollTop = props.refScrollWarp.scrollTop
+  //       const scrollBottom =
+  //         props.refScrollWarp.scrollHeight -
+  //         props.refScrollWarp.clientHeight -
+  //         props.refScrollWarp.scrollTop
+  //       console.log('scrollTop', scrollTop)
+  //       console.log('scrollBottom', scrollBottom)
+  //       console.log('messagesWarpScroll.y', messagesWarpScroll.y.value)
+  //     })()
+  //   }
+  // })()
+
   watch(messagesWarpScroll.y, async () => {
+    console.log('watch(messagesWarpScroll.y')
     // 控制频率，避免性能问题
     if (watchScrollRunning.value === true) {
       return

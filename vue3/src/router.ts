@@ -9,6 +9,7 @@ import SettingPage from './views/setting/SettingPage.vue'
 import NavPage from './views/nav/NavPage.vue'
 import SettingProfile from './views/setting/views/SettingProfile.vue'
 import { routerDict } from './config'
+import ChatPageMobile from './views/chat/ChatPageMobile.vue'
 
 // 路由
 const router = createRouter({
@@ -57,9 +58,21 @@ const router = createRouter({
           ...routerDict.LoginPage,
           component: LoginPage,
         },
+        {
+          ...routerDict.ChatPageMobile,
+          component: ChatPageMobile,
+        },
       ],
     },
   ],
+})
+
+// 路由访问拦截
+router.beforeEach((to) => {
+  // 路由不存在，拦截到首页
+  if (router.resolve(to.path).matched.length === 0) {
+    return routerDict.HomePage.path
+  }
 })
 
 export default router
