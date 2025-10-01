@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
-import { layoutChatPageConfig, routerDict } from '@/config'
+import {
+  chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
+  layoutChatPageConfig,
+  routerDict,
+} from '@/config'
 import { ChatCol } from './components'
 import type { GlobalComponents } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ContainerCol2 } from '@/components'
 
 const i18nStore = useI18nStore()
@@ -29,6 +33,45 @@ const showChatWidth5TrueWidth4False = computed(() => {
 })
 
 const refContainerCol2 = ref<InstanceType<typeof ContainerCol2> | null>(null)
+
+const route = useRoute()
+const router = useRouter()
+// 如果当前为小屏，但有路由消息参数（消息定位），则跳转到ChatPageMobile
+if (showCol2TrueCol1False.value === false) {
+  // 聊天页 双向定位游标 路由查询参数 键统一管理，以便在多处使用
+  const { id: keyId, created: keyCreated } =
+    chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig
+
+  // 路由消息参数（消息定位）
+  const routeQueryPositioningCursorData = (() => {
+    const id = route.query[keyId]
+    const created = route.query[keyCreated]
+    if (
+      id == null ||
+      created == null ||
+      typeof id !== 'string' ||
+      typeof created !== 'string'
+    ) {
+      return null
+    }
+    return {
+      id,
+      created,
+    }
+  })()
+
+  // 存在路由消息参数
+  if (routeQueryPositioningCursorData != null) {
+    // replace到ChatPageMobile，要带定位参数
+    router.replace({
+      path: routerDict.ChatPageMobile.path,
+      query: {
+        [keyId]: routeQueryPositioningCursorData.id,
+        [keyCreated]: routeQueryPositioningCursorData.created,
+      },
+    })
+  }
+}
 </script>
 
 <template>
