@@ -11,6 +11,7 @@ import {
 interface RouterItem {
   path: string
   name: string
+  paramsKey?: Record<string, string>
 }
 
 // 路由信息字典，导出以便整个程序中使用
@@ -64,6 +65,35 @@ export const routerDict = {
   LoginPage: {
     path: '/login',
     name: 'LoginPage',
+  },
+  /**
+   * 房间页
+   *
+   * 路由参数解释
+   * ```
+   * title对逻辑没有影响，房间页是靠id决定房间
+   * 如 http://sakiko.top/前桥魔女/room/pk6fqr5x9o2npb4
+   * title的作用增强链接的可读，放在靠前的位置不容易被省略
+   * 推特的推文链接也是类似这样的，第一个链接路径是用户名，即使修改也不会影响帖子加载
+   * 如 https://x.com/harukiO_0/status/1967188571434996220
+   * ```
+   */
+  RoomPage: {
+    path: '/:title/room/:id',
+    name: 'RoomPage',
+    paramsKey: {
+      title: 'title',
+      id: 'id',
+    },
+  },
+  /** 房间详情页 */
+  RoomInfoPage: {
+    path: '/:title/room/:id/info',
+    name: 'RoomInfoPage',
+    paramsKey: {
+      title: 'title',
+      id: 'id',
+    },
   },
 } as const satisfies Record<string, RouterItem>
 

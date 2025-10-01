@@ -172,6 +172,7 @@ const chatTopBarBack = () => {
           <!-- 标题 -->
           <div class="flex-1 truncate">
             <div class="truncate text-[15px] font-bold text-color-text">
+              <!-- 待实现获取房间信息 -->
               聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             </div>
           </div>

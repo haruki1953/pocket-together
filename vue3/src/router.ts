@@ -10,6 +10,8 @@ import NavPage from './views/nav/NavPage.vue'
 import SettingProfile from './views/setting/views/SettingProfile.vue'
 import { routerDict } from './config'
 import ChatPageMobile from './views/chat/ChatPageMobile.vue'
+import RoomPage from './views/room/RoomPage.vue'
+import RoomInfoPage from './views/room/RoomInfoPage.vue'
 
 // 路由
 const router = createRouter({
@@ -62,17 +64,41 @@ const router = createRouter({
           ...routerDict.ChatPageMobile,
           component: ChatPageMobile,
         },
+        {
+          // path: routerDict.RoomPage.path,
+          // name: routerDict.RoomPage.name
+          ...routerDict.RoomPage,
+          component: RoomPage,
+        },
+        {
+          ...routerDict.RoomInfoPage,
+          component: RoomInfoPage,
+        },
       ],
     },
   ],
 })
 
 // 路由访问拦截
-router.beforeEach((to) => {
+router.beforeEach((to, from) => {
   // 路由不存在，拦截到首页
   if (router.resolve(to.path).matched.length === 0) {
     return routerDict.HomePage.path
   }
 })
+
+// // 测试
+// router.beforeEach((to, from) => {
+//   console.log('beforeEach')
+//   console.log('location.href', location.href)
+//   console.log('to.fullPath', to.fullPath)
+//   console.log('from.fullPath', from.fullPath)
+// })
+// router.afterEach((to, from) => {
+//   console.log('afterEach')
+//   console.log('location.href', location.href)
+//   console.log('to.fullPath', to.fullPath)
+//   console.log('from.fullPath', from.fullPath)
+// })
 
 export default router

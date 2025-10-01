@@ -53,7 +53,7 @@ export const useChatScrollToShowMore = (data: {
   // })()
 
   watch(messagesWarpScroll.y, async () => {
-    console.log('watch(messagesWarpScroll.y')
+    // console.log('watch(messagesWarpScroll.y')
     // 控制频率，避免性能问题
     if (watchScrollRunning.value === true) {
       return
