@@ -2,7 +2,6 @@
 import { routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
 import { potoGoBack, useWatchSourceToHoldTimeAndStep } from '@/utils'
-import { RiArrowUpWideLine, RiLoader4Line, RiRestartLine } from '@remixicon/vue'
 import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 

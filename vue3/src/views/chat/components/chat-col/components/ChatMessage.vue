@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  appLogo,
   appUserDefaultAvatar,
   chatRoomMessagesDispalyTogetherMaxSecondsConfig,
   fileUserAvatarConfig,
@@ -8,12 +7,11 @@ import {
 import type {
   ChatRoomMessagesItem,
   OpenMessageInfoDialogType,
-} from './ChatCol.vue'
+} from './dependencies'
 import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
-import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps<{
   /** 消息数据 */

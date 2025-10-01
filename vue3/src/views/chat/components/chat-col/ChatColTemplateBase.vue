@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { MessagesResponseWidthExpand } from '@/api'
-import { ChatInputBar, ChatMessage } from './dependencies'
-import { useI18nStore } from '@/stores'
-import MessageInfoDialog from './components/MessageInfoDialog.vue'
-import ChatTopBar from './components/ChatTopBar.vue'
 import {
-  RiArrowLeftFill,
-  RiArrowLeftSFill,
-  RiLoader3Line,
-  RiMore2Fill,
-} from '@remixicon/vue'
-import { useWatchSourceToHoldTime } from '@/utils'
+  ChatInputBar,
+  ChatMessage,
+  MessageInfoDialog,
+  ChatTopBar,
+} from './components'
+import { useI18nStore } from '@/stores'
+import { ContainerBar } from '@/components'
 
 const i18nStore = useI18nStore()
 

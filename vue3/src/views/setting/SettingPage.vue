@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ContainerCol2 } from '@/components'
 import { useBalancedGrid } from '@/composables'
 import { layoutSettingPageConfig } from '@/config'
 import { routerSettingList } from '@/config'

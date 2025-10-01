@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatColOnewayNewest from './ChatColOnewayNewest.vue'
+// import ChatColOnewayNewest from './ChatColOnewayNewest.vue'
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import ChatColTwowayPositioningCursor from './ChatColTwowayPositioningCursor.vue'
 

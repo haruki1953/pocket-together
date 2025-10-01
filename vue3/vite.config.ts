@@ -32,6 +32,7 @@ export default defineConfig({
       ],
     }),
     Components({
+      dirs: [], // 禁用本地 components 目录组件自动导入
       resolvers: [
         ElementPlusResolver(),
         NaiveUiResolver(),

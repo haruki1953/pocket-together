@@ -2,9 +2,10 @@
 import { useI18nStore } from '@/stores'
 import { useWindowSize } from '@vueuse/core'
 import { layoutChatPageConfig, routerDict } from '@/config'
-import ChatCol from './components/ChatCol.vue'
+import { ChatCol } from './components'
 import type { GlobalComponents } from 'vue'
 import { RouterLink } from 'vue-router'
+import { ContainerCol2 } from '@/components'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -27,9 +28,7 @@ const showChatWidth5TrueWidth4False = computed(() => {
   return false
 })
 
-const refContainerCol2 = ref<InstanceType<
-  GlobalComponents['ContainerCol2']
-> | null>(null)
+const refContainerCol2 = ref<InstanceType<typeof ContainerCol2> | null>(null)
 </script>
 
 <template>

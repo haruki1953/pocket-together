@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { pbUsersRequestPasswordResetApi } from '@/api'
 import { PotoFormValidationError } from '@/classes'
+import { ConfirmContainer } from '@/components'
 import { useDialogOptimization } from '@/composables'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
@@ -63,11 +64,11 @@ const rules: FormRules<typeof formModel> = {
 }
 
 // 遮罩确认框
-const refConfirmContainer = ref<InstanceType<
-  GlobalComponents['ConfirmContainer']
-> | null>(null)
+const refConfirmContainer = ref<InstanceType<typeof ConfirmContainer> | null>(
+  null
+)
 
-// 修改密码mutation
+// 修改密码mutations
 const mutation = useMutation({
   // mutation函数
   mutationFn: async () => {

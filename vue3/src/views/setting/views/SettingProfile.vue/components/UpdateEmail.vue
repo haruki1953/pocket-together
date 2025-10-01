@@ -23,6 +23,7 @@ import { useNow } from '@vueuse/core'
 import type { ElForm, FormRules } from 'element-plus'
 import { ClientResponseError } from 'pocketbase'
 import { pbUsersRequestEmailChangeApi } from '@/api'
+import { ConfirmContainer } from '@/components'
 
 const i18nStore = useI18nStore()
 
@@ -121,9 +122,9 @@ const rules: FormRules<typeof formModel> = {
 }
 
 // 遮罩确认框
-const refConfirmContainer = ref<InstanceType<
-  GlobalComponents['ConfirmContainer']
-> | null>(null)
+const refConfirmContainer = ref<InstanceType<typeof ConfirmContainer> | null>(
+  null
+)
 
 // 修改邮箱请求mutation
 const mutation = useMutation({

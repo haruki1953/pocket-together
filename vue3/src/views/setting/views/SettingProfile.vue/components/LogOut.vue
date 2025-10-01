@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ConfirmContainer } from '@/components'
 import { pb } from '@/lib'
 import { useI18nStore } from '@/stores'
 import type { GlobalComponents } from 'vue'
@@ -6,9 +7,9 @@ import type { GlobalComponents } from 'vue'
 const i18nStore = useI18nStore()
 
 // 遮罩确认框
-const refConfirmContainer = ref<InstanceType<
-  GlobalComponents['ConfirmContainer']
-> | null>(null)
+const refConfirmContainer = ref<InstanceType<typeof ConfirmContainer> | null>(
+  null
+)
 
 const submit = async () => {
   // 遮罩确认框

@@ -1,0 +1,12 @@
+import ChatInputBar from './ChatInputBar.vue'
+import ChatMessage from './ChatMessage.vue'
+import ChatTopBar from './ChatTopBar.vue'
+import MessageInfoDialog from './MessageInfoDialog.vue'
+
+export {
+  //
+  ChatMessage,
+  ChatTopBar,
+  MessageInfoDialog,
+  ChatInputBar,
+}

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { pbMessagesGetOneApi } from '@/api'
 import { useDialogOptimization } from '@/composables'
 import {
   appUserDefaultAvatar,
@@ -15,14 +14,7 @@ import {
   urlJoinWithOriginUtil,
   useDateFormatYYYYMMDDHHmmss,
 } from '@/utils'
-import {
-  RiBookmarkLine,
-  RiDiscussLine,
-  RiEditLine,
-  RiLink,
-} from '@remixicon/vue'
-import { useQuery, useQueryClient } from '@tanstack/vue-query'
-import { propsToString } from '@unhead/vue/server'
+import { useQueryClient } from '@tanstack/vue-query'
 import { useClipboard, useWindowSize } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 

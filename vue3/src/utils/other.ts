@@ -171,7 +171,7 @@ export const generateRandomIntegerBetween = (a: number, b: number): number => {
  */
 
 export const scrollToElementInContainer = (
-  container: HTMLDivElement,
+  container: HTMLElement,
   target: HTMLElement,
   behavior?: ScrollBehavior,
   offset?: number

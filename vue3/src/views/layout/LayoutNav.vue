@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { layoutLayoutNavConfig } from '@/config'
 import { useElementSize, useWindowSize } from '@vueuse/core'
-import NavList from './components/NavList.vue'
+import { ContainerBar, ContainerCol2 } from '@/components'
+import { NavList } from './components'
 
 // const refDiv = ref<HTMLElement | null>(null)
 // const { width: refDivWidth } = useElementSize(refDiv)

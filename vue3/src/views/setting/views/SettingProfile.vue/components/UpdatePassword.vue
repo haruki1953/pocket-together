@@ -17,6 +17,7 @@ import {
 import { useNow } from '@vueuse/core'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
 import { pbUsersRequestPasswordResetApi } from '@/api'
+import { ConfirmContainer } from '@/components'
 
 const i18nStore = useI18nStore()
 
@@ -24,9 +25,9 @@ const i18nStore = useI18nStore()
 const profileQuery = useProfileQuery()
 
 // 遮罩确认框
-const refConfirmContainer = ref<InstanceType<
-  GlobalComponents['ConfirmContainer']
-> | null>(null)
+const refConfirmContainer = ref<InstanceType<typeof ConfirmContainer> | null>(
+  null
+)
 
 // 修改密码mutation
 const mutation = useMutation({

@@ -1,4 +1,4 @@
-import { useScroll, useWindowScroll } from '@vueuse/core'
+import { useScroll } from '@vueuse/core'
 import type { PropsType } from './dependencies'
 import {
   chatRoomMessagesShowMoreBottomThresholdConfig,
