@@ -6,7 +6,7 @@ import {
   layoutChatPageConfig,
   routerDict,
 } from '@/config'
-import { ChatCol } from './components'
+import { ChatCol } from '@/components'
 import type { GlobalComponents } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ContainerCol2 } from '@/components'

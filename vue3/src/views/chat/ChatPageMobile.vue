@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { layoutChatPageConfig } from '@/config'
-import { ChatCol } from './components'
+import { ChatCol } from '@/components'
 
 const htmlRef = ref<HTMLElement | null>(null)
 onMounted(() => {
