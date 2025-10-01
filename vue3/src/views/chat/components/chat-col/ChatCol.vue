@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import ChatColOnewayNewest from './ChatColOnewayNewest.vue'
-import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import ChatColTwowayPositioningCursor from './ChatColTwowayPositioningCursor.vue'
 
 const props = defineProps<{
@@ -13,7 +11,6 @@ const props = defineProps<{
 
 <template>
   <div>
-    <!-- <ChatColOnewayNewest :refScrollWarp="refScrollWarp"></ChatColOnewayNewest> -->
     <ChatColTwowayPositioningCursor
       :refScrollWarp="refScrollWarp"
       :couldGoBack="couldGoBack"
