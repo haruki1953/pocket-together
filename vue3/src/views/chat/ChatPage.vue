@@ -24,12 +24,28 @@ const showCol2TrueCol1False = computed(() => {
   }
   return false
 })
-/** 大于1024时聊天栏宽度为500，小于则为400 */
-const showChatWidth5TrueWidth4False = computed(() => {
-  if (windowWidth.value >= layoutChatPageConfig.breakpointChatWidth5ToWidth4) {
+/** 窗口宽度大于1024时聊天栏宽度较大，小于则聊天栏宽度较小 */
+const showChatWidthLargerTrueWidthSmallerFalse = computed(() => {
+  if (
+    windowWidth.value >=
+    layoutChatPageConfig.breakpointChatWidthLargerToWidthSmaller
+  ) {
     return true
   }
   return false
+})
+// ContainerCol2 参数 col2StyleValue 控制样式
+const col2StyleValue = computed(() => {
+  const { chatWidthLargerWidth, chatWidthSmallerWidth } = layoutChatPageConfig
+  /** 窗口宽度大于1024时聊天栏宽度较大，小于则聊天栏宽度较小 */
+  if (showChatWidthLargerTrueWidthSmallerFalse.value) {
+    return {
+      width: `${chatWidthLargerWidth}px`,
+    }
+  }
+  return {
+    width: `${chatWidthSmallerWidth}px`,
+  }
 })
 
 const refContainerCol2 = ref<InstanceType<typeof ContainerCol2> | null>(null)
@@ -82,15 +98,7 @@ if (showCol2TrueCol1False.value === false) {
         ref="refContainerCol2"
         col1Position="right"
         col1Twcss="flex-1"
-        :col2Twcss="
-          (() => {
-            /** 大于1024时聊天栏宽度为500，小于则为400 */
-            if (showChatWidth5TrueWidth4False) {
-              return 'w-[500px]'
-            }
-            return 'w-[400px]'
-          })()
-        "
+        :col2StyleValue="col2StyleValue"
       >
         <template #col1>
           <div class="my-6 ml-2">

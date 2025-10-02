@@ -1,3 +1,8 @@
 import ChatCol from './ChatCol.vue'
+import { ChatTopBarMoreMenuItem } from './components'
 
-export { ChatCol }
+export {
+  //
+  ChatCol,
+  ChatTopBarMoreMenuItem,
+}

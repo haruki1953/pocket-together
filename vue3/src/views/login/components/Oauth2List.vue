@@ -58,7 +58,7 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
       <button
         v-for="item in oauth2List"
         :key="item.name"
-        class="my-4 flex h-10 w-full items-center rounded-full border-2 border-color-text-soft bg-color-background-soft py-2 pl-5 pr-3 transition-colors hover:bg-color-background hover:text-color-text"
+        class="oauth2-list-item my-4 flex h-10 w-full items-center rounded-full bg-color-background-soft py-2 pl-5 pr-3"
         @click="authWithOAuth2(item.name)"
       >
         <div class="mr-2">
@@ -73,8 +73,10 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
             class="h-5 w-5"
           />
         </div>
-        <div class="flex flex-1 items-center justify-center truncate">
-          <span class="truncate">
+        <div
+          class="oauth2-text flex flex-1 items-center justify-center truncate"
+        >
+          <span class="truncate text-[14px] font-bold">
             {{ i18nStore.t('loginWithOauth2Text')(item.displayName) }}
           </span>
         </div>
@@ -83,4 +85,22 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.oauth2-list-item {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+
+  background-color: var(--color-background-soft);
+  box-shadow: 0 0 0 2px var(--color-text-soft) inset;
+
+  // color: var(--color-text-soft);
+  color: var(--color-text);
+
+  &:hover {
+    background-color: var(--color-background);
+    // color: var(--color-text);
+  }
+}
+</style>

@@ -229,7 +229,12 @@ const chatRoomMessagesRestartFn = async () => {
       :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
       :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
       :couldGoBack="couldGoBack"
-    ></ChatColTemplateBase>
+    >
+      <template #chatTopBarMoreMenu>
+        <!-- 聊天顶栏菜单项 插槽 -->
+        <slot name="chatTopBarMoreMenu"></slot>
+      </template>
+    </ChatColTemplateBase>
   </div>
 </template>
 

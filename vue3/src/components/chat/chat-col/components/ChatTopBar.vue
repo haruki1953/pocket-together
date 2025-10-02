@@ -4,6 +4,7 @@ import { useI18nStore } from '@/stores'
 import { potoGoBack, useWatchSourceToHoldTimeAndStep } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { ChatTopBarMoreMenuItem } from '.'
 
 const props = defineProps<{
   chatRoomMessagesRestartFn: () => Promise<void>
@@ -59,34 +60,6 @@ const chatRoomMessagesRestartFnWithDisableOnAni = () => {
   }
   props.chatRoomMessagesRestartFn()
 }
-// 控制鼠标光标样式
-const moreMenuItemStyleClass = computed(() => {
-  // 加载中
-  if (chatRoomMessagesRestartFnRunningForAni.value === true) {
-    const cursorTwcss = 'cursor-default'
-    const textTwcss = 'text-color-text-soft'
-    return {
-      cursorTwcss,
-      textTwcss,
-    }
-  }
-  // 不可进行
-  if (props.chatRoomMessagesRestartFnRunnable === false) {
-    const cursorTwcss = 'cursor-not-allowed'
-    const textTwcss = 'text-color-text-soft'
-    return {
-      cursorTwcss,
-      textTwcss,
-    }
-  }
-  // 可点击
-  const cursorTwcss = 'cursor-pointer hover:bg-el-primary-light-4'
-  const textTwcss = 'text-color-text'
-  return {
-    cursorTwcss,
-    textTwcss,
-  }
-})
 
 const i18nStore = useI18nStore()
 
@@ -112,37 +85,26 @@ const chatTopBarBack = () => {
       >
         <!-- 垫片 -->
         <div class="h-[50px]"></div>
+        <!-- 聊天顶栏菜单项 插槽 -->
+        <slot name="chatTopBarMoreMenu"></slot>
         <!-- 菜单项 刷新 -->
-        <div
-          class="flow-root select-none"
-          :class="moreMenuItemStyleClass.cursorTwcss"
+        <ChatTopBarMoreMenuItem
+          :isRunning="chatRoomMessagesRestartFnRunningForAni"
+          :isRunnable="chatRoomMessagesRestartFnRunnable"
           @click="chatRoomMessagesRestartFnWithDisableOnAni"
         >
-          <div
-            class="mx-[15px] my-[6px] flex items-center"
-            :class="moreMenuItemStyleClass.textTwcss"
-          >
-            <div class="mr-[8px]">
-              <!-- <Transition mode="out-in" name="fade-pop">
-                <RiLoader4Line
-                  v-if="chatRoomMessagesRestartFnRunning"
-                  size="18px"
-                  class="loading-spinner-500ms"
-                ></RiLoader4Line>
-                <RiRestartLine v-else size="18px"></RiRestartLine>
-              </Transition> -->
-              <RiRestartLine
-                size="18px"
-                :class="{
-                  'loading-spinner-1s': chatRoomMessagesRestartFnRunningForAni,
-                }"
-              ></RiRestartLine>
-            </div>
-            <div class="wrap-long-text text-[14px] font-bold">
-              {{ i18nStore.t('chatTopBarMoreMenuItemRestartText')() }}
-            </div>
-          </div>
-        </div>
+          <template #icon>
+            <RiRestartLine
+              size="18px"
+              :class="{
+                'loading-spinner-1s': chatRoomMessagesRestartFnRunningForAni,
+              }"
+            ></RiRestartLine>
+          </template>
+          <template #text>
+            {{ i18nStore.t('chatTopBarMoreMenuItemRestartText')() }}
+          </template>
+        </ChatTopBarMoreMenuItem>
         <!-- 收起 -->
         <div
           class="more-menu-close-button flow-root cursor-pointer select-none hover:bg-el-primary-light-4"

@@ -73,28 +73,36 @@ export const routerDict = {
    * ```
    * title对逻辑没有影响，房间页是靠id决定房间
    * 如 http://sakiko.top/前桥魔女/room/pk6fqr5x9o2npb4
-   * title的作用增强链接的可读，放在靠前的位置不容易被省略
+   * title的作用为增强链接的可读性，放在靠前的位置不容易被省略
    * 推特的推文链接也是类似这样的，第一个链接路径是用户名，即使修改也不会影响帖子加载
    * 如 https://x.com/harukiO_0/status/1967188571434996220
    * ```
    */
-  RoomPage: {
-    path: '/:title/room/:id',
-    name: 'RoomPage',
-    paramsKey: {
+  RoomPage: (() => {
+    const paramsKey = {
       title: 'title',
       id: 'id',
-    },
-  },
+    } as const
+    return {
+      // 使用paramsKey拼接参数字符串，安心安全安定
+      path: `/:${paramsKey.title}/room/:${paramsKey.id}`,
+      name: 'RoomPage',
+      paramsKey,
+    } as const
+  })(),
   /** 房间详情页 */
-  RoomInfoPage: {
-    path: '/:title/room/:id/info',
-    name: 'RoomInfoPage',
-    paramsKey: {
+  RoomInfoPage: (() => {
+    const paramsKey = {
       title: 'title',
       id: 'id',
-    },
-  },
+    } as const
+    return {
+      // 使用paramsKey拼接参数字符串，安心安全安定
+      path: `/:${paramsKey.title}/room/:${paramsKey.id}/info`,
+      name: 'RoomInfoPage',
+      paramsKey,
+    } as const
+  })(),
 } as const satisfies Record<string, RouterItem>
 
 interface RouterInfo extends RouterItem {

@@ -14,7 +14,12 @@ const props = defineProps<{
     <ChatColTwowayPositioningCursor
       :refScrollWarp="refScrollWarp"
       :couldGoBack="couldGoBack"
-    ></ChatColTwowayPositioningCursor>
+    >
+      <template #chatTopBarMoreMenu>
+        <!-- 聊天顶栏菜单项 插槽 -->
+        <slot name="chatTopBarMoreMenu"></slot>
+      </template>
+    </ChatColTwowayPositioningCursor>
   </div>
 </template>
 

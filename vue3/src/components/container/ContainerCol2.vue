@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
 import type { ElScrollbar } from 'element-plus'
+import type { StyleValue } from 'vue'
 
 // 将默认值独立出来是因为这样才能有tailwind提示
 // 默认居中
@@ -25,12 +26,23 @@ withDefaults(
      * col1 的位置，col1使用的是原生滚动条，col2是el滚动条
      */
     col1Position?: 'left' | 'right'
+    /**
+     * 不仅可以通过 Twcss（:class="...Twcss"） 的方式控制双列的样式，
+     * 还可以通过 StyleValue（:style="...StyleValue"） 的方式控制双列的样式
+     */
+    col1StyleValue?: StyleValue
+    col2StyleValue?: StyleValue
   }>(),
   {
     colContainerTwcss: defaultColContainerTwcss,
-    col1Twcss: defaultCol1Twcss,
-    col2Twcss: defaultCol2Twcss,
     col1Position: 'right',
+    // col1Twcss: defaultCol1Twcss,
+    // col2Twcss: defaultCol2Twcss,
+    // 【251002】决定不设置默认值，避免与StyleValue冲突
+    col1Twcss: undefined,
+    col2Twcss: undefined,
+    col1StyleValue: undefined,
+    col2StyleValue: undefined,
   }
 )
 
@@ -44,12 +56,16 @@ defineExpose({
 <template>
   <div class="container-col2">
     <div class="flex" :class="colContainerTwcss">
-      <div v-if="col1Position === 'left'" :class="col1Twcss">
+      <div
+        v-if="col1Position === 'left'"
+        :class="col1Twcss"
+        :style="col1StyleValue"
+      >
         <div class="slot-col1">
           <slot name="col1"></slot>
         </div>
       </div>
-      <div :class="col2Twcss">
+      <div :class="col2Twcss" :style="col2StyleValue">
         <div class="slot-col2-with-el-scrollbar sticky top-0 h-screen">
           <ElScrollbar ref="refElScrollbar" height="100vh">
             <div class="slot-col2">
@@ -58,7 +74,11 @@ defineExpose({
           </ElScrollbar>
         </div>
       </div>
-      <div v-if="col1Position === 'right'" :class="col1Twcss">
+      <div
+        v-if="col1Position === 'right'"
+        :class="col1Twcss"
+        :style="col1StyleValue"
+      >
         <div class="slot-col1">
           <slot name="col1"></slot>
         </div>

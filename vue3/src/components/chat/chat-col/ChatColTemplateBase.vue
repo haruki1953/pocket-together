@@ -79,7 +79,12 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                 chatRoomMessagesRestartFnRunnable
               "
               :couldGoBack="couldGoBack"
-            ></ChatTopBar>
+            >
+              <template #chatTopBarMoreMenu>
+                <!-- 聊天顶栏菜单项 插槽 -->
+                <slot name="chatTopBarMoreMenu"></slot>
+              </template>
+            </ChatTopBar>
           </div>
           <!-- 聊天页内容 -->
           <Transition name="fade">

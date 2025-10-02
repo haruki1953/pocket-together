@@ -6,6 +6,7 @@ import { i18nMessagesLoginPart } from './login'
 import { i18nMessagesNotificationPart } from './notification'
 import { i18nMessagesPagePart } from './page'
 import { i18nMessagesRegisterPart } from './register'
+import { i18nMessagesRoomPart } from './room'
 import { i18nMessagesSettingPart } from './setting'
 
 export type I18nMessagesSatisfiesType = Record<
@@ -34,6 +35,8 @@ export const i18nMessages = {
   ...i18nMessagesSettingPart,
   // 聊天页相关部分
   ...i18nMessagesChatPart,
+  // 房间页相关部分
+  ...i18nMessagesRoomPart,
 } as const satisfies I18nMessagesSatisfiesType
 
 // 通过类型体操，获取i18nMessages键的类型

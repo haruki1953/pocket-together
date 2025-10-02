@@ -65,9 +65,9 @@ export const i18nMessagesLoginPart = {
     'zh-TW': () => '密碼必須至少包含 8 個字符' as const,
   },
   loginWithOauth2Text: {
-    'en-US': (platform: string) => `Sign in with ${platform}` as const,
-    'zh-CN': (platform: string) => `使用 ${platform} 登录` as const,
-    'zh-TW': (platform: string) => `使用 ${platform} 登入` as const,
+    'en-US': (platform: string) => `Continue with ${platform}` as const,
+    'zh-CN': (platform: string) => `使用 ${platform} 继续` as const,
+    'zh-TW': (platform: string) => `使用 ${platform} 繼續` as const,
   },
   loginSuccess: {
     'en-US': () => 'Sign-in complete' as const,

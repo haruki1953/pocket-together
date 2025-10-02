@@ -59,11 +59,15 @@ export const layoutChatPageConfig = {
    */
   breakpointCol2ToCol1: 768,
   /**
-   * Width500 >= 1024 > Width400
-   * 大于1024时聊天栏宽度为500，小于则为400
+   * WidthLarger >= 1024 > WidthSmaller
+   * 大于1024时聊天栏宽度较大，小于则聊天栏宽度较小
    * useWindowSize
    */
-  breakpointChatWidth5ToWidth4: 1024,
+  breakpointChatWidthLargerToWidthSmaller: 1024,
+  /** 聊天栏宽度较大时的宽度 */
+  chatWidthLargerWidth: 500,
+  /** 聊天栏宽度较小时的宽度 */
+  chatWidthSmallerWidth: 400,
   /**
    * 导航栏位于底部时（小屏），内容的最大宽度
    */
@@ -71,6 +75,29 @@ export const layoutChatPageConfig = {
   /** 移动端全局聊天页最大宽度 */
   chatPageMobileMaxWidth: 500,
 } as const
+export const layoutRoomPageConfig = {
+  /**
+   * Col2 >= 768 > Col1
+   * 大于等于768显示两列，小于则显示一列（只显示聊天栏，房间详情在另外的页面）
+   * useWindowSize
+   */
+  breakpointCol2ToCol1: 768,
+  /**
+   * WidthLarger >= 1024 > WidthSmaller
+   * 大于1024时聊天栏宽度较大，小于则聊天栏宽度较小
+   * useWindowSize
+   */
+  breakpointChatWidthLargerToWidthSmaller: 1024,
+  /** 聊天栏宽度较大时的宽度 */
+  chatWidthLargerWidth: 500,
+  /** 聊天栏宽度较小时的宽度 */
+  chatWidthSmallerWidth: 400,
+  /** 移动端小屏房间聊天页最大宽度 */
+  chatPageMobileMaxWidth: 500,
+  /** 房间详情页，内容的最大宽度 */
+  roomInfoPageContentMaxWidth: 500,
+}
+/** 房间页布局配置 */
 
 // 参考
 // breakpoints: {
