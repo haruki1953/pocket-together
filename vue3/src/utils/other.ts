@@ -169,7 +169,6 @@ export const generateRandomIntegerBetween = (a: number, b: number): number => {
  * // 立即滚动至目标元素向上偏移 50px 的位置
  * scrollToElementInContainer(container, target, 'instant', -50);
  */
-
 export const scrollToElementInContainer = (
   container: HTMLElement,
   target: HTMLElement,
@@ -193,4 +192,28 @@ export const scrollToElementInContainer = (
     top: topValWidthOffset,
     behavior,
   })
+}
+
+// 显示加载动画
+export function showLoadingMask() {
+  const mask = document.getElementById('index-mask')
+  if (mask) {
+    mask.style.display = 'flex' // Use flex as defined in the CSS
+    // Use a timeout to ensure the display change has taken effect before changing opacity
+    setTimeout(() => {
+      mask.style.opacity = '1'
+    }, 10)
+  }
+}
+
+// 隐藏加载动画
+export function hideLoadingMask() {
+  const mask = document.getElementById('index-mask')
+  if (mask) {
+    mask.style.opacity = '0'
+    // Hide it completely after the transition
+    setTimeout(() => {
+      mask.style.display = 'none'
+    }, 300) // 300ms matches the transition duration in the CSS
+  }
 }

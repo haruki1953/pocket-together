@@ -18,6 +18,7 @@ declare module 'vue' {
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
@@ -35,6 +36,7 @@ declare module 'vue' {
     RiListUnordered: typeof import('@remixicon/vue')['RiListUnordered']
     RiLoader3Line: typeof import('@remixicon/vue')['RiLoader3Line']
     RiLoader4Line: typeof import('@remixicon/vue')['RiLoader4Line']
+    PocketTitle: typeof import('./src/components/pocket/PocketTitle.vue')['default']
     RiLockLine: typeof import('@remixicon/vue')['RiLockLine']
     RiMailLine: typeof import('@remixicon/vue')['RiMailLine']
     RiMessageLine: typeof import('@remixicon/vue')['RiMessageLine']
@@ -50,8 +52,6 @@ declare module 'vue' {
     RiUserLine: typeof import('@remixicon/vue')['RiUserLine']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SettingProfileForm: typeof import('./src/components/setting/SettingProfileForm.vue')['default']
-    Temp: typeof import('./src/components/temp.vue')['default']
     TempCode: typeof import('./src/components/TempCode.vue')['default']
   }
 }

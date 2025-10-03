@@ -103,6 +103,14 @@ export const routerDict = {
       paramsKey,
     } as const
   })(),
+  CreateRoomPage: {
+    path: '/room/create',
+    name: 'CreateRoomPage',
+  },
+  RoomDetailPage: {
+    path: '/room/:id',
+    name: 'RoomDetailPage',
+  },
 } as const satisfies Record<string, RouterItem>
 
 interface RouterInfo extends RouterItem {

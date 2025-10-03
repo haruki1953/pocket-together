@@ -23,3 +23,9 @@ export const fileUserAvatarConfig = {
    */
   imageBlobSizeNotGte: 100000,
 } as const
+
+export const fileRoomImageConfig = {
+  // 这里是房间图片相关配置
+  roomImageBlobFileMaxSize: 10485760, // 10MB
+  // 锁
+} as const

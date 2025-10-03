@@ -1188,9 +1188,11 @@
                 "hidden": false,
                 "id": "file2366146245",
                 "maxSelect": 1,
-                "maxSize": 500000,
+                "maxSize": 5000000,
                 "mimeTypes": [
-                    "image/jpeg"
+                    "image/jpeg",
+                    "image/png",
+                    "image/svg+xml"
                 ],
                 "name": "cover",
                 "presentable": false,
@@ -1252,6 +1254,30 @@
                 "required": false,
                 "system": false,
                 "type": "relation"
+            },
+            {
+                "hidden": false,
+                "id": "json1874629670",
+                "maxSize": 0,
+                "name": "tags",
+                "presentable": false,
+                "required": false,
+                "system": false,
+                "type": "json"
+            },
+            {
+                "autogeneratePattern": "",
+                "hidden": false,
+                "id": "text901924565",
+                "max": 8,
+                "min": 4,
+                "name": "password",
+                "pattern": "^\\d{4,8}$",
+                "presentable": false,
+                "primaryKey": false,
+                "required": false,
+                "system": false,
+                "type": "text"
             },
             {
                 "hidden": false,

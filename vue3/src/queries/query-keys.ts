@@ -1,11 +1,8 @@
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 
 export const queryKeys = {
-  /** useProfileQuery */
   profile: (id: string) => ['profile', id] as const,
-  /** useListAuthMethodsQuery */
   listAuthMethods: () => ['listAuthMethods'] as const,
-  /** usePbCollectionConfigQuery */
   pbCollectionConfig: () => ['pbCollectionConfig'] as const,
   /** useChatRoomMessagesInfiniteQuery */
   chatRoomMessagesInfinite: (roomId: string | null) =>
@@ -24,4 +21,5 @@ export const queryKeys = {
   /** chatRoomMessagesGetOne */
   chatRoomMessagesGetOne: (messageId?: string | null) =>
     ['chatRoomMessagesGetOne', messageId] as const,
+  rooms: (...args: string[]) => ['rooms', ...args] as const,
 }
