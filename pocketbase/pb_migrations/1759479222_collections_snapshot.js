@@ -639,7 +639,7 @@ migrate((app) => {
           "name": "email",
           "onlyDomains": null,
           "presentable": false,
-          "required": false,
+          "required": true,
           "system": true,
           "type": "email"
         },
@@ -668,7 +668,7 @@ migrate((app) => {
           "max": 32,
           "min": 1,
           "name": "username",
-          "pattern": "^[a-zA-Z0-9]+$",
+          "pattern": "^[a-zA-Z0-9_]+$",
           "presentable": false,
           "primaryKey": false,
           "required": true,
@@ -679,9 +679,23 @@ migrate((app) => {
           "autogeneratePattern": "",
           "hidden": false,
           "id": "text1579384326",
-          "max": 255,
+          "max": 0,
           "min": 0,
           "name": "name",
+          "pattern": "",
+          "presentable": false,
+          "primaryKey": false,
+          "required": false,
+          "system": false,
+          "type": "text"
+        },
+        {
+          "autogeneratePattern": "",
+          "hidden": false,
+          "id": "text3709889147",
+          "max": 0,
+          "min": 0,
+          "name": "bio",
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
@@ -703,7 +717,8 @@ migrate((app) => {
           "required": false,
           "system": false,
           "thumbs": [
-            "100x100f"
+            "100x100f",
+            "200x200f"
           ],
           "type": "file"
         },
@@ -770,12 +785,12 @@ migrate((app) => {
       },
       "name": "users",
       "oauth2": {
-        "enabled": false,
+        "enabled": true,
         "mappedFields": {
           "avatarURL": "avatar",
           "id": "",
           "name": "name",
-          "username": ""
+          "username": "username"
         }
       },
       "otp": {
@@ -784,13 +799,14 @@ migrate((app) => {
           "body": "<p>Hello,</p>\n<p>Your one-time password is: <strong>{OTP}</strong></p>\n<p><i>If you didn't ask for the one-time password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
           "subject": "OTP for {APP_NAME}"
         },
-        "enabled": false,
+        "enabled": true,
         "length": 8
       },
       "passwordAuth": {
         "enabled": true,
         "identityFields": [
-          "username"
+          "username",
+          "email"
         ]
       },
       "passwordResetToken": {
@@ -831,17 +847,18 @@ migrate((app) => {
           "type": "text"
         },
         {
+          "autogeneratePattern": "",
           "hidden": false,
-          "id": "select2324736937",
-          "maxSelect": 1,
+          "id": "text2324736937",
+          "max": 0,
+          "min": 0,
           "name": "key",
+          "pattern": "",
           "presentable": false,
-          "required": true,
+          "primaryKey": false,
+          "required": false,
           "system": false,
-          "type": "select",
-          "values": [
-            "allow-basic-users-upload"
-          ]
+          "type": "text"
         },
         {
           "hidden": false,
@@ -852,20 +869,6 @@ migrate((app) => {
           "required": false,
           "system": false,
           "type": "json"
-        },
-        {
-          "autogeneratePattern": "",
-          "hidden": false,
-          "id": "text3485334036",
-          "max": 0,
-          "min": 0,
-          "name": "note",
-          "pattern": "",
-          "presentable": false,
-          "primaryKey": false,
-          "required": false,
-          "system": false,
-          "type": "text"
         },
         {
           "hidden": false,
@@ -892,15 +895,15 @@ migrate((app) => {
       "indexes": [
         "CREATE UNIQUE INDEX `idx_SvFaka2n6R` ON `config` (`key`)"
       ],
-      "listRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\"",
+      "listRule": "",
       "name": "config",
       "system": false,
       "type": "base",
       "updateRule": null,
-      "viewRule": "// 指定可公开的key\nkey = \"allow-basic-users-upload\""
+      "viewRule": ""
     },
     {
-      "createRule": "// 需登录\n@request.auth.id != \"\" &&\n// 根据config，判断是否允许基础用户上传文件\n(\n  // config中允许基础用户，则可以上传\n  (\n    @collection.config.key = \"allow-basic-users-upload\" && \n    @collection.config.value = true\n  ) ||\n  // config中不允许基础用户，则用户level不能为basic\n  // auth中的可能不是实时的，应根据用户集合\n  (\n    @collection.users.id = @request.auth.id &&\n    @collection.users.level != 'basic'\n  )\n)",
+      "createRule": "// 需登录\n@request.auth.id != \"\" &&\n// 创建时需为创建者（传入的author需为当前用户）\n@request.auth.id = author.id &&\n// 根据config，判断是否允许基础用户上传文件\n(\n  // config中允许基础用户，则可以上传\n  (\n    @collection.config.key = \"allow-basic-users-upload\" && \n    @collection.config.value = true\n  ) ||\n  // config中不允许基础用户，则用户level不能为basic\n  // auth中的可能不是实时的，应根据用户集合\n  (\n    @collection.users.id = @request.auth.id &&\n    @collection.users.level != 'basic'\n  )\n)",
       "deleteRule": "// 删除时需为创建者\n@request.auth.id = author.id\n// 并且删除时不能被房间使用（待实现，在api规则中无法实现，需扩展）",
       "fields": [
         {
@@ -1018,7 +1021,7 @@ migrate((app) => {
       "viewRule": ""
     },
     {
-      "createRule": "// 创建消息需登录\n@request.auth.id != \"\"",
+      "createRule": "// 创建消息需登录\n@request.auth.id != \"\" &&\n// 创建时需为创建者（传入的author需为当前用户）\n@request.auth.id = author.id",
       "deleteRule": "// 删除消息需为创建者\n@request.auth.id = author.id",
       "fields": [
         {
@@ -1132,7 +1135,7 @@ migrate((app) => {
       "viewRule": ""
     },
     {
-      "createRule": "// 创建房间需登录\n@request.auth.id != \"\"",
+      "createRule": "// 创建房间需登录\n@request.auth.id != \"\" &&\n// 创建时需为创建者（传入的author需为当前用户）\n@request.auth.id = author.id",
       "deleteRule": "// 删除房间需为创建者\n@request.auth.id = author.id",
       "fields": [
         {
@@ -1181,9 +1184,11 @@ migrate((app) => {
           "hidden": false,
           "id": "file2366146245",
           "maxSelect": 1,
-          "maxSize": 500000,
+          "maxSize": 5000000,
           "mimeTypes": [
-            "image/jpeg"
+            "image/jpeg",
+            "image/png",
+            "image/svg+xml"
           ],
           "name": "cover",
           "presentable": false,
@@ -1200,11 +1205,11 @@ migrate((app) => {
           "hidden": false,
           "id": "number606229465",
           "max": null,
-          "min": 1,
+          "min": null,
           "name": "coverWidth",
           "onlyInt": true,
           "presentable": false,
-          "required": true,
+          "required": false,
           "system": false,
           "type": "number"
         },
@@ -1212,11 +1217,11 @@ migrate((app) => {
           "hidden": false,
           "id": "number2705033776",
           "max": null,
-          "min": 1,
+          "min": null,
           "name": "coverHeight",
           "onlyInt": true,
           "presentable": false,
-          "required": true,
+          "required": false,
           "system": false,
           "type": "number"
         },
@@ -1245,6 +1250,30 @@ migrate((app) => {
           "required": false,
           "system": false,
           "type": "relation"
+        },
+        {
+          "hidden": false,
+          "id": "json1874629670",
+          "maxSize": 0,
+          "name": "tags",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "json"
+        },
+        {
+          "autogeneratePattern": "",
+          "hidden": false,
+          "id": "text901924565",
+          "max": 8,
+          "min": 4,
+          "name": "password",
+          "pattern": "^\\d{4,8}$",
+          "presentable": false,
+          "primaryKey": false,
+          "required": false,
+          "system": false,
+          "type": "text"
         },
         {
           "hidden": false,
