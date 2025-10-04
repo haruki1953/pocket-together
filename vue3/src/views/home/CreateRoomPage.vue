@@ -7,7 +7,7 @@ import { pb } from '@/lib'
 // 封装的状态管理
 import { useAuthStore } from '@/stores'
 // 文件上传限制
-import { fileRoomImageConfig } from '@/config'
+import { fileRoomImageConfig, routerDict } from '@/config'
 import { hideLoadingMask, showLoadingMask } from '@/utils'
 
 const i18nStore = useI18nStore()
@@ -105,7 +105,13 @@ async function createRoom() {
     const newRoom = await pb.collection('rooms').create(roomData)
     // 结束
     hideLoadingMask()
-    router.push({ name: 'CreateRoomOK', params: { id: newRoom.id } })
+    router.push({
+      name: routerDict.CreateRoomOK.name,
+      params: {
+        [routerDict.CreateRoomOK.paramsKey.title]: newRoom.title,
+        [routerDict.CreateRoomOK.paramsKey.id]: newRoom.id,
+      },
+    })
   } catch {
     // 失败也结束动画
     hideLoadingMask()

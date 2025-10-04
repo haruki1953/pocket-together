@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { routerDict } from '@/config'
 import type { HomeCardType } from './types'
 import { useI18nStore } from '@/stores'
 import { RouterLink } from 'vue-router'
@@ -28,7 +29,13 @@ const tagTypes = ['success', 'info', 'warning', 'danger'] as const
 
 <template>
   <RouterLink
-    :to="{ name: 'RoomDetailPage', params: { id: home.id } }"
+    :to="{
+      name: routerDict.RoomPage.name,
+      params: {
+        [routerDict.RoomPage.paramsKey.id]: home.id,
+        [routerDict.RoomPage.paramsKey.title]: home.title,
+      },
+    }"
     class="block"
   >
     <div

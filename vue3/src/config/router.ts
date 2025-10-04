@@ -107,10 +107,22 @@ export const routerDict = {
     path: '/room/create',
     name: 'CreateRoomPage',
   },
-  RoomDetailPage: {
-    path: '/room/:id',
-    name: 'RoomDetailPage',
-  },
+  // RoomDetailPage: {
+  //   path: '/room/:id',
+  //   name: 'RoomDetailPage',
+  // },
+  CreateRoomOK: (() => {
+    const paramsKey = {
+      title: 'title',
+      id: 'id',
+    } as const
+    return {
+      // 使用paramsKey拼接参数字符串，安心安全安定
+      path: `/room/create/ok/:${paramsKey.id}/:${paramsKey.title}`,
+      name: 'CreateRoomOK',
+      paramsKey,
+    } as const
+  })(),
 } as const satisfies Record<string, RouterItem>
 
 interface RouterInfo extends RouterItem {

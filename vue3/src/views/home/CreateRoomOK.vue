@@ -5,13 +5,16 @@ import { useI18nStore } from '@/stores'
 import { onMounted } from 'vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { queryKeys } from '@/queries/query-keys'
+import { routerDict } from '@/config'
 
 const router = useRouter()
 const route = useRoute()
 const i18nStore = useI18nStore()
 const queryClient = useQueryClient()
 
-const roomId = route.params.id as string
+const roomId = computed(() => {
+  return route.params.id
+})
 
 onMounted(() => {
   setTimeout(() => {
@@ -20,8 +23,14 @@ onMounted(() => {
 })
 
 function goToRoom() {
-  if (roomId !== '') {
-    router.push({ name: 'RoomDetailPage', params: { id: roomId } })
+  if (roomId.value !== '') {
+    router.push({
+      name: routerDict.RoomPage.name,
+      params: {
+        [routerDict.RoomPage.paramsKey.title]: '_',
+        [routerDict.RoomPage.paramsKey.id]: roomId.value,
+      },
+    })
   }
 }
 

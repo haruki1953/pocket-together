@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
-import PocketTitle from '@/components/pocket/PocketTitle.vue'
+import { PocketTitle } from '@/components'
 
 defineProps<{
   showContentTrueCol2FalseCol1: boolean

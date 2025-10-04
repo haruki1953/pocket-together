@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routerDict } from './config'
-import CreateRoomPage from './views/home/CreateRoomPage.vue'
-import RoomDetailPage from './views/home/RoomDetailPage.vue'
 
 import {
   LayoutNav,
@@ -16,6 +14,8 @@ import {
   ChatPageMobile,
   RoomPage,
   RoomInfoPage,
+  CreateRoomPage,
+  CreateRoomOK,
 } from './views'
 
 // 路由
@@ -31,10 +31,10 @@ const router = createRouter({
           ...routerDict.HomePage,
           component: HomePage,
         },
-        {
-          ...routerDict.RoomDetailPage,
-          component: RoomDetailPage,
-        },
+        // {
+        //   ...routerDict.RoomDetailPage,
+        //   component: RoomDetailPage,
+        // },
         {
           ...routerDict.ChatPage,
           component: ChatPage,
@@ -74,8 +74,6 @@ const router = createRouter({
           component: ChatPageMobile,
         },
         {
-          // path: routerDict.RoomPage.path,
-          // name: routerDict.RoomPage.name
           ...routerDict.RoomPage,
           component: RoomPage,
         },
@@ -88,9 +86,8 @@ const router = createRouter({
           component: CreateRoomPage,
         },
         {
-          path: '/room/create/ok/:id',
-          name: 'CreateRoomOK',
-          component: () => import('@/views/home/CreateRoomOK.vue'),
+          ...routerDict.CreateRoomOK,
+          component: CreateRoomOK,
         },
       ],
     },

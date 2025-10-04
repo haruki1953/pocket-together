@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import PocketTitle from '@/components/pocket/PocketTitle.vue'
+import { PocketTitle } from '@/components'
 import { useI18nStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
 

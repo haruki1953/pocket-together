@@ -22,7 +22,6 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
-    PocketTitle: typeof import('./src/components/pocket/PocketTitle.vue')['default']
     RiArrowLeftSFill: typeof import('@remixicon/vue')['RiArrowLeftSFill']
     RiArrowUpWideLine: typeof import('@remixicon/vue')['RiArrowUpWideLine']
     RiBookmarkLine: typeof import('@remixicon/vue')['RiBookmarkLine']
@@ -52,6 +51,5 @@ declare module 'vue' {
     RiUserLine: typeof import('@remixicon/vue')['RiUserLine']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TempCode: typeof import('./src/components/TempCode.vue')['default']
   }
 }
