@@ -20,9 +20,16 @@ import type { RoomsResponse, UsersResponse } from '@/lib'
 import { pb } from '@/lib'
 // 导入图片预加载组合式函数
 import { useCardImagePreloader } from '@/composables/Home-CardScroll'
+// 导入房间查询 store
+import { useRoomQueryStore } from '@/stores/room-query'
+import { storeToRefs } from 'pinia'
 
-// 调用勾子命名为 roomsQuery
-const roomsQuery = useRoomsInfiniteQuery()
+// 初始化房间查询 store
+const roomQueryStore = useRoomQueryStore()
+// 从 store 中解构出 searchTerm，并保持其响应性
+const { searchTerm } = storeToRefs(roomQueryStore)
+// 调用勾子命名为 roomsQuery，并传入 searchTerm
+const roomsQuery = useRoomsInfiniteQuery({ searchTerm })
 
 // 预加载函数
 const { preloadImagesForCards } = useCardImagePreloader()

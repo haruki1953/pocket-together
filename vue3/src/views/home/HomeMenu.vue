@@ -3,17 +3,37 @@ import { ref, computed } from 'vue'
 import { PocketTitle } from '@/components'
 import { useI18nStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
+import { useRoomQueryStore } from '@/stores/room-query' // 导入新创建的 store
+import { storeToRefs } from 'pinia'
 
 const i18nStore = useI18nStore()
+const roomQueryStore = useRoomQueryStore() // 初始化 store
+const { searchTerm } = storeToRefs(roomQueryStore) // 从 store 中解构出 searchTerm
 
 const isSearching = ref(true)
 const searchStatus = ref(null)
 
-// function isSearchChenging() {
-//   isSearching.value = !isSearching.value
-// }
+// 用于绑定输入框的本地 ref
+const localSearchTerm = ref(searchTerm.value)
+
+// 监听 Pinia store 中 searchTerm 的变化，以保持 localSearchTerm 同步
+// 这在从其他地方清除搜索词时很有用
+watch(searchTerm, (newTerm) => {
+  localSearchTerm.value = newTerm
+})
+
+// 更新 Pinia store 中的 searchTerm，从而触发查询
+function updateSearchQuery() {
+  // 只有当值确实发生变化时才更新，避免不必要的查询
+  if (searchTerm.value !== localSearchTerm.value) {
+    roomQueryStore.searchTerm = localSearchTerm.value
+  }
+}
+
 onClickOutside(searchStatus, () => {
   isSearching.value = true
+  // 当点击外部区域时，也可以选择触发一次搜索
+  updateSearchQuery()
 })
 
 const menuItems = computed(() => [
@@ -55,10 +75,13 @@ const menuItems = computed(() => [
             <i class="ri-search-line"></i>
           </div>
           <input
+            v-model="localSearchTerm"
             class="absolute h-full w-full flex-1 cursor-pointer bg-white/0 pl-16 caret-gray-200 transition-all duration-700 ease-in-out placeholder:text-[16px] focus:outline-none"
             :class="isSearching ? 'opacity-0' : 'opacity-100'"
             type="text"
             placeholder="Search..."
+            @keydown.enter="updateSearchQuery"
+            @blur="updateSearchQuery"
           />
         </div>
         <button
