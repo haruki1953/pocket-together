@@ -4,29 +4,39 @@ import { queryKeys } from './query-keys'
 import { queryRetryPbNetworkError } from './query-retry'
 import type { Ref } from 'vue'
 import { fetchWithTimeoutPreferred } from '@/utils'
+// 状态说是
+import { useAuthStore } from '@/stores/auth'
 
 // 定义 useRoomsInfiniteQuery 的参数类型
 interface UseRoomsInfiniteQueryOptions {
-  searchTerm: Ref<string> // 接收一个响应式的搜索词
+  // 接收一个响应式的搜索词
+  searchTerm: Ref<string>
+  onlyUser: Ref<boolean>
 }
 
 export const useRoomsInfiniteQuery = ({
   searchTerm,
 }: UseRoomsInfiniteQueryOptions) => {
+  // 状态说是
+  const authStore = useAuthStore()
   const query = useInfiniteQuery({
-    // queryKey: 查询的唯一标识符，vue-query用它来缓存数据
+    // 查询的唯一标识符
     // 将 searchTerm 的值加入 queryKey，当 searchTerm 变化时，vue-query 会自动重新查询
     // 因为searchTerm是响应式的，要用computed，避免其丢失响应式
-    queryKey: computed(() =>
-      queryKeys.rooms('list', 'infinite', searchTerm.value)
-    ),
+    queryKey: queryKeys.rooms('list', 'infinite', { searchTerm, onlyUser }),
     // 实际执行数据请求的函数。
     queryFn: async ({ pageParam }) => {
       const perPage = 7
-      // 根据 searchTerm 的值决定是否添加过滤条件
-      const filter =
-        searchTerm.value !== '' ? `title ~ '${searchTerm.value}'` : ''
-
+      // 过滤条件
+      const filters: string[] = []
+      if (searchTerm.value) {
+        filters.push(`title ~ '${searchTerm.value}'`)
+      }
+      if (onlyUser.value && authStore.record?.id) {
+        filters.push(`author = '${authStore.record.id}'`)
+      }
+      // 链接所有条件
+      const filter = filters.join(' && ')
       // 调用 getList 时，通过泛型传入 expand 的确切类型
       const result = await pb
         .collection(Collections.Rooms)
