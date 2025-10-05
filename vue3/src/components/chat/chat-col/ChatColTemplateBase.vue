@@ -8,6 +8,7 @@ import {
 } from './components'
 import { useI18nStore } from '@/stores'
 import { ContainerBar } from '@/components'
+import { RiMessage3Fill } from '@remixicon/vue'
 
 const i18nStore = useI18nStore()
 
@@ -30,6 +31,8 @@ const props = defineProps<{
   chatRoomMessagesRestartFnRunnable: boolean
   /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
 }>()
 
 // 消息详情对话框
@@ -182,12 +185,13 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       <template #bar>
         <div class="flow-root">
           <!-- 输入栏 -->
-          <ChatInputBar></ChatInputBar>
+          <ChatInputBar :roomId="roomId"></ChatInputBar>
         </div>
       </template>
     </ContainerBar>
-    <!-- 加载时显示的内容 -->
-    <Transition name="fade">
+    <!-- 显示状态的遮罩层：加载中、聊天为空 -->
+    <Transition name="fade" mode="out-in">
+      <!-- 加载时显示的内容 -->
       <div
         v-if="
           chatRoomMessagesForShowWithOnMounted == null && isMounted === true
@@ -197,9 +201,24 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
         <div class="sticky top-0 flex h-screen items-center justify-center">
           <div class="text-color-text-soft">
             <RiLoader3Line
-              class="loading-spinner-500ms"
+              class="loading-spinner-800ms"
               size="50px"
             ></RiLoader3Line>
+          </div>
+        </div>
+      </div>
+      <!-- 为空时显示的内容 -->
+      <div
+        v-else-if="
+          chatRoomMessagesForShowWithOnMounted != null &&
+          chatRoomMessagesForShowWithOnMounted.length === 0
+        "
+        class="pointer-events-none absolute top-0 z-10 h-full w-full"
+      >
+        <div class="sticky top-0 flex h-screen items-center justify-center">
+          <div class="text-color-background-soft">
+            <!-- <RiMessage3Line size="100px"></RiMessage3Line> -->
+            <RiMessage3Fill size="100px"></RiMessage3Fill>
           </div>
         </div>
       </div>

@@ -17,6 +17,8 @@ const props = defineProps<{
   refScrollWarp?: HTMLElement
   /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
 }>()
 // 供封装的组件或组合式函数使用
 export type PropsType = typeof props
@@ -82,6 +84,8 @@ const resetPositioningCursorDataAndRelatedData = () => {
 //   created: '2025-09-01 10:46:42.872Z',
 // }
 
+const chatRoomId = computed(() => props.roomId)
+
 /** 封装了聊天页的数据及其处理相关内容 */
 const {
   // 聊天页消息 游标分页无限查询
@@ -93,6 +97,7 @@ const {
   // 将 MessagesRealtime 和 MessagesList 融合
   chatRoomMessagesListAndRealtime,
 } = useChatDataProcessMessagesTwoway({
+  chatRoomId,
   twowayPositioningCursorData,
 })
 export type ChatRoomMessagesInfiniteTwowayQueryType =
@@ -229,6 +234,7 @@ const chatRoomMessagesRestartFn = async () => {
       :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
       :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
       :couldGoBack="couldGoBack"
+      :roomId="roomId"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->

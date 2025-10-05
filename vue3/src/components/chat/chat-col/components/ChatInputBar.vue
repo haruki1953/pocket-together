@@ -12,6 +12,11 @@ import {
 import { RiSendPlane2Fill, RiSendPlane2Line } from '@remixicon/vue'
 import { useMutation } from '@tanstack/vue-query'
 
+const props = defineProps<{
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
+}>()
+
 const chatInputContent = ref('')
 
 const profileQuery = useProfileQuery()
@@ -30,6 +35,7 @@ const messageSendMutation = useMutation({
     // 通过 pocketbase SDK 请求
     const pbRes = await pbMessagesSendChatApi({
       content: chatInputContent.value,
+      roomId: props.roomId,
     })
     console.log(pbRes)
     return pbRes

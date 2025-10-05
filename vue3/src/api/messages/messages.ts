@@ -16,7 +16,13 @@ import type { RecordSubscription } from 'pocketbase'
 import { messagesExpand, type MessagesResponseWidthExpand } from './base'
 
 /** messages集合 发送消息 需登录 */
-export const pbMessagesSendChatApi = async (data: { content: string }) => {
+export const pbMessagesSendChatApi = async (data: {
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
+  content: string
+}) => {
+  const { roomId, content } = data
+
   // 未登录，抛出错误
   if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
     throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
@@ -25,7 +31,8 @@ export const pbMessagesSendChatApi = async (data: { content: string }) => {
   // 准备数据
   const createData: Create<Collections.Messages> = {
     author: pb.authStore.record.id,
-    content: data.content,
+    content: content,
+    room: roomId,
   }
 
   // 通过 pocketbase SDK 请求

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { pbMessagesSendChatApi } from '@/api'
 import { ChatCol, ChatTopBarMoreMenuItem, ContainerCol2 } from '@/components'
 import { layoutRoomPageConfig, routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
+import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
 import { RiHomeLine, RiMessage3Line } from '@remixicon/vue'
 import { useWindowSize } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 
 const { width: windowWidth } = useWindowSize()
 
@@ -46,6 +49,28 @@ onMounted(() => {
 })
 
 const i18nStore = useI18nStore()
+
+const route = useRoute()
+const roomRouteParams = computed(() => {
+  return {
+    id: route.params[routerDict.RoomPage.paramsKey.id] as string,
+    title: route.params[routerDict.RoomPage.paramsKey.title] as string,
+  }
+})
+
+// 测试批量添加消息
+const testPbSendMessage = async () => {
+  // const sendNum = generateRandomIntegerBetween(1, 10)
+  const sendNum = 100
+  for (let i = 0; i < sendNum; i++) {
+    await pbMessagesSendChatApi({
+      content: generateRandomKey(
+        generateRandomIntegerBetween(5, generateRandomIntegerBetween(20, 200))
+      ),
+      roomId: roomRouteParams.value.id,
+    })
+  }
+}
 </script>
 
 <template>
@@ -61,7 +86,11 @@ const i18nStore = useI18nStore()
         <!-- 聊天列 -->
         <template #col1>
           <div class="ml-2 mr-6">
-            <ChatCol :refScrollWarp="htmlRef ?? undefined" :couldGoBack="true">
+            <ChatCol
+              :refScrollWarp="htmlRef ?? undefined"
+              :couldGoBack="true"
+              :roomId="roomRouteParams.id"
+            >
               <template #chatTopBarMoreMenu>
                 <!-- 返回首页 -->
                 <ChatTopBarMoreMenuItem
@@ -78,6 +107,13 @@ const i18nStore = useI18nStore()
                   <template #text>
                     {{ i18nStore.t('roomChatTopBarMoreMenuBackHomeText')() }}
                   </template>
+                </ChatTopBarMoreMenuItem>
+                <!-- 测试批量添加消息 -->
+                <ChatTopBarMoreMenuItem @click="testPbSendMessage">
+                  <template #icon>
+                    <RiFlaskLine size="18px"></RiFlaskLine>
+                  </template>
+                  <template #text> 测试批量添加消息 </template>
                 </ChatTopBarMoreMenuItem>
               </template>
             </ChatCol>
@@ -102,7 +138,11 @@ const i18nStore = useI18nStore()
             maxWidth: `${layoutRoomPageConfig.chatPageMobileMaxWidth}px`,
           }"
         >
-          <ChatCol :refScrollWarp="htmlRef ?? undefined" :couldGoBack="true">
+          <ChatCol
+            :refScrollWarp="htmlRef ?? undefined"
+            :couldGoBack="true"
+            :roomId="roomRouteParams.id"
+          >
             <template #chatTopBarMoreMenu>
               <!-- 房间详情 -->
               <ChatTopBarMoreMenuItem
@@ -111,9 +151,9 @@ const i18nStore = useI18nStore()
                     name: routerDict.RoomInfoPage.name,
                     params: {
                       [routerDict.RoomInfoPage.paramsKey.title]:
-                        $route.params[routerDict.RoomPage.paramsKey.title],
+                        roomRouteParams.title,
                       [routerDict.RoomInfoPage.paramsKey.id]:
-                        $route.params[routerDict.RoomPage.paramsKey.id],
+                        roomRouteParams.id,
                     },
                   })
                 "

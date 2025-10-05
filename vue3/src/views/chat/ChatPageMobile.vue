@@ -22,6 +22,7 @@ onMounted(() => {
       <ChatCol
         :refScrollWarp="htmlRef ?? undefined"
         :couldGoBack="true"
+        roomId=""
       ></ChatCol>
     </div>
   </div>

@@ -101,14 +101,15 @@ router.beforeEach((to, from) => {
   // 路由滚动行为定制
   // 之所以不用 createRouter 中的 scrollBehavior 来控制，是因为 scrollBehavior 会等到组件onMounted后再进行，会影响聊天页的滚动控制
   // router.beforeEach 是在组件setup前就进行
-  ;(() => {
-    // 点中当前路径时，不滚动
-    if (to.path === from.path) {
-      return
-    }
-    // 回到顶部
-    window.scrollTo({ top: 0 })
-  })()
+  // 【251005】发现有问题，在从房间详情页返回时还是会导致滚动问题
+  // ;(() => {
+  //   // 点中当前路径时，不滚动
+  //   if (to.path === from.path) {
+  //     return
+  //   }
+  //   // 回到顶部
+  //   window.scrollTo({ top: 0 })
+  // })()
 
   // 路由不存在，拦截到首页
   if (router.resolve(to.path).matched.length === 0) {
