@@ -3,23 +3,29 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { queryKeys } from './query-keys'
 import { queryRetryPbNetworkError } from './query-retry'
 import type { Ref } from 'vue'
+import { fetchWithTimeoutPreferred } from '@/utils'
 
 // 定义 useRoomsInfiniteQuery 的参数类型
 interface UseRoomsInfiniteQueryOptions {
   searchTerm: Ref<string> // 接收一个响应式的搜索词
 }
 
-export const useRoomsInfiniteQuery = ({ searchTerm }: UseRoomsInfiniteQueryOptions) => {
+export const useRoomsInfiniteQuery = ({
+  searchTerm,
+}: UseRoomsInfiniteQueryOptions) => {
   const query = useInfiniteQuery({
     // queryKey: 查询的唯一标识符，vue-query用它来缓存数据
     // 将 searchTerm 的值加入 queryKey，当 searchTerm 变化时，vue-query 会自动重新查询
-    queryKey: queryKeys.rooms('list', 'infinite', { searchTerm }),
-
+    // 因为searchTerm是响应式的，要用computed，避免其丢失响应式
+    queryKey: computed(() =>
+      queryKeys.rooms('list', 'infinite', searchTerm.value)
+    ),
     // 实际执行数据请求的函数。
     queryFn: async ({ pageParam }) => {
       const perPage = 7
       // 根据 searchTerm 的值决定是否添加过滤条件
-      const filter = searchTerm.value ? `title ~ '${searchTerm.value}'` : ''
+      const filter =
+        searchTerm.value !== '' ? `title ~ '${searchTerm.value}'` : ''
 
       // 调用 getList 时，通过泛型传入 expand 的确切类型
       const result = await pb
@@ -33,6 +39,8 @@ export const useRoomsInfiniteQuery = ({ searchTerm }: UseRoomsInfiniteQueryOptio
             expand: 'author',
             sort: '-created',
             filter, // 应用过滤器
+            // timeout为5000
+            fetch: fetchWithTimeoutPreferred,
           }
         )
       return result
