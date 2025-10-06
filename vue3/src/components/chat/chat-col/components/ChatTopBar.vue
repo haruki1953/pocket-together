@@ -5,12 +5,15 @@ import { potoGoBack, useWatchSourceToHoldTimeAndStep } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { ChatTopBarMoreMenuItem } from '.'
+import { useRoomsGetOneQuery } from '@/queries'
 
 const props = defineProps<{
   chatRoomMessagesRestartFn: () => Promise<void>
   chatRoomMessagesRestartFnRunning: boolean
   chatRoomMessagesRestartFnRunnable: boolean
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
 }>()
 
 const isShowMoreMenu = ref(false)
@@ -71,6 +74,32 @@ const chatTopBarBack = () => {
     fallbackPath: routerDict.HomePage.path,
   })
 }
+
+/** 是否为全局聊天 */
+const isGlobalChat = computed(() => {
+  if (props.roomId === '') {
+    return true
+  }
+  return false
+})
+/** 房间信息 */
+const roomsGetOneQuery = useRoomsGetOneQuery({
+  roomId: computed(() => props.roomId),
+})
+
+/** 房间标题 */
+const roomTitle = computed(() => {
+  // 当前为全局聊天，返回全局聊天标题
+  if (isGlobalChat.value) {
+    return i18nStore.t('chatTopBarGlobalChatTitle')()
+  }
+  // 房间信息有数据，返回房间标题
+  if (roomsGetOneQuery.data.value != null) {
+    return roomsGetOneQuery.data.value.title
+  }
+  // 无数据，返回空字符串
+  return ''
+})
 </script>
 
 <template>
@@ -133,8 +162,7 @@ const chatTopBarBack = () => {
           <!-- 标题 -->
           <div class="flex-1 truncate">
             <div class="truncate text-[15px] font-bold text-color-text">
-              <!-- 待实现获取房间信息 -->
-              聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试聊天标题测试aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+              {{ roomTitle }}
             </div>
           </div>
           <!-- 更多 -->

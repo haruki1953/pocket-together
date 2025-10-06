@@ -301,7 +301,7 @@ export const useChatRoomMessagesGetOneQuery = (data: {
     queryFn: async () => {
       // 无消息id，抛出错误
       if (messageId.value == null) {
-        throw new Error('dialogMessageId.value == null')
+        throw new Error('messageId.value == null')
       }
       // pb请求
       const pbRes = await pbMessagesGetOneApi(messageId.value)

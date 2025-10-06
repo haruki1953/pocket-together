@@ -49,6 +49,7 @@ export const messagesExpand = (() => {
   >
 
   // 🧩 将字段键拼接为 expand 查询字符串
-  // author,quoteRoom,quoteFile
-  return `${recordKeys.author},${recordKeys.quoteRoom},${recordKeys.quoteFile}`
+  // 模板字面量类型（Template Literal Types）可以在类型层面进行字符串拼接、组合和约束。
+  // type const = "author,quoteRoom,quoteFile"
+  return `${recordKeys.author},${recordKeys.quoteRoom},${recordKeys.quoteFile}` as const
 })()

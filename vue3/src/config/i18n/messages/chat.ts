@@ -30,4 +30,9 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '刷新' as const,
     'zh-TW': () => '刷新' as const,
   },
+  chatTopBarGlobalChatTitle: {
+    'en-US': () => 'Global Chat' as const,
+    'zh-CN': () => '全局聊天' as const,
+    'zh-TW': () => '全域聊天' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

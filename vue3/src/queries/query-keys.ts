@@ -18,8 +18,11 @@ export const queryKeys = {
       twowayPositioningCursorData,
     ] as const,
 
-  /** chatRoomMessagesGetOne */
+  /** useChatRoomMessagesGetOneQuery */
   chatRoomMessagesGetOne: (messageId?: string | null) =>
     ['chatRoomMessagesGetOne', messageId] as const,
+  /**  */
   rooms: (...args: string[]) => ['rooms', ...args] as const,
+  /** useRoomsGetOneQuery */
+  roomsGetOne: (roomId: string | null) => ['roomsGetOne', roomId],
 }

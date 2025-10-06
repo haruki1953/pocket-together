@@ -82,6 +82,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                 chatRoomMessagesRestartFnRunnable
               "
               :couldGoBack="couldGoBack"
+              :roomId="roomId"
             >
               <template #chatTopBarMoreMenu>
                 <!-- 聊天顶栏菜单项 插槽 -->
