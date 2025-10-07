@@ -16,6 +16,7 @@ interface UseRoomsInfiniteQueryOptions {
 
 export const useRoomsInfiniteQuery = ({
   searchTerm,
+  onlyUserRooms,
 }: UseRoomsInfiniteQueryOptions) => {
   // 状态说是
   const authStore = useAuthStore()
