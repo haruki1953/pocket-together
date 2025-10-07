@@ -43,7 +43,9 @@ onClickOutside(searchStatus, () => {
 const menuItems = computed(() => [
   {
     id: 'all',
-    text: onlyUserRooms.value ? '全部房间' : '我的房间',
+    text: onlyUserRooms.value
+      ? i18nStore.t('homeMenuAllRooms')()
+      : i18nStore.t('homeMenuMyRooms')(),
     action: changeUserRoomsOnly,
   },
   // 芝士收藏
