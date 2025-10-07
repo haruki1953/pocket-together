@@ -1,4 +1,5 @@
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
+import type { Ref } from 'vue'
 
 export const queryKeys = {
   profile: (id: string) => ['profile', id] as const,
@@ -22,4 +23,16 @@ export const queryKeys = {
   chatRoomMessagesGetOne: (messageId?: string | null) =>
     ['chatRoomMessagesGetOne', messageId] as const,
   rooms: (...args: string[]) => ['rooms', ...args] as const,
+  /**
+   * @description rooms-list-infinite
+   * 搜索词
+   * - @param {Ref<string>} options.searchTerm
+   * 只看用户自己
+   * - @param {Ref<boolean>} options.onlyUserRooms
+   */
+  roomsListInfinite: (options: {
+    searchTerm: Ref<string>
+    onlyUserRooms: Ref<boolean>
+    userId: string | null | undefined
+  }) => ['rooms', 'list', 'infinite', options] as const,
 }
