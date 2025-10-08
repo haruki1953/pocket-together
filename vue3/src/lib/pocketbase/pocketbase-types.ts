@@ -120,6 +120,7 @@ export type MessagesRecord = {
 	id: string
 	quoteFile?: RecordIdString
 	quoteRoom?: RecordIdString
+	replyMessage?: RecordIdString
 	room?: RecordIdString
 	updated?: IsoDateString
 }
@@ -127,6 +128,8 @@ export type MessagesRecord = {
 export type RoomsRecord<Ttags = unknown> = {
 	author: RecordIdString
 	cover?: string
+	coverHeight?: number
+	coverWidth?: number
 	created?: IsoDateString
 	description?: string
 	id: string
@@ -158,8 +161,7 @@ export type UsersRecord<Tinfo = unknown> = {
 	verified?: boolean
 }
 
-// 它首先获取 Record 的所有字段，并用 Required<> 工具类型把所有可选字段都变成必选字段 
-// BaseSystemFields<Texpand>: 然后，它通过 & (交叉类型) 将 RoomsRecord 与 BaseSystemFields 这个类型合并在一起
+// Response types include system fields and match responses from the PocketBase API
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
