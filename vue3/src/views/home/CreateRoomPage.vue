@@ -22,7 +22,7 @@ const roomImage = ref<File | null>(null)
 const roomTitle = ref('')
 const roomDescription = ref('')
 const roomTag = ref('')
-const tags = ref(['TEST', 'TEST', 'TEST'])
+const tags = ref(['Tag', 'Tag', 'Tag'])
 const tagNotNew = ref<boolean>(false)
 
 // 检测进入页面
