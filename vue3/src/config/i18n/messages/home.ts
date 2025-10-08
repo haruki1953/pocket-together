@@ -9,6 +9,11 @@ export const i18nMessagesHomePart = {
     'zh-CN': () => '全部房间' as const,
     'zh-TW': () => '全部房間' as const,
   },
+  homeMenuMyRooms: {
+    'en-US': () => 'My Rooms' as const,
+    'zh-CN': () => '我的房间' as const,
+    'zh-TW': () => '我的房間' as const,
+  },
   homeMenuSearchRooms: {
     'en-US': () => 'Search Rooms' as const,
     'zh-CN': () => '搜索房间' as const,

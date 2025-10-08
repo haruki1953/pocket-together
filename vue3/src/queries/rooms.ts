@@ -2,33 +2,53 @@ import { Collections, pb, type RoomsResponse, type UsersResponse } from '@/lib'
 import { useInfiniteQuery, useQuery } from '@tanstack/vue-query'
 import { queryKeys } from './query-keys'
 import { queryRetryPbNetworkError } from './query-retry'
-import type { Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { fetchWithTimeoutPreferred } from '@/utils'
 import { pbRoomsGetOneApi } from '@/api'
 import { queryConfig } from '@/config'
+// 状态说是
+import { useAuthStore } from '@/stores/auth'
 
 // 定义 useRoomsInfiniteQuery 的参数类型
 interface UseRoomsInfiniteQueryOptions {
-  searchTerm: Ref<string> // 接收一个响应式的搜索词
+  // 接收一个响应式的搜索词
+  searchTerm: Ref<string>
+  onlyUserRooms: Ref<boolean>
 }
 
 export const useRoomsInfiniteQuery = ({
   searchTerm,
+  onlyUserRooms,
 }: UseRoomsInfiniteQueryOptions) => {
+  // 状态说是
+  const authStore = useAuthStore()
   const query = useInfiniteQuery({
-    // queryKey: 查询的唯一标识符，vue-query用它来缓存数据
-    // 将 searchTerm 的值加入 queryKey，当 searchTerm 变化时，vue-query 会自动重新查询
-    // 因为searchTerm是响应式的，要用computed，避免其丢失响应式
+    // 查询的唯一标识符
+    // 使用专门为无限滚动列表创建的、类型安全的 key 生成函数
+    // 使用 computed 包裹以确保对 authStore.record?.id 的响应性（实时响应）
+    // 当 searchTerm、onlyUserRooms 或用户登录状态变化时，vue-query 会自动重新查询
     queryKey: computed(() =>
-      queryKeys.rooms('list', 'infinite', searchTerm.value)
+      queryKeys.roomsListInfinite({
+        searchTerm,
+        onlyUserRooms,
+        // 如果用户 A 退出，用户 B 登录，用户 B 可能看到用户 A 的房间列表
+        // 用户的登录状态发生变化，queryKey 立刻更新
+        userId: authStore.record?.id,
+      })
     ),
-    // 实际执行数据请求的函数。
+    // 实际执行数据请求的函数
     queryFn: async ({ pageParam }) => {
       const perPage = 7
-      // 根据 searchTerm 的值决定是否添加过滤条件
-      const filter =
-        searchTerm.value !== '' ? `title ~ '${searchTerm.value}'` : ''
-
+      // 过滤条件
+      const filters: string[] = []
+      if (searchTerm.value !== '') {
+        filters.push(`title ~ '${searchTerm.value}'`)
+      }
+      if (onlyUserRooms.value && authStore.record?.id != null) {
+        filters.push(`author = '${authStore.record.id}'`)
+      }
+      // 链接所有条件
+      const filter = filters.join(' && ')
       // 调用 getList 时，通过泛型传入 expand 的确切类型
       const result = await pb
         .collection(Collections.Rooms)
@@ -41,7 +61,7 @@ export const useRoomsInfiniteQuery = ({
             expand: 'author',
             sort: '-created',
             filter, // 应用过滤器
-            // timeout为5000
+            // timeout 为 5000
             fetch: fetchWithTimeoutPreferred,
           }
         )

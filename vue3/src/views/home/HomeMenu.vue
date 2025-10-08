@@ -7,14 +7,18 @@ import { useRoomQueryStore } from '@/stores/room-query' // 导入新创建的 st
 import { storeToRefs } from 'pinia'
 
 const i18nStore = useI18nStore()
-const roomQueryStore = useRoomQueryStore() // 初始化 store
-const { searchTerm } = storeToRefs(roomQueryStore) // 从 store 中解构出 searchTerm
+const roomQueryStore = useRoomQueryStore()
+const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore) // 从 store 中解构出 searchTerm
 
 const isSearching = ref(true)
 const searchStatus = ref(null)
 
 // 用于绑定输入框的本地 ref
 const localSearchTerm = ref(searchTerm.value)
+
+function changeUserRoomsOnly() {
+  roomQueryStore.onlyUserRooms = !roomQueryStore.onlyUserRooms
+}
 
 // 监听 Pinia store 中 searchTerm 的变化，以保持 localSearchTerm 同步
 // 这在从其他地方清除搜索词时很有用
@@ -37,7 +41,14 @@ onClickOutside(searchStatus, () => {
 })
 
 const menuItems = computed(() => [
-  { id: 'all', text: i18nStore.t('homeMenuAllRooms')() },
+  {
+    id: 'all',
+    text: onlyUserRooms.value
+      ? i18nStore.t('homeMenuAllRooms')()
+      : i18nStore.t('homeMenuMyRooms')(),
+    action: changeUserRoomsOnly,
+  },
+  // 芝士收藏
   { id: 'favorites', text: i18nStore.t('homeMenuFavoriteRooms')() },
 ])
 </script>
@@ -88,6 +99,7 @@ const menuItems = computed(() => [
           v-for="item in menuItems"
           :key="item.id"
           class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
+          @click="item.action?.()"
         >
           {{ item.text }}
         </button>
