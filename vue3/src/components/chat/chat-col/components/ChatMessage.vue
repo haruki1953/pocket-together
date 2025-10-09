@@ -12,6 +12,8 @@ import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
+import type { MessagesResponseWidthExpand } from '@/api'
+import { RiDiscussFill } from '@remixicon/vue'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -29,6 +31,8 @@ const props = defineProps<{
   linkPositioningFlagMessageId: string | null
   linkPositioningFlagShow: boolean
   linkPositioningFlagClose: () => void
+  /** 聊天输入栏正在回复的消息 */
+  chatReplyMessage: MessagesResponseWidthExpand | null
 }>()
 
 // 响应式的 pb.authStore
@@ -237,12 +241,34 @@ onLongPress(
   }
 )
 
-// 链接定位标记的点击
+// 是否显示链接定位标记
+const isShowLinkPositioningFlag = computed(() => {
+  if (
+    props.linkPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.linkPositioningFlagShow === true
+  ) {
+    return true
+  }
+  return false
+})
+
+// 链接定位标记的点击，开启详情对话框、延迟等过渡动画结束在取消标记
 const linkPositioningFlagClickFn = async () => {
   openMessageInfoDialogFn()
   await new Promise((resolve) => setTimeout(resolve, 300))
   props.linkPositioningFlagClose()
 }
+
+// 是否显示回复标记
+const isShowChatReplyMessageFlag = computed(() => {
+  if (props.chatReplyMessage == null) {
+    return false
+  }
+  if (props.chatReplyMessage.id === props.chatRoomMessagesItem.id) {
+    return true
+  }
+  return false
+})
 </script>
 
 <template>
@@ -309,6 +335,11 @@ const linkPositioningFlagClickFn = async () => {
               }"
             >
               <div class="flex-1">
+                <!-- 回复的消息 -->
+                <div v-if="chatRoomMessagesItem.expand.replyMessage != null">
+                  {{ chatRoomMessagesItem.expand.replyMessage.id }}
+                </div>
+                <!-- 消息文字内容 -->
                 <div class="wrap-long-text mx-3 my-2 text-[15px]">
                   {{ chatRoomMessagesItem.content }}
                 </div>
@@ -319,12 +350,17 @@ const linkPositioningFlagClickFn = async () => {
         <!-- 图标列（详情按钮） -->
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
-            <!-- 链接定位标记，如果消息id等于此，将显示链接标记 -->
+            <!-- 回复标记 -->
             <div
-              v-if="
-                linkPositioningFlagMessageId === chatRoomMessagesItem.id &&
-                linkPositioningFlagShow === true
-              "
+              v-if="isShowChatReplyMessageFlag"
+              class="cursor-pointer text-el-success"
+              @click="openMessageInfoDialogFn"
+            >
+              <RiDiscussFill></RiDiscussFill>
+            </div>
+            <!-- 链接定位标记 -->
+            <div
+              v-else-if="isShowLinkPositioningFlag"
               class="cursor-pointer text-el-primary"
               @click="linkPositioningFlagClickFn"
             >

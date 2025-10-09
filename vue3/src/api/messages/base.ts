@@ -16,6 +16,12 @@ type MessagesRecordExpand = {
   author?: UsersResponse
   quoteRoom?: RoomsResponse
   quoteFile?: FilesResponse
+  replyMessage?: MessagesResponse<MessagesRecordExpandReplyMessage>
+}
+type MessagesRecordExpandReplyMessage = {
+  author?: UsersResponse
+  quoteRoom?: RoomsResponse
+  quoteFile?: FilesResponse
 }
 // 🧠 类型安全地构造 expand 字符串
 export const messagesExpand = (() => {
@@ -40,6 +46,7 @@ export const messagesExpand = (() => {
     author: 'author',
     quoteRoom: 'quoteRoom',
     quoteFile: 'quoteFile',
+    replyMessage: 'replyMessage',
   } as const satisfies Group<
     // 限制键必须来自 `[CollectionName]Record`，可选（允许只使用部分字段）
     Partial<Record<keyof MessagesRecord, string>>
@@ -47,9 +54,21 @@ export const messagesExpand = (() => {
     // 限制键集合必须与 `RecordExpand` 完全一致，且每个键的值必须与键名相同（KeyValueMirror）
     KeyValueMirror<keyof MessagesRecordExpand>
   >
+  const recordKeysReplyMessage = {
+    author: 'author',
+    quoteRoom: 'quoteRoom',
+    quoteFile: 'quoteFile',
+  } as const satisfies Group<
+    // 限制键必须来自 `[CollectionName]Record`，可选（允许只使用部分字段）
+    Partial<Record<keyof MessagesRecord, string>>
+  > satisfies Group<
+    // 限制键集合必须与 `RecordExpand` 完全一致，且每个键的值必须与键名相同（KeyValueMirror）
+    KeyValueMirror<keyof MessagesRecordExpandReplyMessage>
+  >
 
   // 🧩 将字段键拼接为 expand 查询字符串
   // 模板字面量类型（Template Literal Types）可以在类型层面进行字符串拼接、组合和约束。
-  // type const = "author,quoteRoom,quoteFile"
-  return `${recordKeys.author},${recordKeys.quoteRoom},${recordKeys.quoteFile}` as const
+  // type const = "author,quoteRoom,quoteFile,replyMessage.author,replyMessage.quoteFile,replyMessage.quoteRoom"
+
+  return `${recordKeys.author},${recordKeys.quoteRoom},${recordKeys.quoteFile},${recordKeys.replyMessage}.${recordKeysReplyMessage.author},${recordKeys.replyMessage}.${recordKeysReplyMessage.quoteFile},${recordKeys.replyMessage}.${recordKeysReplyMessage.quoteRoom}` as const
 })()

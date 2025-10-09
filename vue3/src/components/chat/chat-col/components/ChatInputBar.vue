@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { pbMessagesSendChatApi } from '@/api'
+import { pbMessagesSendChatApi, type MessagesResponseWidthExpand } from '@/api'
 import { Collections } from '@/lib'
 import { pb, type Create } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
@@ -17,9 +17,23 @@ const props = defineProps<{
   roomId: string
 }>()
 
+// 聊天输入框内容
 const chatInputContent = ref('')
 
+// 回复的消息，将导出给外部组件使用
+const chatReplyMessage = ref<MessagesResponseWidthExpand | null>(null)
+const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
+  chatReplyMessage.value = val
+}
+
+defineExpose({
+  chatReplyMessage,
+  chatReplyMessageSet,
+})
+
 const profileQuery = useProfileQuery()
+
+const realtimeMessagesStore = useRealtimeMessagesStore()
 
 // 消息发送Mutation
 const messageSendMutation = useMutation({
@@ -36,13 +50,17 @@ const messageSendMutation = useMutation({
     const pbRes = await pbMessagesSendChatApi({
       content: chatInputContent.value,
       roomId: props.roomId,
+      replyMessageId: chatReplyMessage.value?.id,
     })
     console.log(pbRes)
     return pbRes
   },
   // 一些收尾工作
   onSuccess: (data) => {
+    // 发送后重置输入栏
     chatInputContent.value = ''
+    // 发送后取消刚刚的回复消息
+    chatReplyMessage.value = null
   },
   // 错误处理
   onError: (error) => {
@@ -54,8 +72,6 @@ const messageSendMutation = useMutation({
   // ✅ 在网络错误时重试
   retry: queryRetryPbNetworkError,
 })
-
-const realtimeMessagesStore = useRealtimeMessagesStore()
 
 const messageSendSubmitRunning = ref(false)
 // 消息发送提交
@@ -83,8 +99,13 @@ const messageSendSubmit = async () => {
     <div class="chat-input-box flow-root bg-color-background-soft pb-1">
       <!-- <div class="m-3 h-16 bg-red-950">输入框</div> -->
       <div class="my-2 flex items-stretch">
-        <!-- 输入框 -->
+        <!-- 左栏 -->
         <div class="ml-2 mr-1 flow-root flex-1">
+          <!-- 回复的消息 -->
+          <div v-if="chatReplyMessage != null">
+            {{ chatReplyMessage.id }}
+          </div>
+          <!-- 聊天输入框 -->
           <div class="mt-[1px]">
             <ElInput
               v-model="chatInputContent"
@@ -96,7 +117,7 @@ const messageSendSubmit = async () => {
             />
           </div>
         </div>
-        <!-- 按钮 -->
+        <!-- 右栏 按钮 -->
         <div class="mr-2 flex flex-col-reverse">
           <ElButton
             circle

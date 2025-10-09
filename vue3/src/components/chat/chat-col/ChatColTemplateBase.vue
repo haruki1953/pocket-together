@@ -49,6 +49,24 @@ const openMessageInfoDialog: NonNullable<
 // eslint-disable-next-line prettier/prettier
 export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
 
+// 聊天输入栏
+const refChatInputBar = ref<InstanceType<typeof ChatInputBar> | null>(null)
+// 聊天输入栏导出的一些数据和方法
+/** 聊天输入栏正在回复的消息 */
+const chatReplyMessage = computed(() => {
+  if (refChatInputBar.value == null) {
+    return null
+  }
+  return refChatInputBar.value.chatReplyMessage
+})
+/** 聊天输入栏正在回复的消息，设置值 */
+const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
+  if (refChatInputBar.value == null) {
+    return
+  }
+  refChatInputBar.value.chatReplyMessageSet(val)
+}
+
 const isMounted = ref(false)
 onMounted(() => {
   isMounted.value = true
@@ -65,7 +83,11 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
 <template>
   <div class="relative">
     <!-- 消息详情对话框 -->
-    <MessageInfoDialog ref="refMessageInfoDialog"></MessageInfoDialog>
+    <MessageInfoDialog
+      ref="refMessageInfoDialog"
+      :chatReplyMessage="chatReplyMessage"
+      :chatReplyMessageSet="chatReplyMessageSet"
+    ></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
     <ContainerBar :defaultBarHeight="64">
@@ -153,6 +175,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                   :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
                   :linkPositioningFlagShow="linkPositioningFlagShow"
                   :linkPositioningFlagClose="linkPositioningFlagClose"
+                  :chatReplyMessage="chatReplyMessage"
                 ></ChatMessage>
               </div>
               <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->
@@ -186,7 +209,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       <template #bar>
         <div class="flow-root">
           <!-- 输入栏 -->
-          <ChatInputBar :roomId="roomId"></ChatInputBar>
+          <ChatInputBar ref="refChatInputBar" :roomId="roomId"></ChatInputBar>
         </div>
       </template>
     </ContainerBar>

@@ -17,11 +17,13 @@ import { messagesExpand, type MessagesResponseWidthExpand } from './base'
 
 /** messages集合 发送消息 需登录 */
 export const pbMessagesSendChatApi = async (data: {
-  /** 房间id，空字符串为全局聊天 */
-  roomId: string
+  /** 房间id，空字符串或null都可代表全局聊天 */
+  roomId?: string | null
   content: string
+  /** 回复的帖子id，空字符串或null都可代表无 */
+  replyMessageId?: string | null
 }) => {
-  const { roomId, content } = data
+  const { roomId, content, replyMessageId } = data
 
   // 未登录，抛出错误
   if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
@@ -32,7 +34,26 @@ export const pbMessagesSendChatApi = async (data: {
   const createData: Create<Collections.Messages> = {
     author: pb.authStore.record.id,
     content: content,
-    room: roomId,
+    room: (() => {
+      if (roomId == null) {
+        return undefined
+      }
+      if (roomId === '') {
+        // 其实返回空字符串也可以
+        return undefined
+      }
+      return roomId
+    })(),
+    replyMessage: (() => {
+      if (replyMessageId == null) {
+        return undefined
+      }
+      if (replyMessageId === '') {
+        // 其实返回空字符串也可以
+        return undefined
+      }
+      return replyMessageId
+    })(),
   }
 
   // 通过 pocketbase SDK 请求

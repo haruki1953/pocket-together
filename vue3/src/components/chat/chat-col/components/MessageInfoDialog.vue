@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MessagesResponseWidthExpand } from '@/api'
 import { useDialogOptimization } from '@/composables'
 import {
   appUserDefaultAvatar,
@@ -17,6 +18,13 @@ import {
 import { useQueryClient } from '@tanstack/vue-query'
 import { useClipboard, useWindowSize } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
+
+const props = defineProps<{
+  /** 聊天输入栏正在回复的消息 */
+  chatReplyMessage: MessagesResponseWidthExpand | null
+  /** 聊天输入栏正在回复的消息，设置值 */
+  chatReplyMessageSet: (val: MessagesResponseWidthExpand | null) => void
+}>()
 
 // 还是通过普通的ref设置dialogMessageId比较好
 const dialogMessageId = ref<string | null>(null)
@@ -148,7 +156,7 @@ const i18nStore = useI18nStore()
 // 操作按钮 actionButton
 /** 复制消息链接 */
 const actionButtonCopyMessageLink = async () => {
-  // 无数据，时不正常的，返回
+  // 无数据，是不正常的，返回
   if (chatRoomMessagesGetOneQuery.data.value == null) {
     console.error('chatRoomMessagesGetOneQuery.data.value == null')
     return
@@ -198,6 +206,19 @@ const actionButtonCopyMessageLink = async () => {
       message: link,
     })
   }
+}
+/** 让聊天输入栏回复此消息 */
+const actionButtonchatReplyMessageSet = () => {
+  // 无数据，是不正常的，返回
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+
+  // 设置为回复此消息
+  props.chatReplyMessageSet(chatRoomMessagesGetOneQuery.data.value)
+  // 设置后关闭对话框
+  close()
 }
 </script>
 
@@ -255,7 +276,18 @@ const actionButtonCopyMessageLink = async () => {
         <!-- 消息卡片 -->
         <div class="mt-[10px]">
           <div class="flow-root rounded-[20px] bg-color-background-soft">
-            <div class="wrap-long-text mx-[15px] my-[10px]">
+            <div class="mx-[15px] my-[10px]">
+              <!-- 回复的消息 -->
+              <div
+                v-if="
+                  chatRoomMessagesGetOneQuery.data.value.expand.replyMessage !=
+                  null
+                "
+              >
+                {{
+                  chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.id
+                }}
+              </div>
               <!-- 消息 -->
               <div class="wrap-long-text text-[16px]">
                 {{ chatRoomMessagesGetOneQuery.data.value.content }}
@@ -322,6 +354,7 @@ const actionButtonCopyMessageLink = async () => {
             <!-- 回复 -->
             <div
               class="flow-root cursor-pointer transition-colors hover:text-el-success"
+              @click="actionButtonchatReplyMessageSet"
             >
               <div class="m-[5px]">
                 <RiDiscussLine size="24px"></RiDiscussLine>
