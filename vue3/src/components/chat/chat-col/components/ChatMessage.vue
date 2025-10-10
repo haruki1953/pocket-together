@@ -217,6 +217,32 @@ const timeAgo = useTimeAgo(
   }
 )
 
+// 回复的消息的用户头像
+const messageReplyMessageUserAvatarUrl = computed(() => {
+  // expand.replyMessage == null，此情况不会显示，返回默认头像
+  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+    return appUserDefaultAvatar
+  }
+
+  // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
+  if (props.chatRoomMessagesItem.expand.replyMessage.expand.author == null) {
+    console.error('props.chatRoomMessagesItem.expand.author == null')
+    return appUserDefaultAvatar
+  }
+  // 无头像，返回默认头像
+  if (
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar === ''
+  ) {
+    return appUserDefaultAvatar
+  }
+  // 有头像，返回头像url
+  return pb.files.getURL(
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author,
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar,
+    { thumb: fileUserAvatarConfig.thumb200x200f }
+  )
+})
+
 // 打开消息详情对话框函数
 const openMessageInfoDialogFn = () => {
   props.openMessageInfoDialog(
@@ -309,7 +335,7 @@ const isShowChatReplyMessageFlag = computed(() => {
           </div>
         </div>
         <!-- 消息列 -->
-        <div class="col-message">
+        <div class="col-message truncate">
           <div
             class="flex"
             :class="{
@@ -318,7 +344,7 @@ const isShowChatReplyMessageFlag = computed(() => {
             }"
           >
             <div
-              class="flex min-h-[40px] items-center"
+              class="flex min-h-[40px] items-center truncate"
               :class="{
                 // 消息为当前用户发送，显示不同的消息背景色
                 'bg-el-primary-light-4': isMessageCurrentUser,
@@ -334,14 +360,39 @@ const isShowChatReplyMessageFlag = computed(() => {
                 'rounded-br-[4px]': !isMessageBoxroundedBR,
               }"
             >
-              <div class="flex-1">
-                <!-- 回复的消息 -->
-                <div v-if="chatRoomMessagesItem.expand.replyMessage != null">
-                  {{ chatRoomMessagesItem.expand.replyMessage.id }}
-                </div>
-                <!-- 消息文字内容 -->
-                <div class="wrap-long-text mx-3 my-2 text-[15px]">
-                  {{ chatRoomMessagesItem.content }}
+              <div class="flex-1 truncate">
+                <div class="my-2">
+                  <!-- 回复的消息 -->
+                  <div
+                    v-if="chatRoomMessagesItem.expand.replyMessage != null"
+                    class="mb-[4px] ml-[4px] mr-[12px]"
+                  >
+                    <div class="flex cursor-pointer items-center">
+                      <!-- 头像 -->
+                      <div class="ml-[4px] mr-[6px]">
+                        <div
+                          class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                          :style="{
+                            backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }"
+                        ></div>
+                      </div>
+                      <!-- 内容 -->
+                      <div class="truncate">
+                        <div
+                          class="select-none truncate text-[12px] text-color-text"
+                        >
+                          {{ chatRoomMessagesItem.expand.replyMessage.content }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 消息文字内容 -->
+                  <div class="wrap-long-text mx-3 text-[15px] text-color-text">
+                    {{ chatRoomMessagesItem.content }}
+                  </div>
                 </div>
               </div>
             </div>
