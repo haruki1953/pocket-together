@@ -78,7 +78,13 @@ watch(
             // tags 字段，直接提供一个空数组
             tags: Array.isArray(room.tags) ? room.tags : [],
             // 我的 userId 存在吗
-            isFavorited: Boolean(userId) && room.favorites?.includes(userId),
+            isFavorited:
+              // Boolean(userId) && room.favorites?.includes(userId ?? ''),
+              Boolean(
+                userId !== null &&
+                  room.favorites !== null &&
+                  room.favorites.includes(userId ?? '')
+              ),
           } satisfies HomeCardType
           // isFavorited: false,
         }
@@ -133,9 +139,9 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
 
 // 切换收藏状态的函数
 const toggleFavorite = async (room: HomeCardType) => {
-  // 这个定义 回归天空了
+  // 这个定义 回归上层了 去前面找
   // const userId = pb.authStore.record?.id
-  if (userId === '') {
+  if (userId == null) {
     console.error('您还没有登陆喵')
     return
   }
@@ -148,13 +154,13 @@ const toggleFavorite = async (room: HomeCardType) => {
     if (newFavoritedDesu) {
       await pb
         .collection('rooms')
-        .update(String(room.id), { 'favorited+': userId })
+        .update(String(room.id), { 'favorites+': userId })
     }
     // 取消收藏，删掉
     else {
       await pb
         .collection('rooms')
-        .update(String(room.id), { 'favorited-': userId })
+        .update(String(room.id), { 'favorites-': userId })
     }
   } catch (error) {
     console.error('切换收藏状态时出错:', error)
