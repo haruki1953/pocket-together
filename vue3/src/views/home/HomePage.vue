@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// ---
-// 位于: /Users/kippu/KIPPU-Code/GitHub/pocket-together/vue3/src/views/home/HomePage.vue
-
 import HomeCard from './HomeCard.vue'
 import HomeMenu from './HomeMenu.vue'
 import LeftMenuTab from './LeftMenuTab.vue'
@@ -35,6 +32,9 @@ const roomsQuery = useRoomsInfiniteQuery({ searchTerm, onlyUserRooms })
 const { preloadImagesForCards } = useCardImagePreloader()
 // 已预加载图片的卡片数据
 const preloadedRoomCards = ref<HomeCardType[]>([])
+
+// 用来存储当前用户的 ID
+const userId = pb.authStore.record?.id
 
 // 监听从服务器获取的数据变化
 watch(
@@ -77,8 +77,10 @@ watch(
                 : '',
             // tags 字段，直接提供一个空数组
             tags: Array.isArray(room.tags) ? room.tags : [],
-            isFavorited: false,
+            // 我的 userId 存在吗
+            isFavorited: Boolean(userId) && room.favorites?.includes(userId),
           } satisfies HomeCardType
+          // isFavorited: false,
         }
       )
     )
@@ -130,8 +132,35 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
 })
 
 // 切换收藏状态的函数
-const toggleFavorite = (room: HomeCardType) => {
-  room.isFavorited = !room.isFavorited
+const toggleFavorite = async (room: HomeCardType) => {
+  // 这个定义 回归天空了
+  // const userId = pb.authStore.record?.id
+  if (userId === '') {
+    console.error('您还没有登陆喵')
+    return
+  }
+  try {
+    // room.isFavorited = !room.isFavorited
+    //  使用中间值来存储 room.isFavorited 的当前值，为了更方便的读取世纪值（可读性这一块）
+    const newFavoritedDesu = !room.isFavorited
+    room.isFavorited = newFavoritedDesu
+    // 点击收藏，存入
+    if (newFavoritedDesu) {
+      await pb
+        .collection('rooms')
+        .update(String(room.id), { 'favorited+': userId })
+    }
+    // 取消收藏，删掉
+    else {
+      await pb
+        .collection('rooms')
+        .update(String(room.id), { 'favorited-': userId })
+    }
+  } catch (error) {
+    console.error('切换收藏状态时出错:', error)
+    // 把收藏展示改回去
+    room.isFavorited = !room.isFavorited
+  }
 }
 
 // 左侧菜单的开关
