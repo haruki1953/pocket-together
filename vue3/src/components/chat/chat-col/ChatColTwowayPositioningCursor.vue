@@ -9,8 +9,13 @@ import {
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
+import {
+  chatRoomMessagesClassIdNamingFnConfig,
+  chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
+  chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
+} from '@/config'
 import { useQueryClient } from '@tanstack/vue-query'
+import { isElementInViewport, scrollToElementInContainer } from '@/utils'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -215,6 +220,55 @@ const chatRoomMessagesRestartFn = async () => {
     chatRoomMessagesRestartFnRunning.value = false
   }
 }
+
+/** 聊天回复定位 */
+const chatRoomMessagesReplyPositioningFn = async (
+  replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+) => {
+  // 【操作1】使消息在屏幕显示
+  // 从dom获取指定的元素
+  const replyMessageElement = document.querySelector<HTMLElement>(
+    `.${chatRoomMessagesClassIdNamingFnConfig(replyMessagePositioningData.id)}`
+  )
+  // 判断是否已在dom 是
+  if (replyMessageElement != null) {
+    // 判断是否已在屏幕范围 是
+    if (
+      isElementInViewport(replyMessageElement, {
+        fullyVisible: true,
+        offset: {
+          // 元素距顶部距离要大于配置的值
+          top: Math.abs(
+            chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
+          ),
+        },
+      })
+    ) {
+      // 无需处理
+    }
+    // 判断是否已在屏幕范围 否
+    else {
+      // 滚动容器 props.refScrollWarp 没有值是异常的
+      if (props.refScrollWarp == null) {
+        console.error('props.refScrollWarp == null')
+        return
+      }
+      // 滚动至消息
+      scrollToElementInContainer(
+        props.refScrollWarp,
+        replyMessageElement,
+        'smooth',
+        chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
+      )
+    }
+  }
+  // 判断是否已在dom 否
+  else {
+    // 新的定位查询 TODO
+  }
+
+  // 【操作2】赋值回复标志数据 TODO
+}
 </script>
 
 <template>
@@ -235,6 +289,7 @@ const chatRoomMessagesRestartFn = async () => {
       :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
       :couldGoBack="couldGoBack"
       :roomId="roomId"
+      :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->

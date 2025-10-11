@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { MessagesResponseWidthExpand } from '@/api'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import {
   ChatInputBar,
   ChatMessage,
@@ -33,6 +36,10 @@ const props = defineProps<{
   couldGoBack: boolean
   /** 房间id，空字符串为全局聊天 */
   roomId: string
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
 }>()
 
 // 消息详情对话框
@@ -176,6 +183,9 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                   :linkPositioningFlagShow="linkPositioningFlagShow"
                   :linkPositioningFlagClose="linkPositioningFlagClose"
                   :chatReplyMessage="chatReplyMessage"
+                  :chatRoomMessagesReplyPositioningFn="
+                    chatRoomMessagesReplyPositioningFn
+                  "
                 ></ChatMessage>
               </div>
               <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->

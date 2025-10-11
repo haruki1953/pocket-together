@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   appUserDefaultAvatar,
+  chatRoomMessagesClassIdNamingFnConfig,
   chatRoomMessagesDispalyTogetherMaxSecondsConfig,
   fileUserAvatarConfig,
 } from '@/config'
@@ -12,7 +13,10 @@ import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
-import type { MessagesResponseWidthExpand } from '@/api'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import { RiDiscussFill } from '@remixicon/vue'
 
 const props = defineProps<{
@@ -33,6 +37,10 @@ const props = defineProps<{
   linkPositioningFlagClose: () => void
   /** 聊天输入栏正在回复的消息 */
   chatReplyMessage: MessagesResponseWidthExpand | null
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
 }>()
 
 // 响应式的 pb.authStore
@@ -295,6 +303,18 @@ const isShowChatReplyMessageFlag = computed(() => {
   }
   return false
 })
+
+/** 聊天回复定位 */
+const replyMessagesPositioningFn = async () => {
+  // 本消息无回复，直接返回
+  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+    return
+  }
+  await props.chatRoomMessagesReplyPositioningFn({
+    id: props.chatRoomMessagesItem.expand.replyMessage.id,
+    created: props.chatRoomMessagesItem.expand.replyMessage.created,
+  })
+}
 </script>
 
 <template>
@@ -303,7 +323,7 @@ const isShowChatReplyMessageFlag = computed(() => {
   -->
   <div
     class="chat-message flow-root"
-    :class="`chat-message-${chatRoomMessagesItem.id}`"
+    :class="chatRoomMessagesClassIdNamingFnConfig(chatRoomMessagesItem.id)"
     :data-message-id="chatRoomMessagesItem.id"
   >
     <div class="mt-1">
@@ -367,7 +387,10 @@ const isShowChatReplyMessageFlag = computed(() => {
                     v-if="chatRoomMessagesItem.expand.replyMessage != null"
                     class="mb-[4px] ml-[4px] mr-[12px]"
                   >
-                    <div class="flex cursor-pointer items-center">
+                    <div
+                      class="flex cursor-pointer items-center"
+                      @click="replyMessagesPositioningFn"
+                    >
                       <!-- 头像 -->
                       <div class="ml-[4px] mr-[6px]">
                         <div

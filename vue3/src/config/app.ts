@@ -64,3 +64,10 @@ export const chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConf
     id: 'id',
     created: 'created',
   } as const
+
+/**
+ * 聊天页，消息项的类名命名方法，每个消息根据id有唯一的类名
+ */
+export const chatRoomMessagesClassIdNamingFnConfig = (messageId: string) => {
+  return `chat-message-${messageId}` as const
+}

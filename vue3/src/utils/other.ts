@@ -194,6 +194,73 @@ export const scrollToElementInContainer = (
   })
 }
 
+/**
+ * 判断一个 HTMLElement 是否在视口中可见（支持部分/完全可见判断，支持边界偏移配置）。
+ *
+ * @param el - 要判断的 HTML 元素
+ * @param options - 可选配置项
+ *   - fullyVisible: 是否要求完全可见（默认为 false，表示部分可见即可）
+ *   - offset: 视口边界偏移设置（单位 px），用于模拟“缩小视口”或预留安全边距
+ *     - top: 视口顶部偏移（正值表示缩小视口）
+ *     - bottom: 视口底部偏移
+ *     - left: 视口左侧偏移
+ *     - right: 视口右侧偏移
+ *
+ * @returns 是否在视口中可见（true 表示满足配置条件）
+ *
+ * @example
+ * // 判断元素是否部分可见
+ * isElementInViewport(el)
+ *
+ * // 判断元素是否完全可见
+ * isElementInViewport(el, { fullyVisible: true })
+ *
+ * // 判断元素是否在“缩小 20px 的视口”中部分可见
+ * isElementInViewport(el, { offset: { top: 20, bottom: 20 } })
+ */
+export const isElementInViewport = (
+  el: HTMLElement,
+  options?: {
+    fullyVisible?: boolean
+    offset?: {
+      top?: number
+      bottom?: number
+      left?: number
+      right?: number
+    }
+  }
+): boolean => {
+  const rect = el.getBoundingClientRect()
+
+  const { fullyVisible = false, offset = {} } = options ?? {}
+
+  const topOffset = offset.top ?? 0
+  const bottomOffset = offset.bottom ?? 0
+  const leftOffset = offset.left ?? 0
+  const rightOffset = offset.right ?? 0
+
+  const viewportTop = 0 + topOffset
+  const viewportBottom = window.innerHeight - bottomOffset
+  const viewportLeft = 0 + leftOffset
+  const viewportRight = window.innerWidth - rightOffset
+
+  if (fullyVisible) {
+    return (
+      rect.top >= viewportTop &&
+      rect.bottom <= viewportBottom &&
+      rect.left >= viewportLeft &&
+      rect.right <= viewportRight
+    )
+  } else {
+    return (
+      rect.bottom > viewportTop &&
+      rect.top < viewportBottom &&
+      rect.right > viewportLeft &&
+      rect.left < viewportRight
+    )
+  }
+}
+
 // 显示加载动画
 export function showLoadingMask() {
   const mask = document.getElementById('index-mask')
