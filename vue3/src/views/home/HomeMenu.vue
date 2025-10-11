@@ -3,12 +3,12 @@ import { ref, computed } from 'vue'
 import { PocketTitle } from '@/components'
 import { useI18nStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
-import { useRoomQueryStore } from '@/stores/room-query' // 导入新创建的 store
+import { useRoomQueryStore } from '@/stores/room-query'
 import { storeToRefs } from 'pinia'
 
 const i18nStore = useI18nStore()
 const roomQueryStore = useRoomQueryStore()
-const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore) // 从 store 中解构出 searchTerm
+const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore)
 
 const isSearching = ref(true)
 const searchStatus = ref(null)

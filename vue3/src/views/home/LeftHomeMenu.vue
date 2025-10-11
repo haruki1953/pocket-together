@@ -9,9 +9,6 @@ const i18nStore = useI18nStore()
 const isSearching = ref(true)
 const searchStatus = ref(null)
 
-// function isSearchChenging() {
-//   isSearching.value = !isSearching.value
-// }
 onClickOutside(searchStatus, () => {
   isSearching.value = true
 })

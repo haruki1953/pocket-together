@@ -142,7 +142,7 @@ const toggleFavorite = async (room: HomeCardType) => {
   // 这个定义 回归上层了 去前面找
   // const userId = pb.authStore.record?.id
   if (userId == null) {
-    console.error('您还没有登陆喵')
+    // console.error('您还没有登陆喵')
     return
   }
   try {
@@ -162,9 +162,8 @@ const toggleFavorite = async (room: HomeCardType) => {
         .collection('rooms')
         .update(String(room.id), { 'favorites-': userId })
     }
-  } catch (error) {
-    console.error('切换收藏状态时出错:', error)
-    // 把收藏展示改回去
+  } catch {
+    // 切换收藏状态时出错，回退收藏展示
     room.isFavorited = !room.isFavorited
   }
 }
@@ -346,4 +345,4 @@ const smallScreenCards = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<!-- <style scoped lang="scss"></style> -->

@@ -3,7 +3,6 @@ import { routerDict } from '@/config'
 import type { HomeCardType } from './types'
 import { useI18nStore } from '@/stores'
 import { RouterLink } from 'vue-router'
-// import type { I18nMessagesKeyType } from '@/config/i18n'
 
 const i18nStore = useI18nStore()
 

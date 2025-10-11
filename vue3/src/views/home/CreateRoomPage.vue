@@ -292,7 +292,7 @@ async function createRoom() {
         </div>
 
         <!-- 房间属性 -->
-        <div class="">
+        <div>
           <!-- 房间预览文本 -->
           <div>
             <h2 class="text-2xl font-bold text-cyan-600 dark:text-gray-300">
