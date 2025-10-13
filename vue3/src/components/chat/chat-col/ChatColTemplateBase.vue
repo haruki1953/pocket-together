@@ -40,6 +40,9 @@ const props = defineProps<{
   chatRoomMessagesReplyPositioningFn: (
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
   ) => Promise<void>
+  replyPositioningFlagMessageId: string | null
+  replyPositioningFlagShow: boolean
+  replyPositioningFlagClose: () => void
 }>()
 
 // 消息详情对话框
@@ -186,6 +189,9 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                   :chatRoomMessagesReplyPositioningFn="
                     chatRoomMessagesReplyPositioningFn
                   "
+                  :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
+                  :replyPositioningFlagShow="replyPositioningFlagShow"
+                  :replyPositioningFlagClose="replyPositioningFlagClose"
                 ></ChatMessage>
               </div>
               <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->

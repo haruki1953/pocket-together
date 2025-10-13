@@ -41,6 +41,9 @@ const props = defineProps<{
   chatRoomMessagesReplyPositioningFn: (
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
   ) => Promise<void>
+  replyPositioningFlagMessageId: string | null
+  replyPositioningFlagShow: boolean
+  replyPositioningFlagClose: () => void
 }>()
 
 // 响应式的 pb.authStore
@@ -285,15 +288,31 @@ const isShowLinkPositioningFlag = computed(() => {
   }
   return false
 })
-
-// 链接定位标记的点击，开启详情对话框、延迟等过渡动画结束在取消标记
+// 链接定位标记的点击，开启详情对话框、延迟等过渡动画结束再取消标记
 const linkPositioningFlagClickFn = async () => {
   openMessageInfoDialogFn()
   await new Promise((resolve) => setTimeout(resolve, 300))
   props.linkPositioningFlagClose()
 }
 
-// 是否显示回复标记
+// 是否显示回复定位标记
+const isShowReplyPositioningFlag = computed(() => {
+  if (
+    props.replyPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.replyPositioningFlagShow === true
+  ) {
+    return true
+  }
+  return false
+})
+// 回复定位标记的点击，开启详情对话框、延迟等过渡动画结束再取消标记
+const replyPositioningFlagClickFn = async () => {
+  openMessageInfoDialogFn()
+  await new Promise((resolve) => setTimeout(resolve, 300))
+  props.replyPositioningFlagClose()
+}
+
+// 是否显示回复（正在回复）标记
 const isShowChatReplyMessageFlag = computed(() => {
   if (props.chatReplyMessage == null) {
     return false
@@ -424,30 +443,40 @@ const replyMessagesPositioningFn = async () => {
         <!-- 图标列（详情按钮） -->
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
-            <!-- 回复标记 -->
-            <div
-              v-if="isShowChatReplyMessageFlag"
-              class="cursor-pointer text-el-success"
-              @click="openMessageInfoDialogFn"
-            >
-              <RiDiscussFill></RiDiscussFill>
-            </div>
-            <!-- 链接定位标记 -->
-            <div
-              v-else-if="isShowLinkPositioningFlag"
-              class="cursor-pointer text-el-primary"
-              @click="linkPositioningFlagClickFn"
-            >
-              <RiLink></RiLink>
-            </div>
-            <!-- 普通更多按钮 -->
-            <div
-              v-else
-              class="more-button cursor-pointer"
-              @click="openMessageInfoDialogFn"
-            >
-              <RiMoreFill></RiMoreFill>
-            </div>
+            <Transition name="fade150ms" mode="out-in">
+              <!-- 回复标记 -->
+              <div
+                v-if="isShowChatReplyMessageFlag"
+                class="cursor-pointer text-el-success"
+                @click="openMessageInfoDialogFn"
+              >
+                <RiDiscussFill></RiDiscussFill>
+              </div>
+              <!-- 回复定位标记 -->
+              <div
+                v-else-if="isShowReplyPositioningFlag"
+                class="cursor-pointer text-el-primary"
+                @click="replyPositioningFlagClickFn"
+              >
+                <RiDiscussLine></RiDiscussLine>
+              </div>
+              <!-- 链接定位标记 -->
+              <div
+                v-else-if="isShowLinkPositioningFlag"
+                class="cursor-pointer text-el-primary"
+                @click="linkPositioningFlagClickFn"
+              >
+                <RiLink></RiLink>
+              </div>
+              <!-- 普通更多按钮 -->
+              <div
+                v-else
+                class="more-button cursor-pointer"
+                @click="openMessageInfoDialogFn"
+              >
+                <RiMoreFill></RiMoreFill>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>

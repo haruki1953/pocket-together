@@ -24,16 +24,31 @@ export const useChatDataProcessMessagesTwoway = (data: {
     'chatRoomMessagesInfiniteTwowayQuery.data.value',
     chatRoomMessagesInfiniteTwowayQuery.data.value
   )
+
+  /** 是否精细化控制Query数据为null */
+  const whetherToSetChatFinelyControlledQueryDataToNull = ref(false)
+  /** 精细化控制Query数据，使其在必要时保持为null（常用于数据切换时） */
+  const chatRoomMessagesInfiniteTwowayQueryFinelyControlledQueryData = computed(
+    () => {
+      if (whetherToSetChatFinelyControlledQueryDataToNull.value === true) {
+        return null
+      }
+      return chatRoomMessagesInfiniteTwowayQuery.data.value
+    }
+  )
+
   // 将分页数据处理为消息数组，反转（从旧到新）
   const chatRoomMessagesList = computed(() => {
-    if (chatRoomMessagesInfiniteTwowayQuery.data.value == null) {
+    if (
+      chatRoomMessagesInfiniteTwowayQueryFinelyControlledQueryData.value == null
+    ) {
       return null
     }
     // 处理为数组
     const messagesListData: Array<
-      (typeof chatRoomMessagesInfiniteTwowayQuery.data.value)['pages'][number]['items'][number]
+      (typeof chatRoomMessagesInfiniteTwowayQueryFinelyControlledQueryData.value)['pages'][number]['items'][number]
     > = []
-    chatRoomMessagesInfiniteTwowayQuery.data.value.pages.forEach(
+    chatRoomMessagesInfiniteTwowayQueryFinelyControlledQueryData.value.pages.forEach(
       (pagesItem) => {
         messagesListData.push(...pagesItem.items)
       }
@@ -94,5 +109,6 @@ export const useChatDataProcessMessagesTwoway = (data: {
     chatRoomMessagesList,
     chatRoomMessagesRealtime,
     chatRoomMessagesListAndRealtime,
+    whetherToSetChatFinelyControlledQueryDataToNull,
   }
 }

@@ -76,11 +76,24 @@ if (routeQueryPositioningCursorData != null) {
   linkPositioningFlagShow.value = true
 }
 
+// 回复定位标记
+const replyPositioningFlagMessageId = ref<string | null>(null)
+const replyPositioningFlagShow = ref(false)
+const replyPositioningFlagClose = () => {
+  replyPositioningFlagShow.value = false
+}
+const replyPositioningFlagOpen = (messageId: string) => {
+  replyPositioningFlagMessageId.value = messageId
+  replyPositioningFlagShow.value = true
+}
+
 /** 重置双向定位无限查询的定位游标数据和相关数据 */
 const resetPositioningCursorDataAndRelatedData = () => {
   twowayPositioningCursorData.value = null
   linkPositioningFlagMessageId.value = null
   linkPositioningFlagShow.value = false
+  replyPositioningFlagMessageId.value = null
+  replyPositioningFlagShow.value = false
 }
 
 // // 测试定位
@@ -101,6 +114,11 @@ const {
   chatRoomMessagesRealtime,
   // 将 MessagesRealtime 和 MessagesList 融合
   chatRoomMessagesListAndRealtime,
+  /**
+   * 是否精细化控制Query数据为null
+   * 精细化控制Query数据，使其在必要时保持为null（常用于数据切换时）
+   */
+  whetherToSetChatFinelyControlledQueryDataToNull,
 } = useChatDataProcessMessagesTwoway({
   chatRoomId,
   twowayPositioningCursorData,
@@ -264,10 +282,39 @@ const chatRoomMessagesReplyPositioningFn = async (
   }
   // 判断是否已在dom 否
   else {
-    // 新的定位查询 TODO
+    // 新的定位查询
+    // 将进入加载状态，精细化控制Query数据为null，持续400ms，即加载状态至少为400ms
+    ;(async () => {
+      whetherToSetChatFinelyControlledQueryDataToNull.value = true
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      // 避免出现问题，控制滚动归位
+      props.refScrollWarp?.scrollTo({
+        top: 0,
+        // behavior: 'smooth', // 平滑滚动
+        behavior: 'instant', // 立即滚动
+      })
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      whetherToSetChatFinelyControlledQueryDataToNull.value = false
+    })()
+
+    // 重置双向定位无限查询的定位游标数据和相关数据
+    resetPositioningCursorDataAndRelatedData()
+
+    // 修改双向定位游标数据
+    twowayPositioningCursorData.value = {
+      id: replyMessagePositioningData.id,
+      created: replyMessagePositioningData.created,
+    }
+    // 重新加载数据
+    await chatRoomMessagesInfiniteTwowayQuery.refetch()
+    // 重新初始化显示限制游标
+    await chatRoomMessagesLimitCursorInitFn()
+    // 重新初始化滚动位置
+    await chatRoomMessagesScrollInitFn()
   }
 
-  // 【操作2】赋值回复标志数据 TODO
+  // 【操作2】赋值回复标志数据
+  replyPositioningFlagOpen(replyMessagePositioningData.id)
 }
 </script>
 
@@ -290,6 +337,9 @@ const chatRoomMessagesReplyPositioningFn = async (
       :couldGoBack="couldGoBack"
       :roomId="roomId"
       :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
+      :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
+      :replyPositioningFlagShow="replyPositioningFlagShow"
+      :replyPositioningFlagClose="replyPositioningFlagClose"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->
