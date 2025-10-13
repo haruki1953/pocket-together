@@ -23,10 +23,15 @@ import { storeToRefs } from 'pinia'
 
 // 初始化房间查询 store
 const roomQueryStore = useRoomQueryStore()
-// 从 store 中解构出 searchTerm，并保持其响应性
-const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore)
+// 从 store 中解构出定义的全局变量，并保持其响应性
+const { searchTerm, onlyUserRooms, onlyFavoriteRooms } =
+  storeToRefs(roomQueryStore)
 // 调用勾子命名为 roomsQuery，并传入 searchTerm
-const roomsQuery = useRoomsInfiniteQuery({ searchTerm, onlyUserRooms })
+const roomsQuery = useRoomsInfiniteQuery({
+  searchTerm,
+  onlyUserRooms,
+  onlyFavoriteRooms,
+})
 
 // 预加载函数
 const { preloadImagesForCards } = useCardImagePreloader()

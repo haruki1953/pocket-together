@@ -12,11 +12,13 @@ interface UseRoomsInfiniteQueryOptions {
   // 接收一个响应式的搜索词
   searchTerm: Ref<string>
   onlyUserRooms: Ref<boolean>
+  onlyFavoriteRooms: Ref<boolean>
 }
 
 export const useRoomsInfiniteQuery = ({
   searchTerm,
   onlyUserRooms,
+  onlyFavoriteRooms,
 }: UseRoomsInfiniteQueryOptions) => {
   // 状态说是
   const authStore = useAuthStore()
@@ -26,9 +28,11 @@ export const useRoomsInfiniteQuery = ({
     // 使用 computed 包裹以确保对 authStore.record?.id 的响应性（实时响应）
     // 当 searchTerm、onlyUserRooms 或用户登录状态变化时，vue-query 会自动重新查询
     queryKey: computed(() =>
+      // 设立 key 是为了利用 query key 变化时自动重新获取数据的特性
       queryKeys.roomsListInfinite({
         searchTerm,
         onlyUserRooms,
+        onlyFavoriteRooms,
         // 如果用户 A 退出，用户 B 登录，用户 B 可能看到用户 A 的房间列表
         // 用户的登录状态发生变化，queryKey 立刻更新
         userId: authStore.record?.id,
@@ -39,11 +43,16 @@ export const useRoomsInfiniteQuery = ({
       const perPage = 7
       // 过滤条件
       const filters: string[] = []
+      // 搜索词不为空
       if (searchTerm.value !== '') {
         filters.push(`title ~ '${searchTerm.value}'`)
       }
+      // 用户自己的房间
       if (onlyUserRooms.value && authStore.record?.id != null) {
         filters.push(`author = '${authStore.record.id}'`)
+      }
+      if (onlyFavoriteRooms.value && authStore.record?.id != null) {
+        filters.push(`favorites ~ '${authStore.record.id}'`)
       }
       // 链接所有条件
       const filter = filters.join(' && ')

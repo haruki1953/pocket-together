@@ -8,7 +8,8 @@ import { storeToRefs } from 'pinia'
 
 const i18nStore = useI18nStore()
 const roomQueryStore = useRoomQueryStore()
-const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore)
+const { searchTerm, onlyUserRooms, onlyFavoriteRooms } =
+  storeToRefs(roomQueryStore)
 
 const isSearching = ref(true)
 const searchStatus = ref(null)
@@ -16,8 +17,14 @@ const searchStatus = ref(null)
 // 用于绑定输入框的本地 ref
 const localSearchTerm = ref(searchTerm.value)
 
+// 切换只看我的房间
 function changeUserRoomsOnly() {
   roomQueryStore.onlyUserRooms = !roomQueryStore.onlyUserRooms
+}
+
+// 切换只看收藏的房间
+function changeFavoriteRoomsOnly() {
+  roomQueryStore.onlyFavoriteRooms = !roomQueryStore.onlyFavoriteRooms
 }
 
 // 监听 Pinia store 中 searchTerm 的变化，以保持 localSearchTerm 同步
@@ -49,7 +56,13 @@ const menuItems = computed(() => [
     action: changeUserRoomsOnly,
   },
   // 芝士收藏
-  { id: 'favorites', text: i18nStore.t('homeMenuFavoriteRooms')() },
+  {
+    id: 'favorites',
+    text: onlyFavoriteRooms.value
+      ? i18nStore.t('homeMenuFavoriteRooms')()
+      : i18nStore.t('homeMenuMyRooms')(),
+    action: changeFavoriteRoomsOnly,
+  },
 ])
 </script>
 
