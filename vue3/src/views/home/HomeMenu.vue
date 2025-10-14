@@ -79,6 +79,7 @@ const menuFavorite = {
     <!-- 选项卡区域 -->
     <div class="mb-4 flex items-center justify-between">
       <div class="flex h-full w-full flex-col gap-4">
+        <!-- 搜索 -->
         <div
           ref="searchStatus"
           class="relative flex flex-1 cursor-pointer flex-row items-center justify-center overflow-hidden rounded-3xl bg-gray-100 py-2 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-900"
@@ -109,21 +110,22 @@ const menuFavorite = {
             @blur="updateSearchQuery"
           />
         </div>
-        <!-- <button
-          v-for="item in menuItems"
-          :key="item.id"
-          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
-          @click="item.action?.()"
-        > -->
-        <!-- {{ item.text }}
-        </button> -->
+        <!-- 用户 -->
         <button
           class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
+          @click="menuAll.action"
         >
           {{ menuAll.text }}
         </button>
+        <!-- 收藏 -->
         <button
-          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
+          class="flex-1 rounded-3xl py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:hover:bg-blue-900"
+          :class="
+            roomQueryStore.onlyFavoriteRooms
+              ? 'bg-blue-100 dark:bg-blue-900'
+              : 'bg-gray-100 dark:bg-gray-700'
+          "
+          @click="menuFavorite.action"
         >
           {{ menuFavorite.text }}
         </button>
