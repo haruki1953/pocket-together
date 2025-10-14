@@ -297,16 +297,26 @@ const chatRoomMessagesReplyPositioningFn = async (
       whetherToSetChatFinelyControlledQueryDataToNull.value = false
     })()
 
-    // 重置双向定位无限查询的定位游标数据和相关数据
-    resetPositioningCursorDataAndRelatedData()
-
-    // 修改双向定位游标数据
-    twowayPositioningCursorData.value = {
-      id: replyMessagePositioningData.id,
-      created: replyMessagePositioningData.created,
+    // 特殊情况当前 twowayPositioningCursorData 等于 replyMessagePositioningData 时，不必再refetch
+    if (
+      twowayPositioningCursorData.value != null &&
+      twowayPositioningCursorData.value.id === replyMessagePositioningData.id &&
+      twowayPositioningCursorData.value.created ===
+        replyMessagePositioningData.created
+    ) {
+      // 不必再refetch
+    } else {
+      // 重置双向定位无限查询的定位游标数据和相关数据
+      resetPositioningCursorDataAndRelatedData()
+      // 修改双向定位游标数据
+      twowayPositioningCursorData.value = {
+        id: replyMessagePositioningData.id,
+        created: replyMessagePositioningData.created,
+      }
+      // 重新加载数据
+      await chatRoomMessagesInfiniteTwowayQuery.refetch()
     }
-    // 重新加载数据
-    await chatRoomMessagesInfiniteTwowayQuery.refetch()
+
     // 重新初始化显示限制游标
     await chatRoomMessagesLimitCursorInitFn()
     // 重新初始化滚动位置
