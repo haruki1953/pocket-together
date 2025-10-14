@@ -47,23 +47,24 @@ onClickOutside(searchStatus, () => {
   updateSearchQuery()
 })
 
-const menuItems = computed(() => [
-  {
-    id: 'all',
-    text: onlyUserRooms.value
+// 用户
+const menuAll = {
+  id: 'all',
+  text: computed(() =>
+    onlyUserRooms.value
       ? i18nStore.t('homeMenuAllRooms')()
-      : i18nStore.t('homeMenuMyRooms')(),
-    action: changeUserRoomsOnly,
-  },
-  // 芝士收藏
-  {
-    id: 'favorites',
-    text: onlyFavoriteRooms.value
-      ? i18nStore.t('homeMenuFavoriteRooms')()
-      : i18nStore.t('homeMenuMyRooms')(),
-    action: changeFavoriteRoomsOnly,
-  },
-])
+      : i18nStore.t('homeMenuMyRooms')()
+  ),
+  action: changeUserRoomsOnly,
+}
+
+// 收藏
+const menuFavorite = {
+  id: 'favorites',
+  text: i18nStore.t('homeMenuFavoriteRooms')(),
+
+  action: changeFavoriteRoomsOnly,
+}
 </script>
 
 <template>
@@ -108,13 +109,23 @@ const menuItems = computed(() => [
             @blur="updateSearchQuery"
           />
         </div>
-        <button
+        <!-- <button
           v-for="item in menuItems"
           :key="item.id"
           class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
           @click="item.action?.()"
+        > -->
+        <!-- {{ item.text }}
+        </button> -->
+        <button
+          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
         >
-          {{ item.text }}
+          {{ menuAll.text }}
+        </button>
+        <button
+          class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
+        >
+          {{ menuFavorite.text }}
         </button>
       </div>
     </div>
