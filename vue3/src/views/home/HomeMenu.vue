@@ -3,18 +3,29 @@ import { ref, computed } from 'vue'
 import { PocketTitle } from '@/components'
 import { useI18nStore } from '@/stores'
 import { onClickOutside } from '@vueuse/core'
-import { useRoomQueryStore } from '@/stores/room-query' // 导入新创建的 store
+import { useRoomQueryStore } from '@/stores/room-query'
 import { storeToRefs } from 'pinia'
 
 const i18nStore = useI18nStore()
-const roomQueryStore = useRoomQueryStore() // 初始化 store
-const { searchTerm } = storeToRefs(roomQueryStore) // 从 store 中解构出 searchTerm
+const roomQueryStore = useRoomQueryStore()
+const { searchTerm, onlyUserRooms, onlyFavoriteRooms } =
+  storeToRefs(roomQueryStore)
 
 const isSearching = ref(true)
 const searchStatus = ref(null)
 
 // 用于绑定输入框的本地 ref
 const localSearchTerm = ref(searchTerm.value)
+
+// 切换只看我的房间
+function changeUserRoomsOnly() {
+  roomQueryStore.onlyUserRooms = !roomQueryStore.onlyUserRooms
+}
+
+// 切换只看收藏的房间
+function changeFavoriteRoomsOnly() {
+  roomQueryStore.onlyFavoriteRooms = !roomQueryStore.onlyFavoriteRooms
+}
 
 // 监听 Pinia store 中 searchTerm 的变化，以保持 localSearchTerm 同步
 // 这在从其他地方清除搜索词时很有用
@@ -36,10 +47,24 @@ onClickOutside(searchStatus, () => {
   updateSearchQuery()
 })
 
-const menuItems = computed(() => [
-  { id: 'all', text: i18nStore.t('homeMenuAllRooms')() },
-  { id: 'favorites', text: i18nStore.t('homeMenuFavoriteRooms')() },
-])
+// 用户
+const menuAll = {
+  id: 'all',
+  text: computed(() =>
+    onlyUserRooms.value
+      ? i18nStore.t('homeMenuAllRooms')()
+      : i18nStore.t('homeMenuMyRooms')()
+  ),
+  action: changeUserRoomsOnly,
+}
+
+// 收藏
+const menuFavorite = {
+  id: 'favorites',
+  text: i18nStore.t('homeMenuFavoriteRooms')(),
+
+  action: changeFavoriteRoomsOnly,
+}
 </script>
 
 <template>
@@ -54,6 +79,7 @@ const menuItems = computed(() => [
     <!-- 选项卡区域 -->
     <div class="mb-4 flex items-center justify-between">
       <div class="flex h-full w-full flex-col gap-4">
+        <!-- 搜索 -->
         <div
           ref="searchStatus"
           class="relative flex flex-1 cursor-pointer flex-row items-center justify-center overflow-hidden rounded-3xl bg-gray-100 py-2 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-blue-900"
@@ -84,12 +110,24 @@ const menuItems = computed(() => [
             @blur="updateSearchQuery"
           />
         </div>
+        <!-- 用户 -->
         <button
-          v-for="item in menuItems"
-          :key="item.id"
           class="flex-1 rounded-3xl bg-gray-100 py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:bg-gray-700 dark:hover:bg-blue-900"
+          @click="menuAll.action"
         >
-          {{ item.text }}
+          {{ menuAll.text }}
+        </button>
+        <!-- 收藏 -->
+        <button
+          class="flex-1 rounded-3xl py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:hover:bg-blue-900"
+          :class="
+            roomQueryStore.onlyFavoriteRooms
+              ? 'bg-blue-100 dark:bg-blue-900'
+              : 'bg-gray-100 dark:bg-gray-700'
+          "
+          @click="menuFavorite.action"
+        >
+          {{ menuFavorite.text }}
         </button>
       </div>
     </div>

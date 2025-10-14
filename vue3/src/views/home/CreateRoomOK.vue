@@ -85,6 +85,7 @@ function goToHome() {
             </path>
           </g>
         </svg>
+        <!-- 恭喜成功～ -->
         <h1 class="mb-8 text-3xl font-bold text-gray-800 dark:text-gray-200">
           {{ i18nStore.t('createRoomOKTitle')() }}
         </h1>
