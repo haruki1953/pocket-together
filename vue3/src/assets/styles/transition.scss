@@ -3,7 +3,10 @@
 .fade-enter-active {
   transition: all 0.3s;
 }
-
+.fade150ms-leave-active,
+.fade150ms-enter-active {
+  transition: all 150ms;
+}
 .fade500ms-leave-active,
 .fade500ms-enter-active {
   transition: all 500ms;
@@ -15,6 +18,8 @@
 
 .fade-enter-from,
 .fade-leave-to,
+.fade150ms-enter-from,
+.fade150ms-leave-to,
 .fade500ms-enter-from,
 .fade500ms-leave-to,
 .fade1s-enter-from,

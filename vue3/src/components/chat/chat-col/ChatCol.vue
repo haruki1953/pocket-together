@@ -6,14 +6,18 @@ const props = defineProps<{
   refScrollWarp?: HTMLElement
   /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
 }>()
 </script>
 
 <template>
   <div>
     <ChatColTwowayPositioningCursor
+      :key="roomId"
       :refScrollWarp="refScrollWarp"
       :couldGoBack="couldGoBack"
+      :roomId="roomId"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->

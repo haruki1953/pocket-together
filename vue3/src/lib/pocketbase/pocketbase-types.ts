@@ -120,6 +120,7 @@ export type MessagesRecord = {
 	id: string
 	quoteFile?: RecordIdString
 	quoteRoom?: RecordIdString
+	replyMessage?: RecordIdString
 	room?: RecordIdString
 	updated?: IsoDateString
 }

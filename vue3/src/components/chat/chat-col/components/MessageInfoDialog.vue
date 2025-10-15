@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MessagesResponseWidthExpand } from '@/api'
 import { useDialogOptimization } from '@/composables'
 import {
   appUserDefaultAvatar,
@@ -17,6 +18,13 @@ import {
 import { useQueryClient } from '@tanstack/vue-query'
 import { useClipboard, useWindowSize } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
+
+const props = defineProps<{
+  /** 聊天输入栏正在回复的消息 */
+  chatReplyMessage: MessagesResponseWidthExpand | null
+  /** 聊天输入栏正在回复的消息，设置值 */
+  chatReplyMessageSet: (val: MessagesResponseWidthExpand | null) => void
+}>()
 
 // 还是通过普通的ref设置dialogMessageId比较好
 const dialogMessageId = ref<string | null>(null)
@@ -54,9 +62,9 @@ const openMessageInfoDialog = (
       >
     )
     // // 立即标记为过期，可选。会使打开对话框时再重新请求数据
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
-    })
+    // queryClient.invalidateQueries({
+    //   queryKey: queryKeys.chatRoomMessagesGetOne(messageQueryData.id),
+    // })
   }
   dialogMessageId.value = messageId
   open()
@@ -118,6 +126,30 @@ const messageUserName = computed(() => {
   return chatRoomMessagesGetOneQuery.data.value.expand.author.name
 })
 
+// 回复的消息的用户头像
+const messageReplyMessageUserAvatarUrl = computed(() => {
+  // 无数据，返回默认头像（其实无数据时根本不会用到头像，返回默认头像是为了使其类型方便）
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    return appUserDefaultAvatar
+  }
+
+  // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
+  if (chatRoomMessagesGetOneQuery.data.value.expand.author == null) {
+    console.error('props.chatRoomMessagesItem.expand.author == null')
+    return appUserDefaultAvatar
+  }
+  // 无头像，返回默认头像
+  if (chatRoomMessagesGetOneQuery.data.value.expand.author.avatar === '') {
+    return appUserDefaultAvatar
+  }
+  // 有头像，返回头像url
+  return pb.files.getURL(
+    chatRoomMessagesGetOneQuery.data.value.expand.author,
+    chatRoomMessagesGetOneQuery.data.value.expand.author.avatar,
+    { thumb: fileUserAvatarConfig.thumb200x200f }
+  )
+})
+
 // 响应式的 pb.authStore
 const authStore = useAuthStore()
 
@@ -148,7 +180,7 @@ const i18nStore = useI18nStore()
 // 操作按钮 actionButton
 /** 复制消息链接 */
 const actionButtonCopyMessageLink = async () => {
-  // 无数据，时不正常的，返回
+  // 无数据，是不正常的，返回
   if (chatRoomMessagesGetOneQuery.data.value == null) {
     console.error('chatRoomMessagesGetOneQuery.data.value == null')
     return
@@ -198,6 +230,19 @@ const actionButtonCopyMessageLink = async () => {
       message: link,
     })
   }
+}
+/** 让聊天输入栏回复此消息 */
+const actionButtonchatReplyMessageSet = () => {
+  // 无数据，是不正常的，返回
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+
+  // 设置为回复此消息
+  props.chatReplyMessageSet(chatRoomMessagesGetOneQuery.data.value)
+  // 设置后关闭对话框
+  close()
 }
 </script>
 
@@ -255,13 +300,46 @@ const actionButtonCopyMessageLink = async () => {
         <!-- 消息卡片 -->
         <div class="mt-[10px]">
           <div class="flow-root rounded-[20px] bg-color-background-soft">
-            <div class="wrap-long-text mx-[15px] my-[10px]">
+            <div class="my-[10px]">
+              <!-- 回复的消息 -->
+              <div
+                v-if="
+                  chatRoomMessagesGetOneQuery.data.value.expand.replyMessage !=
+                  null
+                "
+                class="mb-[6px] ml-[10px] mr-[12px]"
+              >
+                <div class="flex cursor-pointer items-center">
+                  <!-- 头像 -->
+                  <div class="ml-[4px] mr-[6px]">
+                    <div
+                      class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                      :style="{
+                        backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }"
+                    ></div>
+                  </div>
+                  <!-- 内容 -->
+                  <div class="truncate">
+                    <div
+                      class="select-none truncate text-[12px] text-color-text"
+                    >
+                      {{
+                        chatRoomMessagesGetOneQuery.data.value.expand
+                          .replyMessage.content
+                      }}
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- 消息 -->
-              <div class="wrap-long-text text-[16px]">
+              <div class="wrap-long-text mx-[15px] text-[16px]">
                 {{ chatRoomMessagesGetOneQuery.data.value.content }}
               </div>
               <!-- 时间 -->
-              <div class="mt-[5px] flex items-center justify-end">
+              <div class="mx-[15px] mt-[5px] flex items-center justify-end">
                 <!-- 已修改图标 是否已修改 -->
                 <div
                   v-if="
@@ -322,6 +400,7 @@ const actionButtonCopyMessageLink = async () => {
             <!-- 回复 -->
             <div
               class="flow-root cursor-pointer transition-colors hover:text-el-success"
+              @click="actionButtonchatReplyMessageSet"
             >
               <div class="m-[5px]">
                 <RiDiscussLine size="24px"></RiDiscussLine>

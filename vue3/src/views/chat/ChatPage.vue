@@ -6,10 +6,13 @@ import {
   layoutChatPageConfig,
   routerDict,
 } from '@/config'
-import { ChatCol } from '@/components'
+import { ChatCol, ChatTopBarMoreMenuItem } from '@/components'
 import type { GlobalComponents } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ContainerCol2 } from '@/components'
+import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
+import { pbMessagesSendChatApi } from '@/api'
+import { RiFlaskLine } from '@remixicon/vue'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -88,6 +91,20 @@ if (showCol2TrueCol1False.value === false) {
     })
   }
 }
+
+// 测试批量添加消息
+const testPbSendMessage = async () => {
+  // const sendNum = generateRandomIntegerBetween(1, 10)
+  const sendNum = 100
+  for (let i = 0; i < sendNum; i++) {
+    await pbMessagesSendChatApi({
+      content: generateRandomKey(
+        generateRandomIntegerBetween(5, generateRandomIntegerBetween(20, 200))
+      ),
+      roomId: '',
+    })
+  }
+}
 </script>
 
 <template>
@@ -112,7 +129,18 @@ if (showCol2TrueCol1False.value === false) {
             <ChatCol
               :refScrollWarp="refContainerCol2?.refElScrollbar?.wrapRef"
               :couldGoBack="false"
-            ></ChatCol>
+              roomId=""
+            >
+              <template #chatTopBarMoreMenu>
+                <!-- 测试批量添加消息 -->
+                <ChatTopBarMoreMenuItem @click="testPbSendMessage">
+                  <template #icon>
+                    <RiFlaskLine size="18px"></RiFlaskLine>
+                  </template>
+                  <template #text> 测试批量添加消息 </template>
+                </ChatTopBarMoreMenuItem>
+              </template>
+            </ChatCol>
           </div>
         </template>
       </ContainerCol2>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { MessagesResponseWidthExpand } from '@/api'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import {
   ChatInputBar,
   ChatMessage,
@@ -8,6 +11,7 @@ import {
 } from './components'
 import { useI18nStore } from '@/stores'
 import { ContainerBar } from '@/components'
+import { RiMessage3Fill } from '@remixicon/vue'
 
 const i18nStore = useI18nStore()
 
@@ -30,6 +34,15 @@ const props = defineProps<{
   chatRoomMessagesRestartFnRunnable: boolean
   /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
+  replyPositioningFlagMessageId: string | null
+  replyPositioningFlagShow: boolean
+  replyPositioningFlagClose: () => void
 }>()
 
 // 消息详情对话框
@@ -45,6 +58,24 @@ const openMessageInfoDialog: NonNullable<
 }
 // eslint-disable-next-line prettier/prettier
 export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
+
+// 聊天输入栏
+const refChatInputBar = ref<InstanceType<typeof ChatInputBar> | null>(null)
+// 聊天输入栏导出的一些数据和方法
+/** 聊天输入栏正在回复的消息 */
+const chatReplyMessage = computed(() => {
+  if (refChatInputBar.value == null) {
+    return null
+  }
+  return refChatInputBar.value.chatReplyMessage
+})
+/** 聊天输入栏正在回复的消息，设置值 */
+const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
+  if (refChatInputBar.value == null) {
+    return
+  }
+  refChatInputBar.value.chatReplyMessageSet(val)
+}
 
 const isMounted = ref(false)
 onMounted(() => {
@@ -62,7 +93,11 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
 <template>
   <div class="relative">
     <!-- 消息详情对话框 -->
-    <MessageInfoDialog ref="refMessageInfoDialog"></MessageInfoDialog>
+    <MessageInfoDialog
+      ref="refMessageInfoDialog"
+      :chatReplyMessage="chatReplyMessage"
+      :chatReplyMessageSet="chatReplyMessageSet"
+    ></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
     <ContainerBar :defaultBarHeight="64">
@@ -79,6 +114,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                 chatRoomMessagesRestartFnRunnable
               "
               :couldGoBack="couldGoBack"
+              :roomId="roomId"
             >
               <template #chatTopBarMoreMenu>
                 <!-- 聊天顶栏菜单项 插槽 -->
@@ -149,6 +185,13 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                   :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
                   :linkPositioningFlagShow="linkPositioningFlagShow"
                   :linkPositioningFlagClose="linkPositioningFlagClose"
+                  :chatReplyMessage="chatReplyMessage"
+                  :chatRoomMessagesReplyPositioningFn="
+                    chatRoomMessagesReplyPositioningFn
+                  "
+                  :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
+                  :replyPositioningFlagShow="replyPositioningFlagShow"
+                  :replyPositioningFlagClose="replyPositioningFlagClose"
                 ></ChatMessage>
               </div>
               <!-- <ElButton @click="testPbPageBottom">pb分页测试</ElButton> -->
@@ -182,12 +225,13 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       <template #bar>
         <div class="flow-root">
           <!-- 输入栏 -->
-          <ChatInputBar></ChatInputBar>
+          <ChatInputBar ref="refChatInputBar" :roomId="roomId"></ChatInputBar>
         </div>
       </template>
     </ContainerBar>
-    <!-- 加载时显示的内容 -->
-    <Transition name="fade">
+    <!-- 显示状态的遮罩层：加载中、聊天为空 -->
+    <Transition name="fade" mode="out-in">
+      <!-- 加载时显示的内容 -->
       <div
         v-if="
           chatRoomMessagesForShowWithOnMounted == null && isMounted === true
@@ -197,9 +241,24 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
         <div class="sticky top-0 flex h-screen items-center justify-center">
           <div class="text-color-text-soft">
             <RiLoader3Line
-              class="loading-spinner-500ms"
+              class="loading-spinner-800ms"
               size="50px"
             ></RiLoader3Line>
+          </div>
+        </div>
+      </div>
+      <!-- 为空时显示的内容 -->
+      <div
+        v-else-if="
+          chatRoomMessagesForShowWithOnMounted != null &&
+          chatRoomMessagesForShowWithOnMounted.length === 0
+        "
+        class="pointer-events-none absolute top-0 z-10 h-full w-full"
+      >
+        <div class="sticky top-0 flex h-screen items-center justify-center">
+          <div class="text-color-background-soft">
+            <!-- <RiMessage3Line size="100px"></RiMessage3Line> -->
+            <RiMessage3Fill size="100px"></RiMessage3Fill>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   appUserDefaultAvatar,
+  chatRoomMessagesClassIdNamingFnConfig,
   chatRoomMessagesDispalyTogetherMaxSecondsConfig,
   fileUserAvatarConfig,
 } from '@/config'
@@ -12,6 +13,11 @@ import { useAuthStore, useI18nStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
+import { RiDiscussFill } from '@remixicon/vue'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -29,6 +35,15 @@ const props = defineProps<{
   linkPositioningFlagMessageId: string | null
   linkPositioningFlagShow: boolean
   linkPositioningFlagClose: () => void
+  /** 聊天输入栏正在回复的消息 */
+  chatReplyMessage: MessagesResponseWidthExpand | null
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
+  replyPositioningFlagMessageId: string | null
+  replyPositioningFlagShow: boolean
+  replyPositioningFlagClose: () => void
 }>()
 
 // 响应式的 pb.authStore
@@ -213,6 +228,32 @@ const timeAgo = useTimeAgo(
   }
 )
 
+// 回复的消息的用户头像
+const messageReplyMessageUserAvatarUrl = computed(() => {
+  // expand.replyMessage == null，此情况不会显示，返回默认头像
+  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+    return appUserDefaultAvatar
+  }
+
+  // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
+  if (props.chatRoomMessagesItem.expand.replyMessage.expand.author == null) {
+    console.error('props.chatRoomMessagesItem.expand.author == null')
+    return appUserDefaultAvatar
+  }
+  // 无头像，返回默认头像
+  if (
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar === ''
+  ) {
+    return appUserDefaultAvatar
+  }
+  // 有头像，返回头像url
+  return pb.files.getURL(
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author,
+    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar,
+    { thumb: fileUserAvatarConfig.thumb200x200f }
+  )
+})
+
 // 打开消息详情对话框函数
 const openMessageInfoDialogFn = () => {
   props.openMessageInfoDialog(
@@ -237,11 +278,61 @@ onLongPress(
   }
 )
 
-// 链接定位标记的点击
+// 是否显示链接定位标记
+const isShowLinkPositioningFlag = computed(() => {
+  if (
+    props.linkPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.linkPositioningFlagShow === true
+  ) {
+    return true
+  }
+  return false
+})
+// 链接定位标记的点击，开启详情对话框、延迟等过渡动画结束再取消标记
 const linkPositioningFlagClickFn = async () => {
   openMessageInfoDialogFn()
   await new Promise((resolve) => setTimeout(resolve, 300))
   props.linkPositioningFlagClose()
+}
+
+// 是否显示回复定位标记
+const isShowReplyPositioningFlag = computed(() => {
+  if (
+    props.replyPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.replyPositioningFlagShow === true
+  ) {
+    return true
+  }
+  return false
+})
+// 回复定位标记的点击，开启详情对话框、延迟等过渡动画结束再取消标记
+const replyPositioningFlagClickFn = async () => {
+  openMessageInfoDialogFn()
+  await new Promise((resolve) => setTimeout(resolve, 300))
+  props.replyPositioningFlagClose()
+}
+
+// 是否显示回复（正在回复）标记
+const isShowChatReplyMessageFlag = computed(() => {
+  if (props.chatReplyMessage == null) {
+    return false
+  }
+  if (props.chatReplyMessage.id === props.chatRoomMessagesItem.id) {
+    return true
+  }
+  return false
+})
+
+/** 聊天回复定位 */
+const replyMessagesPositioningFn = async () => {
+  // 本消息无回复，直接返回
+  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+    return
+  }
+  await props.chatRoomMessagesReplyPositioningFn({
+    id: props.chatRoomMessagesItem.expand.replyMessage.id,
+    created: props.chatRoomMessagesItem.expand.replyMessage.created,
+  })
 }
 </script>
 
@@ -251,7 +342,7 @@ const linkPositioningFlagClickFn = async () => {
   -->
   <div
     class="chat-message flow-root"
-    :class="`chat-message-${chatRoomMessagesItem.id}`"
+    :class="chatRoomMessagesClassIdNamingFnConfig(chatRoomMessagesItem.id)"
     :data-message-id="chatRoomMessagesItem.id"
   >
     <div class="mt-1">
@@ -283,7 +374,7 @@ const linkPositioningFlagClickFn = async () => {
           </div>
         </div>
         <!-- 消息列 -->
-        <div class="col-message">
+        <div class="col-message truncate">
           <div
             class="flex"
             :class="{
@@ -292,7 +383,7 @@ const linkPositioningFlagClickFn = async () => {
             }"
           >
             <div
-              class="flex min-h-[40px] items-center"
+              class="flex min-h-[40px] items-center truncate"
               :class="{
                 // 消息为当前用户发送，显示不同的消息背景色
                 'bg-el-primary-light-4': isMessageCurrentUser,
@@ -308,9 +399,42 @@ const linkPositioningFlagClickFn = async () => {
                 'rounded-br-[4px]': !isMessageBoxroundedBR,
               }"
             >
-              <div class="flex-1">
-                <div class="wrap-long-text mx-3 my-2 text-[15px]">
-                  {{ chatRoomMessagesItem.content }}
+              <div class="flex-1 truncate">
+                <div class="my-2">
+                  <!-- 回复的消息 -->
+                  <div
+                    v-if="chatRoomMessagesItem.expand.replyMessage != null"
+                    class="mb-[4px] ml-[4px] mr-[12px]"
+                  >
+                    <div
+                      class="flex cursor-pointer items-center"
+                      @click="replyMessagesPositioningFn"
+                    >
+                      <!-- 头像 -->
+                      <div class="ml-[4px] mr-[6px]">
+                        <div
+                          class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                          :style="{
+                            backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }"
+                        ></div>
+                      </div>
+                      <!-- 内容 -->
+                      <div class="truncate">
+                        <div
+                          class="select-none truncate text-[12px] text-color-text"
+                        >
+                          {{ chatRoomMessagesItem.expand.replyMessage.content }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 消息文字内容 -->
+                  <div class="wrap-long-text mx-3 text-[15px] text-color-text">
+                    {{ chatRoomMessagesItem.content }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -319,25 +443,40 @@ const linkPositioningFlagClickFn = async () => {
         <!-- 图标列（详情按钮） -->
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
-            <!-- 链接定位标记，如果消息id等于此，将显示链接标记 -->
-            <div
-              v-if="
-                linkPositioningFlagMessageId === chatRoomMessagesItem.id &&
-                linkPositioningFlagShow === true
-              "
-              class="cursor-pointer text-el-primary"
-              @click="linkPositioningFlagClickFn"
-            >
-              <RiLink></RiLink>
-            </div>
-            <!-- 普通更多按钮 -->
-            <div
-              v-else
-              class="more-button cursor-pointer"
-              @click="openMessageInfoDialogFn"
-            >
-              <RiMoreFill></RiMoreFill>
-            </div>
+            <Transition name="fade150ms" mode="out-in">
+              <!-- 回复标记 -->
+              <div
+                v-if="isShowChatReplyMessageFlag"
+                class="cursor-pointer text-el-success"
+                @click="openMessageInfoDialogFn"
+              >
+                <RiDiscussFill></RiDiscussFill>
+              </div>
+              <!-- 回复定位标记 -->
+              <div
+                v-else-if="isShowReplyPositioningFlag"
+                class="cursor-pointer text-el-primary"
+                @click="replyPositioningFlagClickFn"
+              >
+                <RiDiscussLine></RiDiscussLine>
+              </div>
+              <!-- 链接定位标记 -->
+              <div
+                v-else-if="isShowLinkPositioningFlag"
+                class="cursor-pointer text-el-primary"
+                @click="linkPositioningFlagClickFn"
+              >
+                <RiLink></RiLink>
+              </div>
+              <!-- 普通更多按钮 -->
+              <div
+                v-else
+                class="more-button cursor-pointer"
+                @click="openMessageInfoDialogFn"
+              >
+                <RiMoreFill></RiMoreFill>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>

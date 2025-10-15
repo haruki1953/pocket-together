@@ -9,14 +9,21 @@ import {
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
+import {
+  chatRoomMessagesClassIdNamingFnConfig,
+  chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
+  chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
+} from '@/config'
 import { useQueryClient } from '@tanstack/vue-query'
+import { isElementInViewport, scrollToElementInContainer } from '@/utils'
 
 const props = defineProps<{
   /** 滚动容器元素 */
   refScrollWarp?: HTMLElement
   /** 是否能返回，控制聊天顶栏的返回按钮是否显示 */
   couldGoBack: boolean
+  /** 房间id，空字符串为全局聊天 */
+  roomId: string
 }>()
 // 供封装的组件或组合式函数使用
 export type PropsType = typeof props
@@ -69,11 +76,24 @@ if (routeQueryPositioningCursorData != null) {
   linkPositioningFlagShow.value = true
 }
 
+// 回复定位标记
+const replyPositioningFlagMessageId = ref<string | null>(null)
+const replyPositioningFlagShow = ref(false)
+const replyPositioningFlagClose = () => {
+  replyPositioningFlagShow.value = false
+}
+const replyPositioningFlagOpen = (messageId: string) => {
+  replyPositioningFlagMessageId.value = messageId
+  replyPositioningFlagShow.value = true
+}
+
 /** 重置双向定位无限查询的定位游标数据和相关数据 */
 const resetPositioningCursorDataAndRelatedData = () => {
   twowayPositioningCursorData.value = null
   linkPositioningFlagMessageId.value = null
   linkPositioningFlagShow.value = false
+  replyPositioningFlagMessageId.value = null
+  replyPositioningFlagShow.value = false
 }
 
 // // 测试定位
@@ -81,6 +101,8 @@ const resetPositioningCursorDataAndRelatedData = () => {
 //   id: 'bnjqt5mbyk35gsd',
 //   created: '2025-09-01 10:46:42.872Z',
 // }
+
+const chatRoomId = computed(() => props.roomId)
 
 /** 封装了聊天页的数据及其处理相关内容 */
 const {
@@ -92,7 +114,13 @@ const {
   chatRoomMessagesRealtime,
   // 将 MessagesRealtime 和 MessagesList 融合
   chatRoomMessagesListAndRealtime,
+  /**
+   * 是否精细化控制Query数据为null
+   * 精细化控制Query数据，使其在必要时保持为null（常用于数据切换时）
+   */
+  whetherToSetChatFinelyControlledQueryDataToNull,
 } = useChatDataProcessMessagesTwoway({
+  chatRoomId,
   twowayPositioningCursorData,
 })
 export type ChatRoomMessagesInfiniteTwowayQueryType =
@@ -210,6 +238,102 @@ const chatRoomMessagesRestartFn = async () => {
     chatRoomMessagesRestartFnRunning.value = false
   }
 }
+
+/** 聊天回复定位 */
+const chatRoomMessagesReplyPositioningFn = async (
+  replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+) => {
+  console.log('chatRoomMessagesReplyPositioningFn')
+  // 【操作1】使消息在屏幕显示
+  // 从dom获取指定的元素
+  const replyMessageElement = document.querySelector<HTMLElement>(
+    `.${chatRoomMessagesClassIdNamingFnConfig(replyMessagePositioningData.id)}`
+  )
+  // 判断是否已在dom 是
+  if (replyMessageElement != null) {
+    // 判断是否已在屏幕范围 是
+    if (
+      isElementInViewport(replyMessageElement, {
+        fullyVisible: true,
+        offset: {
+          // 元素距顶部距离要大于配置的值
+          top: Math.abs(
+            chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
+          ),
+        },
+      })
+    ) {
+      // 无需处理
+    }
+    // 判断是否已在屏幕范围 否
+    else {
+      // 滚动容器 props.refScrollWarp 没有值是异常的
+      if (props.refScrollWarp == null) {
+        console.error('props.refScrollWarp == null')
+        return
+      }
+      // 滚动至消息
+      scrollToElementInContainer(
+        props.refScrollWarp,
+        replyMessageElement,
+        'smooth',
+        chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
+      )
+    }
+  }
+  // 判断是否已在dom 否
+  else {
+    // 新的定位查询
+    // 将进入加载状态，精细化控制Query数据为null，持续400ms，即加载状态至少为400ms
+    ;(async () => {
+      whetherToSetChatFinelyControlledQueryDataToNull.value = true
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      // 避免出现问题，控制滚动归位
+      props.refScrollWarp?.scrollTo({
+        top: 0,
+        // behavior: 'smooth', // 平滑滚动
+        behavior: 'instant', // 立即滚动
+      })
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      whetherToSetChatFinelyControlledQueryDataToNull.value = false
+    })()
+
+    // 特殊情况当前 twowayPositioningCursorData 等于 replyMessagePositioningData 时，不必再refetch
+    if (
+      twowayPositioningCursorData.value != null &&
+      twowayPositioningCursorData.value.id === replyMessagePositioningData.id &&
+      twowayPositioningCursorData.value.created ===
+        replyMessagePositioningData.created
+    ) {
+      // 不必再refetch
+    } else {
+      // 重置双向定位无限查询的定位游标数据和相关数据
+      resetPositioningCursorDataAndRelatedData()
+      // 修改双向定位游标数据
+      twowayPositioningCursorData.value = {
+        id: replyMessagePositioningData.id,
+        created: replyMessagePositioningData.created,
+      }
+      // 重新加载数据
+      await chatRoomMessagesInfiniteTwowayQuery.refetch()
+    }
+
+    // 重新初始化显示限制游标
+    await chatRoomMessagesLimitCursorInitFn()
+    // 重新初始化滚动位置
+    await chatRoomMessagesScrollInitFn()
+  }
+
+  // 【操作2】赋值回复标志数据
+  replyPositioningFlagOpen(replyMessagePositioningData.id)
+
+  // 数据测试
+  console.log(
+    '数据测试',
+    'chatRoomMessagesInfiniteTwowayQuery.data.value',
+    chatRoomMessagesInfiniteTwowayQuery.data.value
+  )
+}
 </script>
 
 <template>
@@ -229,6 +353,11 @@ const chatRoomMessagesRestartFn = async () => {
       :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
       :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
       :couldGoBack="couldGoBack"
+      :roomId="roomId"
+      :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
+      :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
+      :replyPositioningFlagShow="replyPositioningFlagShow"
+      :replyPositioningFlagClose="replyPositioningFlagClose"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->

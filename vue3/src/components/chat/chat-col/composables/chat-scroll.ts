@@ -11,6 +11,7 @@ import type {
   TwowayPositioningCursorDataType,
 } from './dependencies'
 import {
+  chatRoomMessagesClassIdNamingFnConfig,
   chatRoomMessagesScrollCaptureElementNumberConfig,
   chatRoomMessagesScrollRealtimeIsBottomDistanceConfig,
   chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
@@ -59,7 +60,7 @@ export const useChatScrollMessageChangeTwoway = (data: {
     // 滚动到定位的消息
     else {
       const cursorElement = document.querySelector<HTMLElement>(
-        `.chat-message-${twowayPositioningCursorData.value.id}`
+        `.${chatRoomMessagesClassIdNamingFnConfig(twowayPositioningCursorData.value.id)}`
       )
       // 未找到定位的消息元素 cursorElement 是异常的，滚动容器 props.refScrollWarp 没有值也是异常的
       if (cursorElement == null || props.refScrollWarp == null) {
@@ -142,7 +143,7 @@ export const useChatScrollMessageChangeTwoway = (data: {
       // 只收集前几十条消息的 DOM 元素高度（具体数量根据配置控制）
       const selector = chatRoomMessagesForShow.value
         .slice(0, chatRoomMessagesScrollCaptureElementNumberConfig)
-        .map((msg) => `.chat-message-${msg.id}`)
+        .map((msg) => `.${chatRoomMessagesClassIdNamingFnConfig(msg.id)}`)
         .join(', ')
 
       const elements = document.querySelectorAll<HTMLElement>(selector)
@@ -284,7 +285,7 @@ export const useChatScrollMessageChangeTwoway = (data: {
         // 消息数组顶部增加，统计增加的高度
         // dom查询消息元素
         const selector = listTopDelta
-          .map((msg) => `.chat-message-${msg.id}`)
+          .map((msg) => `.${chatRoomMessagesClassIdNamingFnConfig(msg.id)}`)
           .join(', ')
         const elements = document.querySelectorAll<HTMLElement>(selector)
         // 统计高度

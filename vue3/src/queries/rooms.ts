@@ -1,9 +1,11 @@
 import { Collections, pb, type RoomsResponse, type UsersResponse } from '@/lib'
-import { useInfiniteQuery } from '@tanstack/vue-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/vue-query'
 import { queryKeys } from './query-keys'
 import { queryRetryPbNetworkError } from './query-retry'
 import { computed, type Ref } from 'vue'
 import { fetchWithTimeoutPreferred } from '@/utils'
+import { pbRoomsGetOneApi } from '@/api'
+import { queryConfig } from '@/config'
 // 状态说是
 import { useAuthStore } from '@/stores/auth'
 
@@ -87,6 +89,40 @@ export const useRoomsInfiniteQuery = ({
     },
 
     // retry: 继承自项目中的通用网络错误重试策略。
+    retry: queryRetryPbNetworkError,
+  })
+
+  return query
+}
+
+export const useRoomsGetOneQuery = (data: {
+  roomId: ComputedRef<string | null>
+}) => {
+  const { roomId } = data
+
+  const query = useQuery({
+    // 查询依赖，需 roomId
+    enabled: computed(() => roomId.value != null),
+    // 查询键（响应式）
+    queryKey: computed(() => queryKeys.roomsGetOne(roomId.value)),
+    // 查询函数
+    queryFn: async () => {
+      // 无roomId，抛出错误
+      if (roomId.value == null) {
+        throw new Error('roomId.value == null')
+      }
+      // pb请求
+      const pbRes = await pbRoomsGetOneApi(roomId.value)
+
+      // TODO 持久化
+
+      return pbRes
+    },
+    // TODO 占位数据
+    // 缓存时间
+    gcTime: queryConfig.gcTimeLong,
+    staleTime: queryConfig.staleTimeLong,
+    // ✅ 在网络错误时重试
     retry: queryRetryPbNetworkError,
   })
 
