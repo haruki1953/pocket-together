@@ -243,6 +243,7 @@ const chatRoomMessagesRestartFn = async () => {
 const chatRoomMessagesReplyPositioningFn = async (
   replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
 ) => {
+  console.log('chatRoomMessagesReplyPositioningFn')
   // 【操作1】使消息在屏幕显示
   // 从dom获取指定的元素
   const replyMessageElement = document.querySelector<HTMLElement>(
@@ -325,6 +326,13 @@ const chatRoomMessagesReplyPositioningFn = async (
 
   // 【操作2】赋值回复标志数据
   replyPositioningFlagOpen(replyMessagePositioningData.id)
+
+  // 数据测试
+  console.log(
+    '数据测试',
+    'chatRoomMessagesInfiniteTwowayQuery.data.value',
+    chatRoomMessagesInfiniteTwowayQuery.data.value
+  )
 }
 </script>
 
