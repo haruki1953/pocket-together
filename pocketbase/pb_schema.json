@@ -1150,7 +1150,7 @@
         "listRule": "",
         "viewRule": "",
         "createRule": "// 创建房间需登录\n@request.auth.id != \"\" &&\n// 创建时需为创建者（传入的author需为当前用户）\n@request.auth.id = author.id",
-        "updateRule": "// 修改房间需为创建者\n@request.auth.id = author.id",
+        "updateRule": "// 修改房间需登录（不在api规则里限制为创建者，将在hook里进行细致的限制）\n@request.auth.id != \"\" ",
         "deleteRule": "// 删除房间需为创建者\n@request.auth.id = author.id",
         "name": "rooms",
         "type": "base",
