@@ -288,7 +288,7 @@ const chatRoomMessagesReplyPositioningFn = async (
     ;(async () => {
       whetherToSetChatFinelyControlledQueryDataToNull.value = true
       await new Promise((resolve) => setTimeout(resolve, 300))
-      // 避免出现问题，控制滚动归位
+      // 避免出现问题，控制滚动归位（el滚动条不需要，原生滚动条需要）
       props.refScrollWarp?.scrollTo({
         top: 0,
         // behavior: 'smooth', // 平滑滚动
@@ -298,25 +298,15 @@ const chatRoomMessagesReplyPositioningFn = async (
       whetherToSetChatFinelyControlledQueryDataToNull.value = false
     })()
 
-    // 特殊情况当前 twowayPositioningCursorData 等于 replyMessagePositioningData 时，不必再refetch
-    if (
-      twowayPositioningCursorData.value != null &&
-      twowayPositioningCursorData.value.id === replyMessagePositioningData.id &&
-      twowayPositioningCursorData.value.created ===
-        replyMessagePositioningData.created
-    ) {
-      // 不必再refetch
-    } else {
-      // 重置双向定位无限查询的定位游标数据和相关数据
-      resetPositioningCursorDataAndRelatedData()
-      // 修改双向定位游标数据
-      twowayPositioningCursorData.value = {
-        id: replyMessagePositioningData.id,
-        created: replyMessagePositioningData.created,
-      }
-      // 重新加载数据
-      await chatRoomMessagesInfiniteTwowayQuery.refetch()
+    // 重置双向定位无限查询的定位游标数据和相关数据
+    resetPositioningCursorDataAndRelatedData()
+    // 修改双向定位游标数据
+    twowayPositioningCursorData.value = {
+      id: replyMessagePositioningData.id,
+      created: replyMessagePositioningData.created,
     }
+    // 已解决回复跳转不稳定的问题，原因出在Query.refetch，其导致已缓存的数据出现异常，这里不应该也不必调用refetch
+    // await chatRoomMessagesInfiniteTwowayQuery.refetch()
 
     // 重新初始化显示限制游标
     await chatRoomMessagesLimitCursorInitFn()
