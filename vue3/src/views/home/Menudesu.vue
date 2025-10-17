@@ -5,10 +5,13 @@ import { onClickOutside } from '@vueuse/core'
 import { useRoomQueryStore } from '@/stores/room-query'
 import { storeToRefs } from 'pinia'
 
+defineOptions({
+  name: 'MenuDesu',
+})
+
 const i18nStore = useI18nStore()
 const roomQueryStore = useRoomQueryStore()
-const { searchTerm, onlyUserRooms, onlyFavoriteRooms } =
-  storeToRefs(roomQueryStore)
+const { searchTerm, onlyUserRooms } = storeToRefs(roomQueryStore)
 
 const isSearching = ref(true)
 const searchStatus = ref(null)
