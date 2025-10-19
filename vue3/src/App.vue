@@ -5,9 +5,12 @@ import { useDark } from '@vueuse/core'
 import { computed } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
 import {
+  provideAppMainElScrollbar,
   useFirstDataLoadingAndAnimationMaskClose,
   useInitPbAuth,
+  type AppMainElScrollbar,
 } from './composables'
+import type { ElScrollbar } from 'element-plus'
 
 const i18nStore = useI18nStore()
 
@@ -34,6 +37,10 @@ const realtimeMessagesStore = useRealtimeMessagesStore()
 realtimeMessagesStore.startSubscribe()
 
 const isDark = useDark()
+
+// el滚动条的组件实例。【251017】不再使用HTML页面级滚动，使用el滚动条
+const appMainElScrollbar: AppMainElScrollbar = ref(null)
+provideAppMainElScrollbar(appMainElScrollbar)
 </script>
 
 <template>
@@ -45,7 +52,9 @@ const isDark = useDark()
   >
     <!-- ElConfigProvider 国际化控制 -->
     <ElConfigProvider :locale="i18nLocaleInfo[i18nStore.locale].elLocale">
-      <RouterView></RouterView>
+      <ElScrollbar ref="appMainElScrollbar" height="100vh">
+        <RouterView></RouterView>
+      </ElScrollbar>
     </ElConfigProvider>
   </NConfigProvider>
 </template>

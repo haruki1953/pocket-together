@@ -7,7 +7,7 @@
 }
 
 html {
-  overflow-y: scroll;
+  overflow-y: hidden;
   overflow-x: hidden;
   color: var(--color-text);
   background: var(--color-background);

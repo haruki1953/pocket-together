@@ -20,8 +20,9 @@ export const useDialogOptimization = (dependencies: {
 
   // 对话框打开时
   const enableOnDialogShow = async () => {
-    // 禁用滚动，同时防止抖动
-    optimizationScrollOnOverlayShow()
+    // 【251019】不再使用原生滚动条（不再需要担心滚动条宽度引起的抖动）
+    // // 禁用滚动，同时防止抖动
+    // optimizationScrollOnOverlayShow()
 
     // 这行代码会在历史记录中插入一个状态，以防止返回到上一页面。
     window.history.pushState({ isDialogShow: true }, '', window.location.href)
@@ -31,8 +32,9 @@ export const useDialogOptimization = (dependencies: {
 
   // 对话框关闭时，清理监听器与之前添加的历史状态
   const disableOnDialogClose = async () => {
-    // 恢复滚动，同时防止抖动
-    optimizationScrollOnOverlayClose()
+    // 【251019】不再使用原生滚动条（不再需要担心滚动条宽度引起的抖动）
+    // // 恢复滚动，同时防止抖动
+    // optimizationScrollOnOverlayClose()
 
     // 取消返回监听
     window.removeEventListener('popstate', handleBackNavigation)

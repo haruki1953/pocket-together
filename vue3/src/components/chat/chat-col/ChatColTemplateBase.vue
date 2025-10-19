@@ -97,6 +97,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       ref="refMessageInfoDialog"
       :chatReplyMessage="chatReplyMessage"
       :chatReplyMessageSet="chatReplyMessageSet"
+      :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
     ></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
@@ -225,7 +226,13 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       <template #bar>
         <div class="flow-root">
           <!-- 输入栏 -->
-          <ChatInputBar ref="refChatInputBar" :roomId="roomId"></ChatInputBar>
+          <ChatInputBar
+            ref="refChatInputBar"
+            :roomId="roomId"
+            :chatRoomMessagesReplyPositioningFn="
+              chatRoomMessagesReplyPositioningFn
+            "
+          ></ChatInputBar>
         </div>
       </template>
     </ContainerBar>

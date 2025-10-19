@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { pbMessagesSendChatApi, type MessagesResponseWidthExpand } from '@/api'
+import {
+  pbMessagesSendChatApi,
+  type MessagesResponseWidthExpand,
+  type PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
 import { Collections } from '@/lib'
 import { pb, type Create } from '@/lib'
@@ -20,6 +24,11 @@ import { useMutation } from '@tanstack/vue-query'
 const props = defineProps<{
   /** 房间id，空字符串为全局聊天 */
   roomId: string
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable,
+    couldReplyPositioningFlagOpen?: boolean
+  ) => Promise<void>
 }>()
 
 // 聊天输入框内容
@@ -63,6 +72,21 @@ const chatReplyMessageUserAvatarUrl = computed(() => {
 // 取消回复消息
 const chatReplyMessageCancel = () => {
   chatReplyMessage.value = null
+}
+
+/** 回复消息定位 */
+const replyMessagesPositioningFn = async () => {
+  // 无回复消息，直接返回
+  if (chatReplyMessage.value == null) {
+    return
+  }
+  await props.chatRoomMessagesReplyPositioningFn(
+    {
+      id: chatReplyMessage.value.id,
+      created: chatReplyMessage.value.created,
+    },
+    false
+  )
 }
 
 const profileQuery = useProfileQuery()
@@ -136,7 +160,10 @@ const messageSendSubmit = async () => {
         <div class="ml-2 mr-1 flow-root flex-1 truncate">
           <!-- 回复的消息 -->
           <div v-if="chatReplyMessage != null">
-            <div class="flex cursor-pointer items-center">
+            <div
+              class="flex cursor-pointer items-center"
+              @click="replyMessagesPositioningFn"
+            >
               <!-- 头像 -->
               <div class="ml-[4px] mr-[6px]">
                 <div

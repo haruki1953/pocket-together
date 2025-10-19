@@ -241,9 +241,11 @@ const chatRoomMessagesRestartFn = async () => {
 
 /** 聊天回复定位 */
 const chatRoomMessagesReplyPositioningFn = async (
-  replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  // 回复定位数据
+  replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable,
+  // 是否开启回复定位标记，在聊天消息中点击回复的消息时需要，而在输入栏中点击回复的消息时不需要
+  couldReplyPositioningFlagOpen: boolean = true
 ) => {
-  console.log('chatRoomMessagesReplyPositioningFn')
   // 【操作1】使消息在屏幕显示
   // 从dom获取指定的元素
   const replyMessageElement = document.querySelector<HTMLElement>(
@@ -288,13 +290,13 @@ const chatRoomMessagesReplyPositioningFn = async (
     ;(async () => {
       whetherToSetChatFinelyControlledQueryDataToNull.value = true
       await new Promise((resolve) => setTimeout(resolve, 300))
-      // 避免出现问题，控制滚动归位（el滚动条不需要，原生滚动条需要）
-      props.refScrollWarp?.scrollTo({
-        top: 0,
-        // behavior: 'smooth', // 平滑滚动
-        behavior: 'instant', // 立即滚动
-      })
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      // // 避免出现问题，控制滚动归位（el滚动条不需要，原生滚动条需要）
+      // props.refScrollWarp?.scrollTo({
+      //   top: 0,
+      //   // behavior: 'smooth', // 平滑滚动
+      //   behavior: 'instant', // 立即滚动
+      // })
+      // await new Promise((resolve) => setTimeout(resolve, 100))
       whetherToSetChatFinelyControlledQueryDataToNull.value = false
     })()
 
@@ -315,14 +317,9 @@ const chatRoomMessagesReplyPositioningFn = async (
   }
 
   // 【操作2】赋值回复标志数据
-  replyPositioningFlagOpen(replyMessagePositioningData.id)
-
-  // 数据测试
-  console.log(
-    '数据测试',
-    'chatRoomMessagesInfiniteTwowayQuery.data.value',
-    chatRoomMessagesInfiniteTwowayQuery.data.value
-  )
+  if (couldReplyPositioningFlagOpen) {
+    replyPositioningFlagOpen(replyMessagePositioningData.id)
+  }
 }
 </script>
 

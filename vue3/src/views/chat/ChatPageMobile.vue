@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { layoutChatPageConfig } from '@/config'
 import { ChatCol } from '@/components'
+import { injectAppMainElScrollbar } from '@/composables'
 
-const htmlRef = ref<HTMLElement | null>(null)
-onMounted(() => {
-  htmlRef.value = document.documentElement
-})
-
-// const htmlRef = ref<HTMLElement | null>(null)
-// htmlRef.value = document.documentElement
+// inject获取应用主滚动实例
+const appMainElScrollbar = injectAppMainElScrollbar()
 </script>
 
 <template>
@@ -20,7 +16,7 @@ onMounted(() => {
       }"
     >
       <ChatCol
-        :refScrollWarp="htmlRef ?? undefined"
+        :refScrollWarp="appMainElScrollbar?.wrapRef"
         :couldGoBack="true"
         roomId=""
       ></ChatCol>

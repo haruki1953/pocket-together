@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { pbMessagesSendChatApi } from '@/api'
 import { ChatCol, ChatTopBarMoreMenuItem, ContainerCol2 } from '@/components'
+import { injectAppMainElScrollbar } from '@/composables'
 import { layoutRoomPageConfig, routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
 import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
@@ -42,11 +43,8 @@ const col1StyleValue = computed(() => {
   }
 })
 
-// document.documentElement html标签 即原生滚动容器，将传入ChatCol
-const htmlRef = ref<HTMLElement | null>(null)
-onMounted(() => {
-  htmlRef.value = document.documentElement
-})
+// inject获取应用主滚动实例
+const appMainElScrollbar = injectAppMainElScrollbar()
 
 const i18nStore = useI18nStore()
 
@@ -87,7 +85,7 @@ const testPbSendMessage = async () => {
         <template #col1>
           <div class="ml-2 mr-6">
             <ChatCol
-              :refScrollWarp="htmlRef ?? undefined"
+              :refScrollWarp="appMainElScrollbar?.wrapRef"
               :couldGoBack="true"
               :roomId="roomRouteParams.id"
             >
@@ -139,7 +137,7 @@ const testPbSendMessage = async () => {
           }"
         >
           <ChatCol
-            :refScrollWarp="htmlRef ?? undefined"
+            :refScrollWarp="appMainElScrollbar?.wrapRef"
             :couldGoBack="true"
             :roomId="roomRouteParams.id"
           >

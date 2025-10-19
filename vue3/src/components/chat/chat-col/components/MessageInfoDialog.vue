@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { MessagesResponseWidthExpand } from '@/api'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import { useDialogOptimization } from '@/composables'
 import {
   appUserDefaultAvatar,
@@ -24,6 +27,10 @@ const props = defineProps<{
   chatReplyMessage: MessagesResponseWidthExpand | null
   /** 聊天输入栏正在回复的消息，设置值 */
   chatReplyMessageSet: (val: MessagesResponseWidthExpand | null) => void
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
 }>()
 
 // 还是通过普通的ref设置dialogMessageId比较好
@@ -244,6 +251,24 @@ const actionButtonchatReplyMessageSet = () => {
   // 设置后关闭对话框
   close()
 }
+
+/** 聊天回复定位 */
+const replyMessagesPositioningFn = async () => {
+  // 无数据，是不正常的，返回
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+  // 本消息无回复，直接返回
+  if (chatRoomMessagesGetOneQuery.data.value.expand.replyMessage == null) {
+    return
+  }
+  close()
+  await props.chatRoomMessagesReplyPositioningFn({
+    id: chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.id,
+    created: chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.created,
+  })
+}
 </script>
 
 <template>
@@ -309,7 +334,10 @@ const actionButtonchatReplyMessageSet = () => {
                 "
                 class="mb-[6px] ml-[10px] mr-[12px]"
               >
-                <div class="flex cursor-pointer items-center">
+                <div
+                  class="flex cursor-pointer items-center"
+                  @click="replyMessagesPositioningFn"
+                >
                   <!-- 头像 -->
                   <div class="ml-[4px] mr-[6px]">
                     <div

@@ -50,7 +50,7 @@
       color: var(--color-text);
       background: var(--color-background);
       /* 初始化滚动条，避免加载瞬间的抖动 */
-      overflow-y: scroll;
+      overflow-y: hidden;
       overflow-x: hidden;
     }
 
@@ -160,8 +160,9 @@
       const isDarkMode = scheme === 'dark' || (scheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
       document.documentElement.classList.toggle('dark', isDarkMode)
 
-      // 禁用滚动，将在 App.vue 中恢复（同时进行防止抖动的处理）
-      document.documentElement.style.overflowY = 'hidden'
+      // 【251019】不再使用原生滚动条（不再需要担心滚动条宽度引起的抖动）
+      // // 禁用滚动，将在 App.vue 中恢复（同时进行防止抖动的处理）
+      // document.documentElement.style.overflowY = 'hidden'
     })()
   </script>
 </head>

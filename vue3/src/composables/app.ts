@@ -40,12 +40,13 @@ export const useFirstDataLoadingAndAnimationMaskClose = (data: {
   }
 
   // 关闭加载遮罩，恢复滚动条，同时防止抖动
+  // 【251019】不再使用原生滚动条（不再需要担心滚动条宽度引起的抖动）
   const indexMaskClose = async () => {
-    const scrollbarWidth = getScrollbarWidth()
+    // const scrollbarWidth = getScrollbarWidth()
     const maskElement = document.getElementById('index-mask')
-    document.documentElement.style.overflowY = ''
+    // document.documentElement.style.overflowY = ''
     if (maskElement) {
-      maskElement.style.right = `-${scrollbarWidth}px`
+      // maskElement.style.right = `-${scrollbarWidth}px`
       maskElement.style.opacity = '0'
       await new Promise((resolve) => setTimeout(resolve, 300))
       maskElement.style.display = 'none'
