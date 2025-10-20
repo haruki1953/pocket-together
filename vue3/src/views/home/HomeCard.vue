@@ -5,6 +5,10 @@ import { useI18nStore } from '@/stores'
 import { RouterLink } from 'vue-router'
 import { useWindowSize } from '@vueuse/core'
 import { layoutSettingPageConfig } from '@/config'
+import { useAuthStore } from '@/stores'
+
+const authStore = useAuthStore()
+const UserIma = authStore.record
 
 const i18nStore = useI18nStore()
 
@@ -19,6 +23,7 @@ onMounted(() => {
 
 const emit = defineEmits<{
   (e: 'toggleFavorite', home: HomeCardType): void
+  (e: 'deleteRoom', home: HomeCardType): void
 }>()
 
 defineProps<{
@@ -136,8 +141,28 @@ const showContentTrueCol2FalseCol1 = computed(() => {
         </div>
       </div>
 
+      <!-- 删除 -->
+      <div
+        v-if="UserIma && UserIma.id === home.creatorId"
+        class="group/button absolute bottom-0 right-0 m-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
+        @click.prevent.stop="emit('deleteRoom', home)"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          class="text-red-400"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M16 9v10H8V9zm-1.5-6h-5l-1 1H5v2h14V4h-3.5zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2z"
+          />
+        </svg>
+      </div>
       <!-- 收藏 -->
       <div
+        v-else
         class="group/button absolute bottom-0 right-0 m-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
         @click.prevent.stop="emit('toggleFavorite', home)"
       >

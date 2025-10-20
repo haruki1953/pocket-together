@@ -75,6 +75,7 @@ watch(
               typeof author?.name === 'string' && author.name !== ''
                 ? author.name
                 : '未知用户',
+            creatorId: author?.id ?? '',
             // 对 avatar 也使用最严格的检查
             avatarUrl:
               author != null && author.avatar != null && author.avatar !== ''
@@ -114,6 +115,7 @@ const DisplayCards = computed<HomeCardType[]>(() => {
     title: '',
     coverUrl: '',
     creator: '',
+    creatorId: '',
     avatarUrl: '',
     tags: [],
     isFavorited: false,
@@ -141,6 +143,23 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
     roomsQuery.fetchNextPage()
   }
 })
+
+// 删除函数
+const handleDeleteRoom = async (room: HomeCardType) => {
+  if (!confirm('确定要删除这个房间吗？此操作不可撤销。')) {
+    return
+  }
+  try {
+    await pb.collection('rooms').delete(String(room.id))
+    // 视觉上直接移除就好
+    preloadedRoomCards.value = preloadedRoomCards.value.filter(
+      // 把 id 不等于被删除房间的卡片放进数组里
+      (card) => card.id !== room.id
+    )
+  } catch {
+    // alert('删除房间时出错，请稍后再试。')
+  }
+}
 
 // 切换收藏状态的函数
 const toggleFavorite = async (room: HomeCardType) => {
@@ -313,6 +332,7 @@ const smallScreenCards = computed(() => {
           :style="{ transitionDelay: `${index * 50}ms` }"
           :home="item"
           @toggleFavorite="toggleFavorite"
+          @deleteRoom="handleDeleteRoom"
         />
       </template>
     </MasonryWall>

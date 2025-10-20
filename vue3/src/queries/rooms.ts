@@ -113,16 +113,14 @@ export const useRoomsGetOneQuery = (data: {
       }
       // pb请求
       const pbRes = await pbRoomsGetOneApi(roomId.value)
-
       // TODO 持久化
-
       return pbRes
     },
     // TODO 占位数据
     // 缓存时间
     gcTime: queryConfig.gcTimeLong,
     staleTime: queryConfig.staleTimeLong,
-    // ✅ 在网络错误时重试
+    // 在网络错误时重试
     retry: queryRetryPbNetworkError,
   })
 
