@@ -146,11 +146,16 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
 
 // 删除函数
 const handleDeleteRoom = async (room: HomeCardType) => {
-  if (!confirm('确定要删除这个房间吗？此操作不可撤销。')) {
-    return
-  }
+  // if (!confirm('确定要删除这个房间吗？此操作不可撤销。')) {
+  //   return
+  // }
   try {
-    await pb.collection('rooms').delete(String(room.id))
+    await ElMessageBox.confirm('确定要删除吗？', '要删除吗', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    pb.collection('rooms').delete(String(room.id))
     // 视觉上直接移除就好
     preloadedRoomCards.value = preloadedRoomCards.value.filter(
       // 把 id 不等于被删除房间的卡片放进数组里
