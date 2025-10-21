@@ -3,7 +3,8 @@ import type {
   MessagesResponseWidthExpand,
   PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
-import { useDialogOptimization } from '@/composables'
+import { ContainerDialog } from '@/components'
+import { useDialogOptimization, useRouteControlDialog } from '@/composables'
 import {
   appUserDefaultAvatar,
   chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
@@ -14,6 +15,7 @@ import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
 import { useAuthStore, useI18nStore } from '@/stores'
 import {
   generateRandomClassName,
+  potoGoBack,
   potoNotification,
   urlJoinWithOriginUtil,
   useDateFormatYYYYMMDDHHmmss,
@@ -33,24 +35,12 @@ const props = defineProps<{
   ) => Promise<void>
 }>()
 
+const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
+  dialogQueryKey: 'MessageInfoDialog',
+})
+
 // 还是通过普通的ref设置dialogMessageId比较好
 const dialogMessageId = ref<string | null>(null)
-const dialogVisible = ref(false)
-
-const windowSize = useWindowSize()
-const dialogWidth = computed(() => {
-  const width = 500
-  const windowWidth = windowSize.width.value
-  return windowWidth * 0.9 < width ? '90%' : width
-})
-
-// 自定义遮罩类名，随机生成
-const overlayClass = generateRandomClassName()
-// 对话框优化
-const { open, close } = useDialogOptimization({
-  dialogVisible,
-  overlayClass,
-})
 
 const queryClient = useQueryClient()
 const openMessageInfoDialog = (
@@ -74,12 +64,12 @@ const openMessageInfoDialog = (
     // })
   }
   dialogMessageId.value = messageId
-  open()
+  dialogOpen()
 }
 
 defineExpose({
   openMessageInfoDialog,
-  close,
+  dialogClose,
 })
 
 // 当前消息数据 useChatRoomMessagesGetOneQuery
@@ -249,7 +239,7 @@ const actionButtonchatReplyMessageSet = () => {
   // 设置为回复此消息
   props.chatReplyMessageSet(chatRoomMessagesGetOneQuery.data.value)
   // 设置后关闭对话框
-  close()
+  dialogClose()
 }
 
 /** 聊天回复定位 */
@@ -263,7 +253,7 @@ const replyMessagesPositioningFn = async () => {
   if (chatRoomMessagesGetOneQuery.data.value.expand.replyMessage == null) {
     return
   }
-  close()
+  dialogClose()
   await props.chatRoomMessagesReplyPositioningFn({
     id: chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.id,
     created: chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.created,
@@ -273,12 +263,9 @@ const replyMessagesPositioningFn = async () => {
 
 <template>
   <div>
-    <ElDialog
-      v-model="dialogVisible"
-      :width="dialogWidth"
-      :lockScroll="false"
-      appendToBody
-      :modalClass="overlayClass"
+    <ContainerDialog
+      :dialogVisible="dialogVisible"
+      :dialogCloseFn="dialogClose"
     >
       <!-- 显示消息数据 -->
       <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
@@ -318,7 +305,7 @@ const replyMessagesPositioningFn = async () => {
             </div>
           </div>
           <!-- 关闭按钮 -->
-          <div class="mx-[10px] cursor-pointer" @click="close()">
+          <div class="mx-[10px] cursor-pointer" @click="dialogClose()">
             <RiCloseFill></RiCloseFill>
           </div>
         </div>
@@ -454,6 +441,8 @@ const replyMessagesPositioningFn = async () => {
             </template>
           </div>
         </div>
+        <!-- 垫片，视觉高度调整 -->
+        <div class="h-[16px]"></div>
       </template>
       <template v-else>
         <!-- 显示获取中 -->
@@ -463,7 +452,7 @@ const replyMessagesPositioningFn = async () => {
         <!-- 消息不存在 -->
         <template v-else> 消息不存在 </template>
       </template>
-    </ElDialog>
+    </ContainerDialog>
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useDialogOptimization } from '@/composables'
+import { ContainerDialog } from '@/components'
+import { useDialogOptimization, useRouteControlDialog } from '@/composables'
 import { fileUserAvatarConfig } from '@/config'
 import { useI18nStore } from '@/stores'
 import {
@@ -12,6 +13,15 @@ import { useWindowSize } from '@vueuse/core'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 
+const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
+  dialogQueryKey: 'AvatarCropDialog',
+})
+
+defineExpose({
+  dialogOpen,
+  dialogClose,
+})
+
 const i18nStore = useI18nStore()
 
 const originalImage = defineModel<string | null>('originalImage', {
@@ -22,29 +32,6 @@ const imageUrlRef = defineModel<string | null>('imageUrlRef', {
 })
 const imageBlobRef = defineModel<Blob | null>('imageBlobRef', {
   required: true,
-})
-
-const cropDialogVisible = ref(false)
-
-// 自定义遮罩类名，随机生成
-const overlayClass = generateRandomClassName()
-// 对话框优化
-const { open, close } = useDialogOptimization({
-  dialogVisible: cropDialogVisible,
-  overlayClass,
-})
-
-defineExpose({
-  open,
-  close,
-})
-
-// 对话框大小
-const windowSize = useWindowSize()
-const dialogWidth = computed(() => {
-  const width = 500
-  const windowWidth = windowSize.width.value
-  return windowWidth * 0.9 < width ? '90%' : width
 })
 
 // 引用 vue-advanced-cropper 组件
@@ -98,7 +85,7 @@ const crop = () => {
         }
         // 关闭
         // cropDialogVisible.value = false
-        close()
+        dialogClose()
       },
       fileUserAvatarConfig.toBlobType,
       fileUserAvatarConfig.toBlobQuality
@@ -110,7 +97,7 @@ const crop = () => {
 <template>
   <div class="crop-dialog">
     <!-- 裁剪对话框 -->
-    <ElDialog
+    <!-- <ElDialog
       v-model="cropDialogVisible"
       :title="i18nStore.t('settingProfileUpdateAvatarDialogTitle')()"
       :width="dialogWidth"
@@ -118,6 +105,11 @@ const crop = () => {
       appendToBody
       :modalClass="overlayClass"
       :closeOnClickModal="false"
+    > -->
+    <ContainerDialog
+      :dialogVisible="dialogVisible"
+      :dialogCloseFn="dialogClose"
+      :closeOnClickOverlay="false"
     >
       <div class="flow-root rounded-t-3xl bg-color-background-soft">
         <!-- title -->
@@ -153,7 +145,7 @@ const crop = () => {
       <div class="flow-root rounded-b-3xl bg-color-background-soft">
         <div class="poto-setting-button-box not-center mb-4 mr-2 mt-2">
           <span class="dialog-footer">
-            <ElButton round @click="close()">{{
+            <ElButton round @click="dialogClose()">{{
               i18nStore.t('settingProfileUpdateAvatarDialogCancelButton')()
             }}</ElButton>
             <ElButton type="primary" round @click="crop">{{
@@ -162,7 +154,8 @@ const crop = () => {
           </span>
         </div>
       </div>
-    </ElDialog>
+    </ContainerDialog>
+    <!-- </ElDialog> -->
   </div>
 </template>
 

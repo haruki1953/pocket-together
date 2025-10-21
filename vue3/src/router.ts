@@ -16,6 +16,7 @@ import {
   RoomInfoPage,
   CreateRoomPage,
   CreateRoomOK,
+  TestPage,
 } from './views'
 
 // 路由
@@ -28,13 +29,14 @@ const router = createRouter({
       redirect: routerDict.HomePage.path,
       children: [
         {
+          path: '/test',
+          name: 'TestPage',
+          component: TestPage,
+        },
+        {
           ...routerDict.HomePage,
           component: HomePage,
         },
-        // {
-        //   ...routerDict.RoomDetailPage,
-        //   component: RoomDetailPage,
-        // },
         {
           ...routerDict.ChatPage,
           component: ChatPage,

@@ -33,7 +33,7 @@ const refForgotPasswordDialog = ref<InstanceType<
 
 const clickForgotPassword = () => {
   // 打开忘记密码对话框
-  refForgotPasswordDialog.value?.open()
+  refForgotPasswordDialog.value?.dialogOpen()
 }
 </script>
 

@@ -62,7 +62,7 @@ const refCropDialog = ref<InstanceType<typeof CropDialog> | null>(null)
 const onImageSelect = (uploadFile: UploadFile) => {
   if (uploadFile.raw) {
     originalImage.value = URL.createObjectURL(uploadFile.raw)
-    refCropDialog.value?.open()
+    refCropDialog.value?.dialogOpen()
   }
 }
 

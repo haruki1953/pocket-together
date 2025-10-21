@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { pbUsersRequestPasswordResetApi } from '@/api'
 import { PotoFormValidationError } from '@/classes'
-import { ConfirmContainer } from '@/components'
-import { useDialogOptimization } from '@/composables'
+import { ConfirmContainer, ContainerDialog } from '@/components'
+import { useDialogOptimization, useRouteControlDialog } from '@/composables'
 import { pbCollectionConfigDefaultGetFn } from '@/config'
 import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { queryRetryPbNetworkError, usePbCollectionConfigQuery } from '@/queries'
@@ -19,26 +19,13 @@ import { useNow, useWindowSize } from '@vueuse/core'
 import type { ElForm, FormRules } from 'element-plus'
 import type { GlobalComponents } from 'vue'
 
-const dialogVisible = ref(false)
-
-const windowSize = useWindowSize()
-const dialogWidth = computed(() => {
-  const width = 500
-  const windowWidth = windowSize.width.value
-  return windowWidth * 0.9 < width ? '90%' : width
-})
-
-// 自定义遮罩类名，随机生成
-const overlayClass = generateRandomClassName()
-// 对话框优化
-const { open, close } = useDialogOptimization({
-  dialogVisible,
-  overlayClass,
+const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
+  dialogQueryKey: 'ForgotPasswordDialog',
 })
 
 defineExpose({
-  open,
-  close,
+  dialogOpen,
+  dialogClose,
 })
 
 const i18nStore = useI18nStore()
@@ -92,7 +79,7 @@ const mutation = useMutation({
 
 const cancelFn = () => {
   form.value?.resetFields()
-  close()
+  dialogClose()
 }
 
 const submitRunning = ref(false)
@@ -163,12 +150,9 @@ const passwordUpdateRateLimitInfo = computed(() => {
 
 <template>
   <div class="forgot-password-dialog">
-    <ElDialog
-      v-model="dialogVisible"
-      :width="dialogWidth"
-      :lockScroll="false"
-      appendToBody
-      :modalClass="overlayClass"
+    <ContainerDialog
+      :dialogVisible="dialogVisible"
+      :dialogCloseFn="dialogClose"
     >
       <div class="flow-root rounded-3xl bg-color-background-soft">
         <div class="m-4">
@@ -272,7 +256,7 @@ const passwordUpdateRateLimitInfo = computed(() => {
           </div>
         </div>
       </div>
-    </ElDialog>
+    </ContainerDialog>
   </div>
 </template>
 
