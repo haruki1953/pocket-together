@@ -25,8 +25,8 @@ function changeUserRoomsOnly() {
 }
 
 // 切换只看收藏的房间
-function changeFavoriteRoomsOnly() {
-  roomQueryStore.onlyFavoriteRooms = !roomQueryStore.onlyFavoriteRooms
+function changeJoinRoomsOnly() {
+  roomQueryStore.onlyJoinRooms = !roomQueryStore.onlyJoinRooms
 }
 
 // 监听 Pinia store 中 searchTerm 的变化，以保持 localSearchTerm 同步
@@ -61,10 +61,10 @@ const menuAll = {
 }
 
 // 收藏
-const menuFavorite = {
-  id: 'favorites',
+const menuJoin = {
+  id: 'Join',
   text: i18nStore.t('homeMenuFavoriteRooms')(),
-  action: changeFavoriteRoomsOnly,
+  action: changeJoinRoomsOnly,
 }
 </script>
 
@@ -113,13 +113,13 @@ const menuFavorite = {
       <button
         class="flex-1 rounded-3xl py-2 text-base font-semibold transition-all duration-200 ease-in-out hover:bg-blue-100 active:scale-90 dark:hover:bg-blue-900"
         :class="
-          roomQueryStore.onlyFavoriteRooms
+          roomQueryStore.onlyJoinRooms
             ? 'bg-blue-100 dark:bg-blue-900'
             : 'bg-gray-100 dark:bg-gray-700'
         "
-        @click="menuFavorite.action"
+        @click="menuJoin.action"
       >
-        {{ menuFavorite.text }}
+        {{ menuJoin.text }}
       </button>
     </div>
   </div>
