@@ -84,12 +84,12 @@ watch(
             // tags 字段，直接提供一个空数组
             tags: Array.isArray(room.tags) ? room.tags : [],
             // 我的 userId 存在吗
-            isFavorited:
+            join:
               // Boolean(userId) && room.favorites?.includes(userId ?? ''),
               Boolean(
                 userId !== null &&
-                  room.favorites !== null &&
-                  room.favorites.includes(userId ?? '')
+                  room.join !== null &&
+                  room.join.includes(userId ?? '')
               ),
           } satisfies HomeCardType
           // isFavorited: false,
@@ -118,7 +118,7 @@ const DisplayCards = computed<HomeCardType[]>(() => {
     creatorId: '',
     avatarUrl: '',
     tags: [],
-    isFavorited: false,
+    join: false,
   }
 
   // 如果 roomsQuery.data.value 不存在
@@ -167,7 +167,7 @@ const handleDeleteRoom = async (room: HomeCardType) => {
 }
 
 // 切换收藏状态的函数
-const toggleFavorite = async (room: HomeCardType) => {
+const toggleJoin = async (room: HomeCardType) => {
   // 这个定义 回归上层了 去前面找
   // const userId = pb.authStore.record?.id
   if (userId == null) {
@@ -177,23 +177,29 @@ const toggleFavorite = async (room: HomeCardType) => {
   try {
     // room.isFavorited = !room.isFavorited
     //  使用中间值来存储 room.isFavorited 的当前值，为了更方便的读取世纪值（可读性这一块）
-    const newFavoritedDesu = !room.isFavorited
-    room.isFavorited = newFavoritedDesu
-    // 点击收藏，存入
-    if (newFavoritedDesu) {
-      await pb
-        .collection('rooms')
-        .update(String(room.id), { 'favorites+': userId })
+    const newJoinDesu = !room.join
+    room.join = newJoinDesu
+    // 加入
+    if (newJoinDesu) {
+      await pb.collection('rooms').update(String(room.id), { 'join+': userId })
+      ElMessage({
+        message: '已加入群组',
+        type: 'success',
+        duration: 1500,
+      })
     }
-    // 取消收藏，删掉
+    // 退掉
     else {
-      await pb
-        .collection('rooms')
-        .update(String(room.id), { 'favorites-': userId })
+      await pb.collection('rooms').update(String(room.id), { 'join-': userId })
+      ElMessage({
+        message: '已退出群组',
+        type: 'success',
+        duration: 1500,
+      })
     }
   } catch {
     // 切换收藏状态时出错，回退收藏展示
-    room.isFavorited = !room.isFavorited
+    room.join = !room.join
   }
 }
 
@@ -336,7 +342,7 @@ const smallScreenCards = computed(() => {
           "
           :style="{ transitionDelay: `${index * 50}ms` }"
           :home="item"
-          @toggleFavorite="toggleFavorite"
+          @toggleJoin="toggleJoin"
           @deleteRoom="handleDeleteRoom"
         />
       </template>
@@ -366,7 +372,7 @@ const smallScreenCards = computed(() => {
           "
           :style="{ transitionDelay: `${index * 50}ms` }"
           :home="item"
-          @toggleFavorite="toggleFavorite"
+          @toggleJoin="toggleJoin"
         />
       </template>
     </MasonryWall>

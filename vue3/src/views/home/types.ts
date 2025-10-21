@@ -7,5 +7,5 @@ export interface HomeCardType {
   creatorId: string
   avatarUrl: string
   tags: string[]
-  isFavorited: boolean
+  join: boolean
 }

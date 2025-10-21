@@ -22,7 +22,7 @@ onMounted(() => {
 })
 
 const emit = defineEmits<{
-  (e: 'toggleFavorite', home: HomeCardType): void
+  (e: 'toggleJoin', home: HomeCardType): void
   (e: 'deleteRoom', home: HomeCardType): void
 }>()
 
@@ -164,21 +164,22 @@ const showContentTrueCol2FalseCol1 = computed(() => {
       <div
         v-else
         class="group/button absolute bottom-0 right-0 m-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-500/10 dark:hover:bg-white/10"
-        @click.prevent.stop="emit('toggleFavorite', home)"
+        @click.prevent.stop="emit('toggleJoin', home)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-6 transition-transform duration-200 group-hover/button:scale-110 group-active/button:scale-90"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
           :class="
-            home.isFavorited
+            home.join
               ? 'text-blue-600'
               : 'text-gray-400 group-hover/button:text-blue-600 dark:text-gray-400 dark:group-hover/button:text-blue-400'
           "
-          viewBox="0 0 384 512"
         >
           <path
             fill="currentColor"
-            d="M0 48C0 21.5 21.5 0 48 0v441.4l130.1-92.9c8.3-6 19.6-6 27.9 0l130 92.9V48H48V0h288c26.5 0 48 21.5 48 48v440c0 9-5 17.2-13 21.3s-17.6 3.4-24.9-1.8L192 397.5l-154.1 110c-7.3 5.2-16.9 5.9-24.9 1.8S0 497 0 488z"
+            d="M11 11v2q0 .425.288.713T12 14t.713-.288T13 13v-2h2q.425 0 .713-.288T16 10t-.288-.712T15 9h-2V7q0-.425-.288-.712T12 6t-.712.288T11 7v2H9q-.425 0-.712.288T8 10t.288.713T9 11zm-5 7l-2.3 2.3q-.475.475-1.088.213T2 19.575V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18zm-.85-2H20V4H4v13.125zM4 16V4z"
           />
         </svg>
       </div>
