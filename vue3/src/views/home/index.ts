@@ -6,7 +6,6 @@ import CreateRoomOK from './CreateRoomOK.vue'
 export {
   //
   HomePage,
-  // RoomDetailPage,
   CreateRoomPage,
   CreateRoomOK,
 }

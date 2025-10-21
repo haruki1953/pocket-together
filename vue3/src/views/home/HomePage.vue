@@ -83,15 +83,12 @@ watch(
             // tags 字段，直接提供一个空数组
             tags: Array.isArray(room.tags) ? room.tags : [],
             // 我的 userId 存在吗
-            join:
-              // Boolean(userId) && room.favorites?.includes(userId ?? ''),
-              Boolean(
-                userId !== null &&
-                  room.join !== null &&
-                  room.join.includes(userId ?? '')
-              ),
+            join: Boolean(
+              userId !== null &&
+                room.join !== null &&
+                room.join.includes(userId ?? '')
+            ),
           } satisfies HomeCardType
-          // isFavorited: false,
         }
       )
     )
@@ -145,9 +142,6 @@ useIntersectionObserver(loadMoreCards, ([{ isIntersecting }]) => {
 
 // 删除函数
 const handleDeleteRoom = async (room: HomeCardType) => {
-  // if (!confirm('确定要删除这个房间吗？此操作不可撤销。')) {
-  //   return
-  // }
   try {
     await ElMessageBox.confirm('确定要删除吗？', '要删除吗', {
       confirmButtonText: '删除',
@@ -160,9 +154,7 @@ const handleDeleteRoom = async (room: HomeCardType) => {
       // 把 id 不等于被删除房间的卡片放进数组里
       (card) => card.id !== room.id
     )
-  } catch {
-    // alert('删除房间时出错，请稍后再试。')
-  }
+  } catch {}
 }
 
 // 切换收藏状态的函数
@@ -379,5 +371,3 @@ const smallScreenCards = computed(() => {
     <div ref="loadMoreCards"></div>
   </div>
 </template>
-
-<!-- <style scoped lang="scss"></style> -->
