@@ -14,6 +14,8 @@ import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
 import { pbMessagesSendChatApi } from '@/api'
 import { RiFlaskLine } from '@remixicon/vue'
 
+console.log('ChatPage setup')
+
 const i18nStore = useI18nStore()
 useSeoMeta({
   title: computed(() => i18nStore.t('pageChat')()),
@@ -55,6 +57,14 @@ const refContainerCol2 = ref<InstanceType<typeof ContainerCol2> | null>(null)
 
 const route = useRoute()
 const router = useRouter()
+
+router.replace({
+  path: route.path,
+  query: {
+    test: '测试',
+  },
+})
+
 // 如果当前为小屏，但有路由消息参数（消息定位），则跳转到ChatPageMobile
 if (showCol2TrueCol1False.value === false) {
   // 聊天页 双向定位游标 路由查询参数 键统一管理，以便在多处使用
