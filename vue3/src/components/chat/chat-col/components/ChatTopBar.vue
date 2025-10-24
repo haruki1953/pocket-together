@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
-import { potoGoBack, useWatchSourceToHoldTimeAndStep } from '@/utils'
+import { useWatchSourceToHoldTimeAndStep } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { ChatTopBarMoreMenuItem } from '.'
 import { useRoomsGetOneQuery } from '@/queries'
+import { useRouterHistoryTool } from '@/composables'
 
 const props = defineProps<{
   chatRoomMessagesRestartFn: () => Promise<void>
@@ -67,11 +68,11 @@ const chatRoomMessagesRestartFnWithDisableOnAni = () => {
 const i18nStore = useI18nStore()
 
 const router = useRouter()
+const { routerBackSafe } = useRouterHistoryTool()
+
 const chatTopBarBack = () => {
-  // router.back()
-  potoGoBack({
-    router,
-    fallbackPath: routerDict.HomePage.path,
+  routerBackSafe({
+    fallbackTo: routerDict.HomePage.path,
   })
 }
 

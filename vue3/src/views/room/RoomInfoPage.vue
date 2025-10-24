@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { useRouterHistoryTool } from '@/composables'
 import { layoutRoomPageConfig, routerDict } from '@/config'
-import { potoGoBack } from '@/utils'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const { routerBackSafe } = useRouterHistoryTool()
+
 const roomInfoPageBack = () => {
-  // router.back()
-  potoGoBack({
-    router,
-    fallbackPath: routerDict.HomePage.path,
+  routerBackSafe({
+    fallbackTo: routerDict.HomePage.path,
   })
 }
 </script>

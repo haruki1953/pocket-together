@@ -15,7 +15,6 @@ import { queryKeys, useChatRoomMessagesGetOneQuery } from '@/queries'
 import { useAuthStore, useI18nStore } from '@/stores'
 import {
   generateRandomClassName,
-  potoGoBack,
   potoNotification,
   urlJoinWithOriginUtil,
   useDateFormatYYYYMMDDHHmmss,

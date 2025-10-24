@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores'
 // 文件上传限制
 import { fileRoomImageConfig, routerDict } from '@/config'
 import { hideLoadingMask, showLoadingMask } from '@/utils'
+import { useRouterHistoryTool } from '@/composables'
 
 const i18nStore = useI18nStore()
 
@@ -118,6 +119,8 @@ async function createRoom() {
     ElMessage.error(i18nStore.t('createRoomError_creationFailed')())
   }
 }
+
+const { routerBackSafe } = useRouterHistoryTool()
 </script>
 
 <template>
@@ -129,7 +132,11 @@ async function createRoom() {
       <!-- back 键 -->
       <button
         class="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-        @click="$router.back()"
+        @click="
+          routerBackSafe({
+            fallbackTo: routerDict.HomePage.path,
+          })
+        "
       >
         <RiArrowLeftSLine class="h-6 w-6" />
       </button>

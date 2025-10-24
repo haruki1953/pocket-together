@@ -1,15 +1,5 @@
 import type { useRouter } from 'vue-router'
 
-/** 如果可以后退且来源是本站，则后退；否则跳转至指定页面（待完成） */
-export const potoGoBack = (data: {
-  router: ReturnType<typeof useRouter>
-  fallbackPath: string
-}) => {
-  const { router, fallbackPath } = data
-  // TODO
-  router.back()
-}
-
 // 打开链接
 export const openLink = (url: string) => {
   window.open(url, '_blank')

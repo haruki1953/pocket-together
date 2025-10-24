@@ -18,6 +18,7 @@ import {
   CreateRoomOK,
   TestPage,
 } from './views'
+import { useRouterHistoryStore } from './stores'
 
 // 路由
 const router = createRouter({
@@ -119,6 +120,12 @@ router.beforeEach((to, from) => {
   }
 })
 
+// 自建路由历史栈
+router.afterEach(() => {
+  const routerHistoryStore = useRouterHistoryStore()
+  routerHistoryStore.routerAfterEachCheckHistoryStateAndControlRouterHistoryStack()
+})
+
 // // 测试
 // router.beforeEach((to, from) => {
 //   console.log('beforeEach')
@@ -134,24 +141,3 @@ router.beforeEach((to, from) => {
 // })
 
 export default router
-
-// 实验
-// 为了确认Vue Router 内部使用 history.state.key 来标识每次导航的唯一 ID
-router.beforeEach((to, from) => {
-  console.log('🔍 [beforeEach] history.state', history.state)
-})
-
-router.afterEach((to, from) => {
-  console.log('🔍 [afterEach] history.state', history.state)
-  console.log(JSON.stringify(to, null, 2))
-  if (history.state?.routorHistoryUuid == null) {
-    console.log('history.state?.routorHistoryUuid == null')
-
-    // 只修改State且保留其中原本存在的值
-    history.replaceState(
-      { ...history.state, routorHistoryUuid: 'test' },
-      '',
-      location.href
-    )
-  }
-})

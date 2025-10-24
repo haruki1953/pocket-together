@@ -1,5 +1,6 @@
-import { potoGoBack } from '@/utils'
 import { useRoute, useRouter } from 'vue-router'
+import { useRouterHistoryTool } from '@/composables'
+import { routerDict } from '@/config'
 
 /**
  * 通过route控制dialog，根据路由query参数决定是否显示对话框，router.push即打开对话框，back即关闭（开关前应判断当前是否为打开）。
@@ -13,6 +14,7 @@ export const useRouteControlDialog = (data: {
 
   const route = useRoute()
   const router = useRouter()
+  const { routerBackSafe } = useRouterHistoryTool()
 
   const dialogVisible = computed(() => {
     if (route.query[dialogQueryKey] != null) {
@@ -41,10 +43,14 @@ export const useRouteControlDialog = (data: {
     if (dialogVisible.value === false) {
       return
     }
-    // router.back()
-    potoGoBack({
-      router,
-      fallbackPath: route.path,
+    routerBackSafe({
+      fallbackTo: {
+        path: route.path,
+        query: {
+          ...route.query,
+          [dialogQueryKey]: undefined,
+        },
+      },
     })
   }
 
