@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import {
+  useChatControlFunctions,
   useChatDataProcessMessagesTwoway,
+  useChatDisplayDependentDataDefinition,
+  useChatDisplayDependentDataInitialization,
+  useChatDisplayDependentDataInitializationChoose,
   useChatScrollMessageChangeTwoway,
   useChatScrollToShowMore,
   useChatShowLimitControlTwoway,
   useChatShowMoreOnTopOrBottomTwoway,
+  useTwowayPositioningCursorDataInitialization,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -28,79 +33,47 @@ const props = defineProps<{
 // 供封装的组件或组合式函数使用
 export type PropsType = typeof props
 
-/**
- * 双向定位无限查询的定位游标数据
- */
-const twowayPositioningCursorData =
-  ref<PMLRCApiParameters0DataPageParamNonNullable | null>(null)
+// 这些数据有点乱，进行封装，定义 与 初始化，分开
+
+// 定义
+// 封装：
+// 定位游标数据、链接定位标记、回复定位标记 、……
+// 等会影响聊天显示的数据 的定义与配套方法
+// ChatDisplayDependentData chat-display-dependent-data
+
+// 初始化
+// 首先初始化 twowayPositioningCursorData ，其他数据的初始化要等到得到 chatRoomMessagesInfiniteTwowayQuery 之后
+// 因为要需要有Query数据来判断“页面恢复数据”是否正确，至于需要先初始化twowayPositioningCursorData时因为chatRoomMessagesInfiniteTwowayQuery依赖这个
+
+// 聊天显示所依赖的数据 的定义与配套方法
+const {
+  /** 双向定位无限查询的定位游标数据 */
+  twowayPositioningCursorData,
+  // 链接定位标记，如果消息id等于此，将显示链接标记
+  linkPositioningFlagMessageId,
+  // 控制链接标记是否显示，消息被点击会使其不显示
+  linkPositioningFlagShow,
+  linkPositioningFlagClose,
+  // 回复定位标记
+  replyPositioningFlagMessageId,
+  replyPositioningFlagShow,
+  replyPositioningFlagClose,
+  replyPositioningFlagOpen,
+  /** 重置双向定位无限查询的定位游标数据和相关数据 */
+  resetPositioningCursorDataAndRelatedData,
+} = useChatDisplayDependentDataDefinition()
+
 export type TwowayPositioningCursorDataType = typeof twowayPositioningCursorData
 
-// 根据路由查询参数定位消息
-const route = useRoute()
-const routeQueryPositioningCursorData = (() => {
-  const { id: keyId, created: keyCreated } =
-    chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig
-  const id = route.query[keyId]
-  const created = route.query[keyCreated]
-  if (
-    id == null ||
-    created == null ||
-    typeof id !== 'string' ||
-    typeof created !== 'string'
-  ) {
-    return null
-  }
-  return {
-    id,
-    created,
-  }
-})()
-// 清除路由中的查询参数
-const router = useRouter()
-router.replace(route.path)
+// 获取各种初始化情况的对应数据
+const chatDisplayDependentDataInitializationChoose =
+  useChatDisplayDependentDataInitializationChoose()
 
-// 设置路由定位数据
-if (routeQueryPositioningCursorData != null) {
-  twowayPositioningCursorData.value = routeQueryPositioningCursorData
-}
-
-// 链接定位标记，如果消息id等于此，将显示链接标记
-const linkPositioningFlagMessageId = ref<string | null>(null)
-// 控制链接标记是否显示，消息被点击会使其不显示
-const linkPositioningFlagShow = ref(false)
-const linkPositioningFlagClose = () => {
-  linkPositioningFlagShow.value = false
-}
-if (routeQueryPositioningCursorData != null) {
-  linkPositioningFlagMessageId.value = routeQueryPositioningCursorData.id
-  linkPositioningFlagShow.value = true
-}
-
-// 回复定位标记
-const replyPositioningFlagMessageId = ref<string | null>(null)
-const replyPositioningFlagShow = ref(false)
-const replyPositioningFlagClose = () => {
-  replyPositioningFlagShow.value = false
-}
-const replyPositioningFlagOpen = (messageId: string) => {
-  replyPositioningFlagMessageId.value = messageId
-  replyPositioningFlagShow.value = true
-}
-
-/** 重置双向定位无限查询的定位游标数据和相关数据 */
-const resetPositioningCursorDataAndRelatedData = () => {
-  twowayPositioningCursorData.value = null
-  linkPositioningFlagMessageId.value = null
-  linkPositioningFlagShow.value = false
-  replyPositioningFlagMessageId.value = null
-  replyPositioningFlagShow.value = false
-}
-
-// // 测试定位
-// twowayPositioningCursorData.value = {
-//   id: 'bnjqt5mbyk35gsd',
-//   created: '2025-09-01 10:46:42.872Z',
-// }
+// twowayPositioningCursorData 的初始化
+useTwowayPositioningCursorDataInitialization({
+  chatDisplayDependentDataInitializationChoose,
+  twowayPositioningCursorData,
+})
 
 const chatRoomId = computed(() => props.roomId)
 
@@ -133,6 +106,14 @@ export type ChatRoomMessagesItem = NonNullable<
 export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
 export type ChatRoomMessagesListAndRealtimeType =
   typeof chatRoomMessagesListAndRealtime
+
+// 聊天显示所依赖的数据 的初始化（除twowayPositioningCursorData外）
+useChatDisplayDependentDataInitialization({
+  chatRoomMessagesInfiniteTwowayQuery,
+  chatDisplayDependentDataInitializationChoose,
+  linkPositioningFlagMessageId,
+  linkPositioningFlagShow,
+})
 
 /** 封装了聊天页消息显示数量限制控制相关的内容 */
 const {
@@ -202,125 +183,22 @@ useChatScrollToShowMore({
   chatShowMoreOnBottom,
 })
 
-const queryClient = useQueryClient()
-/** 聊天刷新（重置）是否正在进行 */
-const chatRoomMessagesRestartFnRunning = ref(false)
-/** 聊天刷新（重置）是否能执行 */
-const chatRoomMessagesRestartFnRunnable = computed(() => {
-  if (chatRoomMessagesRestartFnRunning.value === true) {
-    return false
-  }
-  return true
+// 封装 chat的一些操作
+const {
+  chatRoomMessagesRestartFnRunning,
+  chatRoomMessagesRestartFnRunnable,
+  chatRoomMessagesRestartFn,
+  chatRoomMessagesReplyPositioningFn,
+} = useChatControlFunctions({
+  chatRoomMessagesInfiniteTwowayQuery,
+  resetPositioningCursorDataAndRelatedData,
+  chatRoomMessagesLimitCursorInitFn,
+  chatRoomMessagesScrollInitFn,
+  props,
+  whetherToSetChatFinelyControlledQueryDataToNull,
+  twowayPositioningCursorData,
+  replyPositioningFlagOpen,
 })
-/** 聊天刷新（重置） */
-const chatRoomMessagesRestartFn = async () => {
-  if (chatRoomMessagesRestartFnRunning.value === true) {
-    return
-  }
-  chatRoomMessagesRestartFnRunning.value = true
-  try {
-    const { queryKey } = chatRoomMessagesInfiniteTwowayQuery
-    // 移除本房间聊天数据
-    queryClient.removeQueries({
-      // chatRoomMessagesInfiniteTwowayQuery.queryKey.value 是只读的固定长度元组类型，通过索引访问是安全的
-      queryKey: [queryKey.value[0], queryKey.value[1]],
-      exact: false, // 模糊匹配，即不需要CursorData游标数据，移除本房间的所有数据
-    })
-    // 重置双向定位无限查询的定位游标数据和相关数据
-    resetPositioningCursorDataAndRelatedData()
-    // 重新加载数据
-    await chatRoomMessagesInfiniteTwowayQuery.refetch()
-    // 重新初始化显示限制游标
-    await chatRoomMessagesLimitCursorInitFn()
-    // 重新初始化滚动位置
-    await chatRoomMessagesScrollInitFn()
-  } finally {
-    chatRoomMessagesRestartFnRunning.value = false
-  }
-}
-
-/** 聊天回复定位 */
-const chatRoomMessagesReplyPositioningFn = async (
-  // 回复定位数据
-  replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable,
-  // 是否开启回复定位标记，在聊天消息中点击回复的消息时需要，而在输入栏中点击回复的消息时不需要
-  couldReplyPositioningFlagOpen: boolean = true
-) => {
-  // 【操作1】使消息在屏幕显示
-  // 从dom获取指定的元素
-  const replyMessageElement = document.querySelector<HTMLElement>(
-    `.${chatRoomMessagesClassIdNamingFnConfig(replyMessagePositioningData.id)}`
-  )
-  // 判断是否已在dom 是
-  if (replyMessageElement != null) {
-    // 判断是否已在屏幕范围 是
-    if (
-      isElementInViewport(replyMessageElement, {
-        fullyVisible: true,
-        offset: {
-          // 元素距顶部距离要大于配置的值
-          top: Math.abs(
-            chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
-          ),
-        },
-      })
-    ) {
-      // 无需处理
-    }
-    // 判断是否已在屏幕范围 否
-    else {
-      // 滚动容器 props.refScrollWarp 没有值是异常的
-      if (props.refScrollWarp == null) {
-        console.error('props.refScrollWarp == null')
-        return
-      }
-      // 滚动至消息
-      scrollToElementInContainer(
-        props.refScrollWarp,
-        replyMessageElement,
-        'smooth',
-        chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig
-      )
-    }
-  }
-  // 判断是否已在dom 否
-  else {
-    // 新的定位查询
-    // 将进入加载状态，精细化控制Query数据为null，持续400ms，即加载状态至少为400ms
-    ;(async () => {
-      whetherToSetChatFinelyControlledQueryDataToNull.value = true
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      // // 避免出现问题，控制滚动归位（el滚动条不需要，原生滚动条需要）
-      // props.refScrollWarp?.scrollTo({
-      //   top: 0,
-      //   // behavior: 'smooth', // 平滑滚动
-      //   behavior: 'instant', // 立即滚动
-      // })
-      // await new Promise((resolve) => setTimeout(resolve, 100))
-      whetherToSetChatFinelyControlledQueryDataToNull.value = false
-    })()
-
-    // 重置双向定位无限查询的定位游标数据和相关数据
-    resetPositioningCursorDataAndRelatedData()
-    // 修改双向定位游标数据
-    twowayPositioningCursorData.value = {
-      id: replyMessagePositioningData.id,
-      created: replyMessagePositioningData.created,
-    }
-    // 已解决回复跳转不稳定的问题，原因出在Query.refetch，其导致已缓存的数据出现异常，这里不应该也不必调用refetch
-    // await chatRoomMessagesInfiniteTwowayQuery.refetch()
-
-    // 重新初始化显示限制游标
-    await chatRoomMessagesLimitCursorInitFn()
-    // 重新初始化滚动位置
-    await chatRoomMessagesScrollInitFn()
-  }
-
-  // 【操作2】赋值回复标志数据
-  if (couldReplyPositioningFlagOpen) {
-    replyPositioningFlagOpen(replyMessagePositioningData.id)
-  }
-}
 </script>
 
 <template>

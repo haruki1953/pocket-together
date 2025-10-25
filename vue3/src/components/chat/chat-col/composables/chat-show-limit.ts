@@ -91,6 +91,7 @@ export const useChatShowLimitControlTwoway = (data: {
     )
     return limitList
   })
+
   // 显示限制游标初始化函数
   const chatRoomMessagesLimitCursorInitFn = async () => {
     if (chatRoomMessagesListAndRealtime.value == null) {
@@ -203,6 +204,8 @@ export const useChatShowLimitControlTwoway = (data: {
       })()
     }
   }
+
+  // TODO “页面恢复数据”
   // 初始化显示限制，setup时就可以进行
   chatRoomMessagesLimitCursorInitFn()
 

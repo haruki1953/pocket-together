@@ -13,17 +13,6 @@ export const useRouterHistoryTool = () => {
   }) => {
     const { fallbackTo = '/' } = data
 
-    console.log('routerBackSafe')
-    console.log('routerHistoryStore.stack', routerHistoryStore.stack)
-    console.log(
-      'routerHistoryStore.currentUuid',
-      routerHistoryStore.currentUuid
-    )
-    console.log(
-      'routerHistoryStore.currentPreviousRouterHistoryEntry',
-      routerHistoryStore.currentPreviousRouterHistoryEntry
-    )
-
     // 为null即代表当前app中没有上一页
     if (routerHistoryStore.currentPreviousRouterHistoryEntry == null) {
       router.push(fallbackTo)

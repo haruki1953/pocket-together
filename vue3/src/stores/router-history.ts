@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
+import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 
 type Route = ReturnType<typeof useRoute>
 
@@ -11,6 +12,12 @@ export type RouterHistoryEntryType = {
   name: Route['name']
   path: Route['path']
   fullPath: Route['fullPath']
+}
+
+/** ChatCol 所需要的页面恢复数据，也就是决定页面显示内容的的所有数据 */
+export type PageRecoverDataForChatCol = {
+  roomId: string
+  twowayPositioningCursorData: PMLRCApiParameters0DataPageParamNonNullable | null
 }
 
 /**
@@ -45,7 +52,9 @@ export const useRouterHistoryStore = defineStore(
       return stack.value[findIndex - 1]
     })
 
-    // TODO 各路由页面数据，主要用于路由返回时，页面中的数据恢复（返回时保持之前浏览的位置和数据）
+    // TODO 各路由页面恢复数据，主要用于路由返回时，页面中的数据恢复（返回时保持之前浏览的位置和数据）
+    // 用于 ChatCol 的页面恢复数据
+    const pageRecoverDataForChatCol = ref([])
 
     const route = useRoute()
 
