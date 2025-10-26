@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import {
+  useChatColPageRecoverDataCheck,
   useChatControlFunctions,
   useChatDataProcessMessagesTwoway,
   useChatDisplayDependentDataDefinition,
@@ -13,14 +13,8 @@ import {
   useTwowayPositioningCursorDataInitialization,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
-import { useRoute, useRouter } from 'vue-router'
-import {
-  chatRoomMessagesClassIdNamingFnConfig,
-  chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig,
-  chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
-} from '@/config'
-import { useQueryClient } from '@tanstack/vue-query'
-import { isElementInViewport, scrollToElementInContainer } from '@/utils'
+import { useRouterHistoryStore } from '@/stores'
+import { onBeforeRouteLeave } from 'vue-router'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -107,12 +101,21 @@ export type ChatRoomMessagesRealtimeType = typeof chatRoomMessagesRealtime
 export type ChatRoomMessagesListAndRealtimeType =
   typeof chatRoomMessagesListAndRealtime
 
+// 检查“页面恢复数据”是否正确，以页面恢复数据初始化时需要确保数据正确
+const chatColPageRecoverDataCheck = useChatColPageRecoverDataCheck({
+  chatRoomMessagesListAndRealtime,
+  chatDisplayDependentDataInitializationChoose,
+  chatRoomId,
+})
+
 // 聊天显示所依赖的数据 的初始化（除twowayPositioningCursorData外）
 useChatDisplayDependentDataInitialization({
-  chatRoomMessagesInfiniteTwowayQuery,
   chatDisplayDependentDataInitializationChoose,
+  chatColPageRecoverDataCheck,
   linkPositioningFlagMessageId,
   linkPositioningFlagShow,
+  replyPositioningFlagMessageId,
+  replyPositioningFlagShow,
 })
 
 /** 封装了聊天页消息显示数量限制控制相关的内容 */
@@ -199,12 +202,74 @@ const {
   twowayPositioningCursorData,
   replyPositioningFlagOpen,
 })
+
+const refChatColTemplateBase = ref<InstanceType<
+  typeof ChatColTemplateBase
+> | null>(null)
+
+// 页面恢复数据收集
+const routerHistoryStore = useRouterHistoryStore()
+// onBeforeUnmount 有一些问题，有时会在 router.afterEach 之后才执行，这对于自己是不正确的，
+// 而 onBeforeRouteLeave 虽然能确保在 router.afterEach 之前执行（确定吗），但不会触发于非路由卸载（如 v-if）
+// 所以需要将 onBeforeUnmount 和 beforeRouteLeave结合，同时使用这两个，只要让这两个不会执行两次即可
+
+const chatColPageRecoverDataSet = () => {
+  console.log('routerHistoryStore.currentUuid', routerHistoryStore.currentUuid)
+  if (
+    props.refScrollWarp == null ||
+    refChatColTemplateBase.value?.refChatInputBar == null
+  ) {
+    console.log(`
+    props.refScrollWarp == null ||
+    refChatColTemplateBase.value?.refChatInputBar == null
+    `)
+    return
+  }
+  const chatInputContent =
+    refChatColTemplateBase.value.refChatInputBar.chatInputContent
+  const chatReplyMessage =
+    refChatColTemplateBase.value.refChatInputBar.chatReplyMessage
+  const refScrollWarpScrollTop = props.refScrollWarp.scrollTop
+
+  routerHistoryStore.currentSetPageRecoverDataForChatColItem({
+    chatRoomId: chatRoomId.value,
+    twowayPositioningCursorData: twowayPositioningCursorData.value,
+    linkPositioningFlagMessageId: linkPositioningFlagMessageId.value,
+    linkPositioningFlagShow: linkPositioningFlagShow.value,
+    replyPositioningFlagMessageId: replyPositioningFlagMessageId.value,
+    replyPositioningFlagShow: replyPositioningFlagShow.value,
+    chatRoomMessagesLimitTopCursor: chatRoomMessagesLimitTopCursor.value,
+    chatRoomMessagesLimitBottomCursor: chatRoomMessagesLimitBottomCursor.value,
+    chatInputContent,
+    chatReplyMessage,
+    refScrollWarpScrollTop,
+  })
+  console.log(routerHistoryStore.pageRecoverDataForChatCol)
+}
+// chatColPageRecoverDataSet 是否已执行
+let chatColPageRecoverDataSetHasRun = false
+// 让 chatColPageRecoverDataSet 只执行一次
+const chatColPageRecoverDataSetRunOnce = () => {
+  if (chatColPageRecoverDataSetHasRun) {
+    return
+  }
+  chatColPageRecoverDataSetHasRun = true
+  chatColPageRecoverDataSet()
+}
+
+onBeforeUnmount(() => {
+  chatColPageRecoverDataSetRunOnce()
+})
+onBeforeRouteLeave(() => {
+  chatColPageRecoverDataSetRunOnce()
+})
 </script>
 
 <template>
   <div>
     <!-- ChatCol的主要渲染内容，达到将逻辑和内容分离的效果 -->
     <ChatColTemplateBase
+      ref="refChatColTemplateBase"
       :isChatTopHasMore="isChatTopHasMore"
       :isShowMoreRunning="isShowMoreRunning"
       :chatShowMoreOnTop="chatShowMoreOnTop"

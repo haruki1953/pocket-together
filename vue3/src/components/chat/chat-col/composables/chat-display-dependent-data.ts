@@ -3,7 +3,12 @@
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
 import { useRoute, useRouter } from 'vue-router'
-import type { ChatRoomMessagesInfiniteTwowayQueryType } from './dependencies'
+import type {
+  ChatRoomMessagesInfiniteTwowayQueryType,
+  ChatRoomMessagesListAndRealtimeType,
+  PropsType,
+} from './dependencies'
+import { useRouterHistoryStore } from '@/stores'
 
 // 定义
 // 封装：
@@ -12,6 +17,11 @@ import type { ChatRoomMessagesInfiniteTwowayQueryType } from './dependencies'
 // 聊天显示所依赖的数据 ChatDisplayDependentData chat-display-dependent-data
 
 // 聊天显示所依赖的数据 的定义与配套方法
+// 注：其中返回的的数据，并不是全部的聊天显示所依赖的数据，还有一些特殊的：
+// - 消息显示限制游标 chatRoomMessagesLimitTopCursor 与 chatRoomMessagesLimitBottomCursor 在 chat-show-limit.ts 中定义与初始化
+// - 输入栏内容 chatInputContent 、回复消息 chatReplyMessage 在 ChatInputBar.vue 中定义与初始化
+// - 滚动位置值 refScrollWarp?.scrollTop 在 chat-scroll.ts 中初始化
+
 export const useChatDisplayDependentDataDefinition = () => {
   /** 双向定位无限查询的定位游标数据 */
   const twowayPositioningCursorData =
@@ -64,11 +74,12 @@ export const useChatDisplayDependentDataDefinition = () => {
 // 需要先初始化twowayPositioningCursorData是因为chatRoomMessagesInfiniteTwowayQuery依赖这个
 // 其他数据的初始化要在c33y之后，是因为要需要有c33y来判断“页面恢复数据”是否正确
 
-// 获取各种初始化情况的对应数据
+// 获取各种初始化情况的对应数据，并决定使用哪种初始化
 export const useChatDisplayDependentDataInitializationChoose = () => {
   const route = useRoute()
+  const router = useRouter()
 
-  // 根据路由参数初始化
+  // 获取根据路由定位查询参数初始化数据
   const routeQueryPositioningCursorData = (() => {
     const { id: keyId, created: keyCreated } =
       chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig
@@ -87,19 +98,48 @@ export const useChatDisplayDependentDataInitializationChoose = () => {
       created,
     }
   })()
+  // 无卵使用哪种初始化，都清除路由中的查询参数
+  router.replace(route.path)
 
-  // TODO RouterHistoryStore页面恢复数据初始化
+  // 获取根据页面恢复数据初始化数据
+  const routerHistoryStore = useRouterHistoryStore()
+  const chatColPageRecoverData =
+    routerHistoryStore.currentGetPageRecoverDataForChatColItem()
+
+  console.log('routerHistoryStore.currentUuid', routerHistoryStore.currentUuid)
+  ;(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+    console.log(
+      'routerHistoryStore.currentUuid',
+      routerHistoryStore.currentUuid
+    )
+  })()
+
+  // 决定使用哪种初始化
+  const chooseInitialization = (() => {
+    // 优先使用页面恢复数据初始化
+    if (chatColPageRecoverData != null) {
+      return 'chatColPageRecoverData' as const
+    }
+    if (routeQueryPositioningCursorData != null) {
+      return 'routeQueryPositioningCursorData' as const
+    }
+    return 'none' as const
+  })()
 
   return {
+    chooseInitialization,
     routeQueryPositioningCursorData,
+    chatColPageRecoverData,
   }
 }
+export type ChatDisplayDependentDataInitializationChooseType = ReturnType<
+  typeof useChatDisplayDependentDataInitializationChoose
+>
 
 // twowayPositioningCursorData 的初始化
 export const useTwowayPositioningCursorDataInitialization = (data: {
-  chatDisplayDependentDataInitializationChoose: ReturnType<
-    typeof useChatDisplayDependentDataInitializationChoose
-  >
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
   twowayPositioningCursorData: Ref<PMLRCApiParameters0DataPageParamNonNullable | null>
 }) => {
   const {
@@ -107,47 +147,158 @@ export const useTwowayPositioningCursorDataInitialization = (data: {
     chatDisplayDependentDataInitializationChoose,
   } = data
 
-  const route = useRoute()
-  const router = useRouter()
+  const {
+    chooseInitialization,
+    routeQueryPositioningCursorData,
+    chatColPageRecoverData,
+  } = chatDisplayDependentDataInitializationChoose
 
-  const { routeQueryPositioningCursorData } =
-    chatDisplayDependentDataInitializationChoose
-
-  // 根据路由参数初始化
-  // 设置路由定位数据
-  if (routeQueryPositioningCursorData != null) {
+  // 根据页面恢复数据初始化
+  if (
+    chooseInitialization === 'chatColPageRecoverData' &&
+    chatColPageRecoverData != null
+  ) {
+    twowayPositioningCursorData.value =
+      chatColPageRecoverData.data.twowayPositioningCursorData
+  }
+  // 根据路由定位查询参数初始化
+  else if (
+    chooseInitialization === 'routeQueryPositioningCursorData' &&
+    routeQueryPositioningCursorData != null
+  ) {
     twowayPositioningCursorData.value = routeQueryPositioningCursorData
   }
-  // 清除路由中的查询参数
-  router.replace(route.path)
-
-  // TODO 根据RouterHistoryStore页面恢复数据初始化
 }
 
-// 聊天显示所依赖的数据 的初始化（除twowayPositioningCursorData外）
-export const useChatDisplayDependentDataInitialization = (data: {
-  chatRoomMessagesInfiniteTwowayQuery: ChatRoomMessagesInfiniteTwowayQueryType
+/**
+ * 检查“页面恢复数据”是否正确，以页面恢复数据初始化时需要确保数据正确
+ */
+export const useChatColPageRecoverDataCheck = (data: {
+  chatRoomMessagesListAndRealtime: ChatRoomMessagesListAndRealtimeType
   chatDisplayDependentDataInitializationChoose: ReturnType<
     typeof useChatDisplayDependentDataInitializationChoose
   >
-  linkPositioningFlagMessageId: Ref<string | null>
-  linkPositioningFlagShow: Ref<boolean>
+  chatRoomId: ComputedRef<string>
 }) => {
   const {
-    chatRoomMessagesInfiniteTwowayQuery,
+    chatRoomMessagesListAndRealtime,
     chatDisplayDependentDataInitializationChoose,
-    linkPositioningFlagMessageId,
-    linkPositioningFlagShow,
+    chatRoomId,
   } = data
 
-  const { routeQueryPositioningCursorData } =
+  const { chooseInitialization, chatColPageRecoverData } =
     chatDisplayDependentDataInitializationChoose
 
-  // TODO
-  // routeQueryPositioningCursorData chatRoomMessagesInfiniteTwowayQuery
-  // 判断 “页面恢复数据” 是否正确
+  // chooseInitialization 不为 chatColPageRecoverData 则返回false
+  if (
+    chooseInitialization !== 'chatColPageRecoverData' ||
+    chatColPageRecoverData == null
+  ) {
+    return false
+  }
 
-  if (routeQueryPositioningCursorData != null) {
+  const {
+    chatRoomId: chatRoomIdCheck,
+    chatRoomMessagesLimitTopCursor,
+    chatRoomMessagesLimitBottomCursor,
+  } = chatColPageRecoverData.data
+
+  // chatRoomId 与 chatRoomIdCheck 不相符 则返回false
+  if (chatRoomId.value !== chatRoomIdCheck) {
+    return false
+  }
+
+  // 如果 chatRoomMessagesLimitTopCursor 有id值但 chatRoomMessagesListAndRealtime 的数据中没有 则返回false
+  if (
+    chatRoomMessagesLimitTopCursor != null &&
+    chatRoomMessagesLimitTopCursor !== 'no-limit'
+  ) {
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      return false
+    }
+    const find = chatRoomMessagesListAndRealtime.value.find(
+      (i) => i.id === chatRoomMessagesLimitTopCursor
+    )
+    if (find == null) {
+      return false
+    }
+  }
+  // 如果 chatRoomMessagesLimitBottomCursor 有id值但 chatRoomMessagesListAndRealtime 的数据中没有 则返回false
+  if (
+    chatRoomMessagesLimitBottomCursor != null &&
+    chatRoomMessagesLimitBottomCursor !== 'no-limit'
+  ) {
+    if (chatRoomMessagesListAndRealtime.value == null) {
+      return false
+    }
+    const find = chatRoomMessagesListAndRealtime.value.find(
+      (i) => i.id === chatRoomMessagesLimitBottomCursor
+    )
+    if (find == null) {
+      return false
+    }
+  }
+
+  // 通过检查
+  return true
+}
+export type ChatColPageRecoverDataCheckType = ReturnType<
+  typeof useChatColPageRecoverDataCheck
+>
+
+// 聊天显示所依赖的数据 的初始化（除twowayPositioningCursorData外）
+export const useChatDisplayDependentDataInitialization = (data: {
+  chatDisplayDependentDataInitializationChoose: ReturnType<
+    typeof useChatDisplayDependentDataInitializationChoose
+  >
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
+  linkPositioningFlagMessageId: Ref<string | null>
+  linkPositioningFlagShow: Ref<boolean>
+  replyPositioningFlagMessageId: Ref<string | null>
+  replyPositioningFlagShow: Ref<boolean>
+}) => {
+  const {
+    chatDisplayDependentDataInitializationChoose,
+    chatColPageRecoverDataCheck,
+    linkPositioningFlagMessageId,
+    linkPositioningFlagShow,
+    replyPositioningFlagMessageId,
+    replyPositioningFlagShow,
+  } = data
+
+  const {
+    chooseInitialization,
+    routeQueryPositioningCursorData,
+    chatColPageRecoverData,
+  } = chatDisplayDependentDataInitializationChoose
+
+  console.log('chooseInitialization', chooseInitialization)
+  console.log('chatColPageRecoverData', chatColPageRecoverData)
+  console.log('chatColPageRecoverDataCheck', chatColPageRecoverDataCheck)
+
+  // 根据页面恢复数据初始化
+  if (
+    chooseInitialization === 'chatColPageRecoverData' &&
+    chatColPageRecoverData != null
+  ) {
+    // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
+    if (chatColPageRecoverDataCheck === true) {
+      linkPositioningFlagMessageId.value =
+        chatColPageRecoverData.data.linkPositioningFlagMessageId
+      linkPositioningFlagShow.value =
+        chatColPageRecoverData.data.linkPositioningFlagShow
+      replyPositioningFlagMessageId.value =
+        chatColPageRecoverData.data.replyPositioningFlagMessageId
+      replyPositioningFlagShow.value =
+        chatColPageRecoverData.data.replyPositioningFlagShow
+    }
+  }
+  // 根据路由定位查询参数初始化
+  else if (
+    chooseInitialization === 'routeQueryPositioningCursorData' &&
+    routeQueryPositioningCursorData != null
+  ) {
+    //
     linkPositioningFlagMessageId.value = routeQueryPositioningCursorData.id
     linkPositioningFlagShow.value = true
   }

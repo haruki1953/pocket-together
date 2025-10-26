@@ -9,6 +9,16 @@ import {
   chatRoomMessagesLimitShowItemMaxNumberConfig,
 } from '@/config'
 
+/**
+ * 限制消息显示数量，顶部游标与底部游标 的类型
+ * null 为初始值，将会被初始化，如果为null就不显示所有消息
+ * 'no-limit' 为不限制
+ */
+export type ChatRoomMessagesLimitCursorValType =
+  | 'no-limit'
+  | (string & {})
+  | null
+
 /** 封装了聊天页消息显示数量限制控制相关的内容 双向 */
 export const useChatShowLimitControlTwoway = (data: {
   // 所有消息数据
@@ -29,12 +39,10 @@ export const useChatShowLimitControlTwoway = (data: {
   // 限制消息显示数量，顶部游标与底部游标
   // null 为初始值，将会被初始化，如果为null就不显示所有消息
   // 'no-limit' 为不限制
-  const chatRoomMessagesLimitTopCursor = ref<'no-limit' | (string & {}) | null>(
-    null
-  )
-  const chatRoomMessagesLimitBottomCursor = ref<
-    'no-limit' | (string & {}) | null
-  >(null)
+  const chatRoomMessagesLimitTopCursor =
+    ref<ChatRoomMessagesLimitCursorValType>(null)
+  const chatRoomMessagesLimitBottomCursor =
+    ref<ChatRoomMessagesLimitCursorValType>(null)
 
   // 已限制数量的消息列表
   const chatRoomMessagesLimitList = computed(() => {

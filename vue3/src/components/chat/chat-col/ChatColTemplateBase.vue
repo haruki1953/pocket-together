@@ -77,6 +77,11 @@ const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
   refChatInputBar.value.chatReplyMessageSet(val)
 }
 
+// 导出聊天输入栏引用以便于页面回复数据收集
+defineExpose({
+  refChatInputBar,
+})
+
 const isMounted = ref(false)
 onMounted(() => {
   isMounted.value = true

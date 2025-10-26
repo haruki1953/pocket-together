@@ -6,3 +6,5 @@ export {
   ChatCol,
   ChatTopBarMoreMenuItem,
 }
+
+export type * from './types'

@@ -41,6 +41,7 @@ const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
 }
 
 defineExpose({
+  chatInputContent,
   chatReplyMessage,
   chatReplyMessageSet,
 })
