@@ -20,6 +20,10 @@ import {
   RiSendPlane2Line,
 } from '@remixicon/vue'
 import { useMutation } from '@tanstack/vue-query'
+import type {
+  ChatDisplayDependentDataInitializationChooseType,
+  ChatColPageRecoverDataCheckType,
+} from './dependencies'
 
 const props = defineProps<{
   /** 房间id，空字符串为全局聊天 */
@@ -29,6 +33,10 @@ const props = defineProps<{
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable,
     couldReplyPositioningFlagOpen?: boolean
   ) => Promise<void>
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
 }>()
 
 // 聊天输入框内容
@@ -38,6 +46,25 @@ const chatInputContent = ref('')
 const chatReplyMessage = ref<MessagesResponseWidthExpand | null>(null)
 const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
   chatReplyMessage.value = val
+}
+
+const { chooseInitialization, chatColPageRecoverData } =
+  props.chatDisplayDependentDataInitializationChoose
+
+// 输入栏内容 回复消息 初始化
+// 根据“页面恢复数据”初始化
+if (
+  chooseInitialization === 'chatColPageRecoverData' &&
+  chatColPageRecoverData != null &&
+  // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
+  props.chatColPageRecoverDataCheck === true
+) {
+  chatInputContent.value = chatColPageRecoverData.data.chatInputContent
+  chatReplyMessage.value = chatColPageRecoverData.data.chatReplyMessage
+}
+// 正常的初始化
+else {
+  // 无
 }
 
 defineExpose({

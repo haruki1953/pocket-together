@@ -12,6 +12,10 @@ import {
 import { useI18nStore } from '@/stores'
 import { ContainerBar } from '@/components'
 import { RiMessage3Fill } from '@remixicon/vue'
+import type {
+  ChatDisplayDependentDataInitializationChooseType,
+  ChatColPageRecoverDataCheckType,
+} from './types'
 
 const i18nStore = useI18nStore()
 
@@ -43,6 +47,10 @@ const props = defineProps<{
   replyPositioningFlagMessageId: string | null
   replyPositioningFlagShow: boolean
   replyPositioningFlagClose: () => void
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
 }>()
 
 // 消息详情对话框
@@ -80,6 +88,7 @@ const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
 // 导出聊天输入栏引用以便于页面回复数据收集
 defineExpose({
   refChatInputBar,
+  refMessageInfoDialog,
 })
 
 const isMounted = ref(false)
@@ -103,6 +112,10 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
       :chatReplyMessage="chatReplyMessage"
       :chatReplyMessageSet="chatReplyMessageSet"
       :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
+      :chatDisplayDependentDataInitializationChoose="
+        chatDisplayDependentDataInitializationChoose
+      "
+      :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
     ></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
@@ -237,6 +250,10 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
             :chatRoomMessagesReplyPositioningFn="
               chatRoomMessagesReplyPositioningFn
             "
+            :chatDisplayDependentDataInitializationChoose="
+              chatDisplayDependentDataInitializationChoose
+            "
+            :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
           ></ChatInputBar>
         </div>
       </template>

@@ -32,6 +32,7 @@ export type PageRecoverDataForChatColItemType = {
     chatRoomMessagesLimitBottomCursor: ChatRoomMessagesLimitCursorValType
     chatInputContent: string
     chatReplyMessage: MessagesResponseWidthExpand | null
+    dialogMessageId: string | null
     refScrollWarpScrollTop: number
   }
 }

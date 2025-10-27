@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   useChatColPageRecoverDataCheck,
+  useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave,
   useChatControlFunctions,
   useChatDataProcessMessagesTwoway,
   useChatDisplayDependentDataDefinition,
@@ -13,8 +14,6 @@ import {
   useTwowayPositioningCursorDataInitialization,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
-import { useRouterHistoryStore } from '@/stores'
-import { onBeforeRouteLeave } from 'vue-router'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -128,6 +127,8 @@ const {
   chatRoomMessagesListAndRealtime,
   twowayPositioningCursorData,
   chatRoomMessagesInfiniteTwowayQuery,
+  chatDisplayDependentDataInitializationChoose,
+  chatColPageRecoverDataCheck,
 })
 // 导出一些类型
 export type ChatRoomMessagesLimitTopCursorType =
@@ -151,6 +152,8 @@ const {
   chatRoomMessagesRealtime,
   chatRoomMessagesLimitBottomCursor,
   twowayPositioningCursorData,
+  chatDisplayDependentDataInitializationChoose,
+  chatColPageRecoverDataCheck,
 })
 export type ChatScrollCaptureSnapshotBeforeMessageChangeType =
   typeof chatScrollCaptureSnapshotBeforeMessageChange
@@ -206,62 +209,19 @@ const {
 const refChatColTemplateBase = ref<InstanceType<
   typeof ChatColTemplateBase
 > | null>(null)
+export type RefChatColTemplateBaseType = typeof refChatColTemplateBase
 
 // 页面恢复数据收集
-const routerHistoryStore = useRouterHistoryStore()
-// onBeforeUnmount 有一些问题，有时会在 router.afterEach 之后才执行，这对于自己是不正确的，
-// 而 onBeforeRouteLeave 虽然能确保在 router.afterEach 之前执行（确定吗），但不会触发于非路由卸载（如 v-if）
-// 所以需要将 onBeforeUnmount 和 beforeRouteLeave结合，同时使用这两个，只要让这两个不会执行两次即可
-
-const chatColPageRecoverDataSet = () => {
-  console.log('routerHistoryStore.currentUuid', routerHistoryStore.currentUuid)
-  if (
-    props.refScrollWarp == null ||
-    refChatColTemplateBase.value?.refChatInputBar == null
-  ) {
-    console.log(`
-    props.refScrollWarp == null ||
-    refChatColTemplateBase.value?.refChatInputBar == null
-    `)
-    return
-  }
-  const chatInputContent =
-    refChatColTemplateBase.value.refChatInputBar.chatInputContent
-  const chatReplyMessage =
-    refChatColTemplateBase.value.refChatInputBar.chatReplyMessage
-  const refScrollWarpScrollTop = props.refScrollWarp.scrollTop
-
-  routerHistoryStore.currentSetPageRecoverDataForChatColItem({
-    chatRoomId: chatRoomId.value,
-    twowayPositioningCursorData: twowayPositioningCursorData.value,
-    linkPositioningFlagMessageId: linkPositioningFlagMessageId.value,
-    linkPositioningFlagShow: linkPositioningFlagShow.value,
-    replyPositioningFlagMessageId: replyPositioningFlagMessageId.value,
-    replyPositioningFlagShow: replyPositioningFlagShow.value,
-    chatRoomMessagesLimitTopCursor: chatRoomMessagesLimitTopCursor.value,
-    chatRoomMessagesLimitBottomCursor: chatRoomMessagesLimitBottomCursor.value,
-    chatInputContent,
-    chatReplyMessage,
-    refScrollWarpScrollTop,
-  })
-  console.log(routerHistoryStore.pageRecoverDataForChatCol)
-}
-// chatColPageRecoverDataSet 是否已执行
-let chatColPageRecoverDataSetHasRun = false
-// 让 chatColPageRecoverDataSet 只执行一次
-const chatColPageRecoverDataSetRunOnce = () => {
-  if (chatColPageRecoverDataSetHasRun) {
-    return
-  }
-  chatColPageRecoverDataSetHasRun = true
-  chatColPageRecoverDataSet()
-}
-
-onBeforeUnmount(() => {
-  chatColPageRecoverDataSetRunOnce()
-})
-onBeforeRouteLeave(() => {
-  chatColPageRecoverDataSetRunOnce()
+useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
+  props,
+  twowayPositioningCursorData,
+  linkPositioningFlagMessageId,
+  linkPositioningFlagShow,
+  replyPositioningFlagMessageId,
+  replyPositioningFlagShow,
+  chatRoomMessagesLimitTopCursor,
+  chatRoomMessagesLimitBottomCursor,
+  refChatColTemplateBase,
 })
 </script>
 
@@ -288,6 +248,10 @@ onBeforeRouteLeave(() => {
       :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
       :replyPositioningFlagShow="replyPositioningFlagShow"
       :replyPositioningFlagClose="replyPositioningFlagClose"
+      :chatDisplayDependentDataInitializationChoose="
+        chatDisplayDependentDataInitializationChoose
+      "
+      :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
     >
       <template #chatTopBarMoreMenu>
         <!-- 聊天顶栏菜单项 插槽 -->

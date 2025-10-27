@@ -22,6 +22,10 @@ import {
 import { useQueryClient } from '@tanstack/vue-query'
 import { useClipboard, useWindowSize } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
+import type {
+  ChatDisplayDependentDataInitializationChooseType,
+  ChatColPageRecoverDataCheckType,
+} from './dependencies'
 
 const props = defineProps<{
   /** 聊天输入栏正在回复的消息 */
@@ -32,6 +36,10 @@ const props = defineProps<{
   chatRoomMessagesReplyPositioningFn: (
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
   ) => Promise<void>
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
 }>()
 
 const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
@@ -40,6 +48,23 @@ const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
 
 // 还是通过普通的ref设置dialogMessageId比较好
 const dialogMessageId = ref<string | null>(null)
+
+// dialogMessageId 初始化
+const { chooseInitialization, chatColPageRecoverData } =
+  props.chatDisplayDependentDataInitializationChoose
+// 根据“页面恢复数据”初始化
+if (
+  chooseInitialization === 'chatColPageRecoverData' &&
+  chatColPageRecoverData != null &&
+  // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
+  props.chatColPageRecoverDataCheck === true
+) {
+  dialogMessageId.value = chatColPageRecoverData.data.dialogMessageId
+}
+// 正常的初始化
+else {
+  // 无
+}
 
 const queryClient = useQueryClient()
 const openMessageInfoDialog = (
@@ -67,6 +92,7 @@ const openMessageInfoDialog = (
 }
 
 defineExpose({
+  dialogMessageId,
   openMessageInfoDialog,
   dialogClose,
 })

@@ -4,6 +4,8 @@ import {
   watchUntilSourceCondition,
 } from '@/utils'
 import type {
+  ChatColPageRecoverDataCheckType,
+  ChatDisplayDependentDataInitializationChooseType,
   ChatRoomMessagesForShowType,
   ChatRoomMessagesLimitBottomCursorType,
   ChatRoomMessagesRealtimeType,
@@ -25,6 +27,10 @@ export const useChatScrollMessageChangeTwoway = (data: {
   props: PropsType
   chatRoomMessagesLimitBottomCursor: ChatRoomMessagesLimitBottomCursorType
   twowayPositioningCursorData: TwowayPositioningCursorDataType
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
 }) => {
   const {
     props,
@@ -32,9 +38,15 @@ export const useChatScrollMessageChangeTwoway = (data: {
     chatRoomMessagesRealtime,
     chatRoomMessagesLimitBottomCursor,
     twowayPositioningCursorData,
+    chatDisplayDependentDataInitializationChoose,
+    chatColPageRecoverDataCheck,
   } = data
+  const { chooseInitialization, chatColPageRecoverData } =
+    chatDisplayDependentDataInitializationChoose
 
-  // 聊天滚动初始化函数
+  // 聊天滚动初始化函数（正常）
+  // 当前为从最新的消息开始查询的，则滚动到底部
+  // 当前为双向定位查询的，则滚动至定位的消息
   const chatRoomMessagesScrollInitFn = async () => {
     // 等待存在消息数据
     await watchUntilSourceCondition(
@@ -78,10 +90,26 @@ export const useChatScrollMessageChangeTwoway = (data: {
   }
 
   // 初始化时据情况处理滚动
-  // 当前为从最新的消息开始查询的，则滚动到底部
-  // 当前为双向定位查询的，则滚动至定位的消息
   onMounted(async () => {
-    await chatRoomMessagesScrollInitFn()
+    // 根据“页面恢复数据”初始化
+    if (
+      chooseInitialization === 'chatColPageRecoverData' &&
+      chatColPageRecoverData != null &&
+      // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
+      chatColPageRecoverDataCheck === true
+    ) {
+      // 等待渲染
+      await nextTick()
+      props.refScrollWarp?.scrollTo({
+        top: chatColPageRecoverData.data.refScrollWarpScrollTop,
+        // behavior: 'smooth', // 平滑滚动
+        behavior: 'instant', // 立即滚动
+      })
+    }
+    // 正常的初始化
+    else {
+      await chatRoomMessagesScrollInitFn()
+    }
   })
 
   // 新增实时消息时，如果当前底部显示限制为 no-limit 即显示至底部的所有消息，且贴近底部，则滚到底部（平滑）

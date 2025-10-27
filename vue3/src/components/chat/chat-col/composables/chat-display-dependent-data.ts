@@ -1,14 +1,19 @@
-// 这些数据有点乱，进行封装，定义 与 初始化，分开
-
-import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
+import type {
+  MessagesResponseWidthExpand,
+  PMLRCApiParameters0DataPageParamNonNullable,
+} from '@/api'
 import { chatRoomMessagesTwowayPositioningCursorRouterQueryParametersKeyConfig } from '@/config'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import type {
   ChatRoomMessagesInfiniteTwowayQueryType,
+  ChatRoomMessagesLimitTopCursorType,
   ChatRoomMessagesListAndRealtimeType,
   PropsType,
+  RefChatColTemplateBaseType,
 } from './dependencies'
 import { useRouterHistoryStore } from '@/stores'
+
+// 封装，定义 与 初始化，分开
 
 // 定义
 // 封装：
@@ -20,6 +25,7 @@ import { useRouterHistoryStore } from '@/stores'
 // 注：其中返回的的数据，并不是全部的聊天显示所依赖的数据，还有一些特殊的：
 // - 消息显示限制游标 chatRoomMessagesLimitTopCursor 与 chatRoomMessagesLimitBottomCursor 在 chat-show-limit.ts 中定义与初始化
 // - 输入栏内容 chatInputContent 、回复消息 chatReplyMessage 在 ChatInputBar.vue 中定义与初始化
+// - 消息对话框数据
 // - 滚动位置值 refScrollWarp?.scrollTop 在 chat-scroll.ts 中初始化
 
 export const useChatDisplayDependentDataDefinition = () => {
@@ -175,9 +181,7 @@ export const useTwowayPositioningCursorDataInitialization = (data: {
  */
 export const useChatColPageRecoverDataCheck = (data: {
   chatRoomMessagesListAndRealtime: ChatRoomMessagesListAndRealtimeType
-  chatDisplayDependentDataInitializationChoose: ReturnType<
-    typeof useChatDisplayDependentDataInitializationChoose
-  >
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
   chatRoomId: ComputedRef<string>
 }) => {
   const {
@@ -248,9 +252,7 @@ export type ChatColPageRecoverDataCheckType = ReturnType<
 
 // 聊天显示所依赖的数据 的初始化（除twowayPositioningCursorData外）
 export const useChatDisplayDependentDataInitialization = (data: {
-  chatDisplayDependentDataInitializationChoose: ReturnType<
-    typeof useChatDisplayDependentDataInitializationChoose
-  >
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
   chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
   linkPositioningFlagMessageId: Ref<string | null>
   linkPositioningFlagShow: Ref<boolean>
@@ -279,19 +281,18 @@ export const useChatDisplayDependentDataInitialization = (data: {
   // 根据页面恢复数据初始化
   if (
     chooseInitialization === 'chatColPageRecoverData' &&
-    chatColPageRecoverData != null
-  ) {
+    chatColPageRecoverData != null &&
     // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
-    if (chatColPageRecoverDataCheck === true) {
-      linkPositioningFlagMessageId.value =
-        chatColPageRecoverData.data.linkPositioningFlagMessageId
-      linkPositioningFlagShow.value =
-        chatColPageRecoverData.data.linkPositioningFlagShow
-      replyPositioningFlagMessageId.value =
-        chatColPageRecoverData.data.replyPositioningFlagMessageId
-      replyPositioningFlagShow.value =
-        chatColPageRecoverData.data.replyPositioningFlagShow
-    }
+    chatColPageRecoverDataCheck === true
+  ) {
+    linkPositioningFlagMessageId.value =
+      chatColPageRecoverData.data.linkPositioningFlagMessageId
+    linkPositioningFlagShow.value =
+      chatColPageRecoverData.data.linkPositioningFlagShow
+    replyPositioningFlagMessageId.value =
+      chatColPageRecoverData.data.replyPositioningFlagMessageId
+    replyPositioningFlagShow.value =
+      chatColPageRecoverData.data.replyPositioningFlagShow
   }
   // 根据路由定位查询参数初始化
   else if (
@@ -302,4 +303,95 @@ export const useChatDisplayDependentDataInitialization = (data: {
     linkPositioningFlagMessageId.value = routeQueryPositioningCursorData.id
     linkPositioningFlagShow.value = true
   }
+}
+
+// 页面恢复数据收集
+export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
+  //
+  props: PropsType
+  twowayPositioningCursorData: Ref<PMLRCApiParameters0DataPageParamNonNullable | null>
+  linkPositioningFlagMessageId: Ref<string | null>
+  linkPositioningFlagShow: Ref<boolean>
+  replyPositioningFlagMessageId: Ref<string | null>
+  replyPositioningFlagShow: Ref<boolean>
+  chatRoomMessagesLimitTopCursor: ChatRoomMessagesLimitTopCursorType
+  chatRoomMessagesLimitBottomCursor: ChatRoomMessagesLimitTopCursorType
+  refChatColTemplateBase: RefChatColTemplateBaseType
+}) => {
+  const {
+    //
+    props,
+    twowayPositioningCursorData,
+    linkPositioningFlagMessageId,
+    linkPositioningFlagShow,
+    replyPositioningFlagMessageId,
+    replyPositioningFlagShow,
+    chatRoomMessagesLimitTopCursor,
+    chatRoomMessagesLimitBottomCursor,
+    refChatColTemplateBase,
+  } = data
+
+  const routerHistoryStore = useRouterHistoryStore()
+  // onBeforeUnmount 有一些问题，有时会在 router.afterEach 之后才执行，这对于自己是不正确的，
+  // 而 onBeforeRouteLeave 虽然能确保在 router.afterEach 之前执行（确定吗），但不会触发于非路由卸载（如 v-if）
+  // 所以需要将 onBeforeUnmount 和 beforeRouteLeave结合，同时使用这两个，只要让这两个不会执行两次即可
+
+  const chatColPageRecoverDataSet = () => {
+    console.log(
+      'routerHistoryStore.currentUuid',
+      routerHistoryStore.currentUuid
+    )
+    if (
+      props.refScrollWarp == null ||
+      refChatColTemplateBase.value?.refChatInputBar == null ||
+      refChatColTemplateBase.value?.refMessageInfoDialog == null
+    ) {
+      console.log(`
+    props.refScrollWarp == null ||
+    refChatColTemplateBase.value?.refChatInputBar == null
+    `)
+      return
+    }
+    const chatInputContent =
+      refChatColTemplateBase.value.refChatInputBar.chatInputContent
+    const chatReplyMessage =
+      refChatColTemplateBase.value.refChatInputBar.chatReplyMessage
+    const dialogMessageId =
+      refChatColTemplateBase.value.refMessageInfoDialog.dialogMessageId
+    const refScrollWarpScrollTop = props.refScrollWarp.scrollTop
+
+    routerHistoryStore.currentSetPageRecoverDataForChatColItem({
+      chatRoomId: props.roomId,
+      twowayPositioningCursorData: twowayPositioningCursorData.value,
+      linkPositioningFlagMessageId: linkPositioningFlagMessageId.value,
+      linkPositioningFlagShow: linkPositioningFlagShow.value,
+      replyPositioningFlagMessageId: replyPositioningFlagMessageId.value,
+      replyPositioningFlagShow: replyPositioningFlagShow.value,
+      chatRoomMessagesLimitTopCursor: chatRoomMessagesLimitTopCursor.value,
+      chatRoomMessagesLimitBottomCursor:
+        chatRoomMessagesLimitBottomCursor.value,
+      chatInputContent,
+      chatReplyMessage,
+      dialogMessageId,
+      refScrollWarpScrollTop,
+    })
+    console.log(routerHistoryStore.pageRecoverDataForChatCol)
+  }
+  // chatColPageRecoverDataSet 是否已执行
+  let chatColPageRecoverDataSetHasRun = false
+  // 让 chatColPageRecoverDataSet 只执行一次
+  const chatColPageRecoverDataSetRunOnce = () => {
+    if (chatColPageRecoverDataSetHasRun) {
+      return
+    }
+    chatColPageRecoverDataSetHasRun = true
+    chatColPageRecoverDataSet()
+  }
+
+  onBeforeUnmount(() => {
+    chatColPageRecoverDataSetRunOnce()
+  })
+  onBeforeRouteLeave(() => {
+    chatColPageRecoverDataSetRunOnce()
+  })
 }

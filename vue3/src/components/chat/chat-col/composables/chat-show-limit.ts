@@ -1,5 +1,7 @@
 import { watchUntilSourceCondition } from '@/utils'
 import type {
+  ChatColPageRecoverDataCheckType,
+  ChatDisplayDependentDataInitializationChooseType,
   ChatRoomMessagesInfiniteTwowayQueryType,
   ChatRoomMessagesListAndRealtimeType,
   TwowayPositioningCursorDataType,
@@ -29,13 +31,22 @@ export const useChatShowLimitControlTwoway = (data: {
   twowayPositioningCursorData: TwowayPositioningCursorDataType
   // 数据查询相关信息，用与判断底部（）是否有下一页
   chatRoomMessagesInfiniteTwowayQuery: ChatRoomMessagesInfiniteTwowayQueryType
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
 }) => {
   const {
     //
     chatRoomMessagesListAndRealtime,
     twowayPositioningCursorData,
     chatRoomMessagesInfiniteTwowayQuery,
+    chatDisplayDependentDataInitializationChoose,
+    chatColPageRecoverDataCheck,
   } = data
+  const { chooseInitialization, chatColPageRecoverData } =
+    chatDisplayDependentDataInitializationChoose
+
   // 限制消息显示数量，顶部游标与底部游标
   // null 为初始值，将会被初始化，如果为null就不显示所有消息
   // 'no-limit' 为不限制
@@ -213,9 +224,23 @@ export const useChatShowLimitControlTwoway = (data: {
     }
   }
 
-  // TODO “页面恢复数据”
   // 初始化显示限制，setup时就可以进行
-  chatRoomMessagesLimitCursorInitFn()
+  // 根据“页面恢复数据”初始化
+  if (
+    chooseInitialization === 'chatColPageRecoverData' &&
+    chatColPageRecoverData != null &&
+    // 判断 “页面恢复数据” 是否正确，正确才进行此方式的初始化
+    chatColPageRecoverDataCheck === true
+  ) {
+    chatRoomMessagesLimitTopCursor.value =
+      chatColPageRecoverData.data.chatRoomMessagesLimitTopCursor
+    chatRoomMessagesLimitBottomCursor.value =
+      chatColPageRecoverData.data.chatRoomMessagesLimitBottomCursor
+  }
+  // 正常的初始化
+  else {
+    chatRoomMessagesLimitCursorInitFn()
+  }
 
   return {
     chatRoomMessagesLimitTopCursor,
