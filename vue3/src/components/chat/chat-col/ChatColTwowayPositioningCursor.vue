@@ -189,12 +189,16 @@ useChatScrollToShowMore({
   chatShowMoreOnBottom,
 })
 
+const refScrollView = ref<HTMLElement | null>(null)
+
 // 封装 chat的一些操作
 const {
   chatRoomMessagesRestartFnRunning,
   chatRoomMessagesRestartFnRunnable,
   chatRoomMessagesRestartFn,
   chatRoomMessagesReplyPositioningFn,
+  chatBackBottomDisplayable,
+  chatBackBottomFn,
 } = useChatControlFunctions({
   chatRoomMessagesInfiniteTwowayQuery,
   resetPositioningCursorDataAndRelatedData,
@@ -204,6 +208,8 @@ const {
   whetherToSetChatFinelyControlledQueryDataToNull,
   twowayPositioningCursorData,
   replyPositioningFlagOpen,
+  isChatBottomHasMore,
+  refScrollView,
 })
 
 const refChatColTemplateBase = ref<InstanceType<
@@ -227,37 +233,41 @@ useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
 
 <template>
   <div>
-    <!-- ChatCol的主要渲染内容，达到将逻辑和内容分离的效果 -->
-    <ChatColTemplateBase
-      ref="refChatColTemplateBase"
-      :isChatTopHasMore="isChatTopHasMore"
-      :isShowMoreRunning="isShowMoreRunning"
-      :chatShowMoreOnTop="chatShowMoreOnTop"
-      :chatRoomMessagesForShow="chatRoomMessagesForShow"
-      :isChatBottomHasMore="isChatBottomHasMore"
-      :chatShowMoreOnBottom="chatShowMoreOnBottom"
-      :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
-      :linkPositioningFlagShow="linkPositioningFlagShow"
-      :linkPositioningFlagClose="linkPositioningFlagClose"
-      :chatRoomMessagesRestartFn="chatRoomMessagesRestartFn"
-      :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
-      :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
-      :couldGoBack="couldGoBack"
-      :roomId="roomId"
-      :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
-      :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
-      :replyPositioningFlagShow="replyPositioningFlagShow"
-      :replyPositioningFlagClose="replyPositioningFlagClose"
-      :chatDisplayDependentDataInitializationChoose="
-        chatDisplayDependentDataInitializationChoose
-      "
-      :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
-    >
-      <template #chatTopBarMoreMenu>
-        <!-- 聊天顶栏菜单项 插槽 -->
-        <slot name="chatTopBarMoreMenu"></slot>
-      </template>
-    </ChatColTemplateBase>
+    <div ref="refScrollView">
+      <!-- ChatCol的主要渲染内容，达到将逻辑和内容分离的效果 -->
+      <ChatColTemplateBase
+        ref="refChatColTemplateBase"
+        :isChatTopHasMore="isChatTopHasMore"
+        :isShowMoreRunning="isShowMoreRunning"
+        :chatShowMoreOnTop="chatShowMoreOnTop"
+        :chatRoomMessagesForShow="chatRoomMessagesForShow"
+        :isChatBottomHasMore="isChatBottomHasMore"
+        :chatShowMoreOnBottom="chatShowMoreOnBottom"
+        :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
+        :linkPositioningFlagShow="linkPositioningFlagShow"
+        :linkPositioningFlagClose="linkPositioningFlagClose"
+        :chatRoomMessagesRestartFn="chatRoomMessagesRestartFn"
+        :chatRoomMessagesRestartFnRunning="chatRoomMessagesRestartFnRunning"
+        :chatRoomMessagesRestartFnRunnable="chatRoomMessagesRestartFnRunnable"
+        :couldGoBack="couldGoBack"
+        :roomId="roomId"
+        :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
+        :replyPositioningFlagMessageId="replyPositioningFlagMessageId"
+        :replyPositioningFlagShow="replyPositioningFlagShow"
+        :replyPositioningFlagClose="replyPositioningFlagClose"
+        :chatDisplayDependentDataInitializationChoose="
+          chatDisplayDependentDataInitializationChoose
+        "
+        :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
+        :chatBackBottomDisplayable="chatBackBottomDisplayable"
+        :chatBackBottomFn="chatBackBottomFn"
+      >
+        <template #chatTopBarMoreMenu>
+          <!-- 聊天顶栏菜单项 插槽 -->
+          <slot name="chatTopBarMoreMenu"></slot>
+        </template>
+      </ChatColTemplateBase>
+    </div>
   </div>
 </template>
 

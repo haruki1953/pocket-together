@@ -51,6 +51,8 @@ const props = defineProps<{
   chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
   // “页面恢复数据”是否正确
   chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
+  chatBackBottomDisplayable: boolean
+  chatBackBottomFn: () => Promise<void>
 }>()
 
 // 消息详情对话框
@@ -254,6 +256,9 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
               chatDisplayDependentDataInitializationChoose
             "
             :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
+            :chatBackBottomDisplayable="chatBackBottomDisplayable"
+            :chatBackBottomFn="chatBackBottomFn"
+
           ></ChatInputBar>
         </div>
       </template>

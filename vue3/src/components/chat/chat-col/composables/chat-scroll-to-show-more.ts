@@ -19,12 +19,15 @@ export const useChatScrollToShowMore = (data: {
     chatShowMoreOnTop,
     chatShowMoreOnBottom,
   } = data
-  // 滚动触发加载更多
+
+  // 响应式的滚动位置数据
   const messagesWarpScroll = useScroll(() => {
-    console.log('props.refScrollWarp?.tagName', props.refScrollWarp?.tagName)
-    if (props.refScrollWarp != null && props.refScrollWarp.tagName === 'HTML') {
-      return window
-    }
+    // console.log('props.refScrollWarp?.tagName', props.refScrollWarp?.tagName)
+
+    // 【251028】不使用全局原生滚动条后，不再需要
+    // if (props.refScrollWarp != null && props.refScrollWarp.tagName === 'HTML') {
+    //   return window
+    // }
     return props.refScrollWarp
   })
 
@@ -52,6 +55,7 @@ export const useChatScrollToShowMore = (data: {
   //   }
   // })()
 
+  // 滚动触发加载更多
   watch(messagesWarpScroll.y, async () => {
     // console.log('watch(messagesWarpScroll.y')
     // 控制频率，避免性能问题

@@ -7,9 +7,12 @@ import type {
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import {
   chatRoomMessagesClassIdNamingFnConfig,
+  chatRoomMessagesScrollBottomGtThisValueCanBackTopConfig,
   chatRoomMessagesTwowayPositioningCursorScrollTopOffsetConfig,
 } from '@/config'
 import { isElementInViewport, scrollToElementInContainer } from '@/utils'
+import { useResizeObserver, useScroll } from '@vueuse/core'
+import { useElementScrollMetrics } from '@/composables'
 
 /**
  * 封装 chat的一些操作
@@ -24,6 +27,8 @@ export const useChatControlFunctions = (data: {
   whetherToSetChatFinelyControlledQueryDataToNull: Ref<boolean>
   twowayPositioningCursorData: TwowayPositioningCursorDataType
   replyPositioningFlagOpen: (messageId: string) => void
+  isChatBottomHasMore: ComputedRef<boolean>
+  refScrollView: Ref<HTMLElement | null>
 }) => {
   const {
     //
@@ -35,6 +40,8 @@ export const useChatControlFunctions = (data: {
     whetherToSetChatFinelyControlledQueryDataToNull,
     twowayPositioningCursorData,
     replyPositioningFlagOpen,
+    isChatBottomHasMore,
+    refScrollView,
   } = data
 
   const queryClient = useQueryClient()
@@ -122,7 +129,7 @@ export const useChatControlFunctions = (data: {
     // 判断是否已在dom 否
     else {
       // 新的定位查询
-      // 将进入加载状态，精细化控制Query数据为null，持续400ms，即加载状态至少为400ms
+      // 将进入加载状态，精细化控制Query数据为null，持续300ms，即加载状态至少为300ms
       ;(async () => {
         whetherToSetChatFinelyControlledQueryDataToNull.value = true
         await new Promise((resolve) => setTimeout(resolve, 300))
@@ -158,10 +165,74 @@ export const useChatControlFunctions = (data: {
     }
   }
 
+  const messagesWarpScroll = useScroll(computed(() => props.refScrollWarp))
+  const messagesWarpElementScrollMetrics = useElementScrollMetrics(
+    computed(() => props.refScrollWarp),
+    computed(() => refScrollView.value)
+  )
+  /** 是否显示回到底部 */
+  const chatBackBottomDisplayable = computed(() => {
+    // 底部仍有未显示消息，返回true
+    if (isChatBottomHasMore.value) {
+      return true
+    }
+    // 计算距底部距离scrollBottom
+    const scrollHeight = messagesWarpElementScrollMetrics.scrollHeight.value
+    const clientHeight = messagesWarpElementScrollMetrics.clientHeight.value
+    const scrollTop = messagesWarpScroll.y.value
+    const scrollBottom = scrollHeight - clientHeight - scrollTop
+    // 距底部距离大于大于一定值，返回true
+    if (
+      scrollBottom > chatRoomMessagesScrollBottomGtThisValueCanBackTopConfig
+    ) {
+      return true
+    }
+    return false
+  })
+  /** 聊天刷新（重置）是否正在进行 */
+  const chatBackBottomFnRunning = ref(false)
+  /** 回到底部 */
+  const chatBackBottomFn = async () => {
+    if (chatRoomMessagesRestartFnRunning.value === true) {
+      return
+    }
+    chatRoomMessagesRestartFnRunning.value = true
+    try {
+      // 情况1：已显示底部所有消息，滚动至底部即可
+      if (isChatBottomHasMore.value === false) {
+        props.refScrollWarp?.scrollTo({
+          top: props.refScrollWarp.scrollHeight,
+          behavior: 'smooth', // 平滑滚动
+          // behavior: 'instant', // 立即滚动
+        })
+      }
+      // 情况2：未显示底部所有消息，按类似重置聊天的操作
+      else {
+        // 将进入加载状态，精细化控制Query数据为null，持续300ms，即加载状态至少为300ms
+        ;(async () => {
+          whetherToSetChatFinelyControlledQueryDataToNull.value = true
+          await new Promise((resolve) => setTimeout(resolve, 300))
+          whetherToSetChatFinelyControlledQueryDataToNull.value = false
+        })()
+        // 重置双向定位无限查询的定位游标数据
+        twowayPositioningCursorData.value = null
+        // 重新初始化显示限制游标
+        await chatRoomMessagesLimitCursorInitFn()
+        // 重新初始化滚动位置
+        await chatRoomMessagesScrollInitFn()
+      }
+    } finally {
+      chatRoomMessagesRestartFnRunning.value = false
+    }
+  }
+
   return {
     chatRoomMessagesRestartFnRunning,
     chatRoomMessagesRestartFnRunnable,
     chatRoomMessagesRestartFn,
     chatRoomMessagesReplyPositioningFn,
+    chatBackBottomDisplayable,
+    chatBackBottomFnRunning,
+    chatBackBottomFn,
   }
 }

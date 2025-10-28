@@ -35,4 +35,9 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '全局聊天' as const,
     'zh-TW': () => '全域聊天' as const,
   },
+  chatInputBarBackBottomText: {
+    'en-US': () => 'Back to bottom' as const,
+    'zh-CN': () => '回到底部' as const,
+    'zh-TW': () => '回到底部' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

@@ -15,6 +15,9 @@ import {
   watchUntilSourceCondition,
 } from '@/utils'
 import {
+  RiArrowDownLine,
+  RiArrowDownLongLine,
+  RiAttachmentLine,
   RiCloseCircleFill,
   RiSendPlane2Fill,
   RiSendPlane2Line,
@@ -37,6 +40,8 @@ const props = defineProps<{
   chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
   // “页面恢复数据”是否正确
   chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
+  chatBackBottomDisplayable: boolean
+  chatBackBottomFn: () => Promise<void>
 }>()
 
 // 聊天输入框内容
@@ -177,6 +182,33 @@ const messageSendSubmit = async () => {
     messageSendSubmitRunning.value = false
   }
 }
+
+// 输入栏不同功能判断
+// menu 正常状时为 输入栏+菜单按钮
+// send 输入文字（或设置回复）后为 输入栏+发送按钮
+// backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
+const chatInputBarFunctionChoose = computed(() => {
+  if (
+    chatInputContent.value !== '' ||
+    chatReplyMessage.value != null ||
+    messageSendSubmitRunning.value
+  ) {
+    // send 输入文字后，或正处于发送中，为 输入栏+发送按钮
+    if (chatInputContent.value !== '' || messageSendSubmitRunning.value) {
+      return 'send' as const
+    }
+    // 设置回复后，无输入文字，也为 menu 输入栏+菜单按钮
+    return 'menu' as const
+  }
+  // backTop 底部仍有未显示的消息，或距底部距离大于大于一定值后为 回到底部文字+按钮
+  if (props.chatBackBottomDisplayable) {
+    return 'backBottom' as const
+  }
+  // menu 正常状时为 输入栏+菜单按钮
+  return 'menu' as const
+})
+
+const i18nStore = useI18nStore()
 </script>
 
 <template>
@@ -186,64 +218,101 @@ const messageSendSubmit = async () => {
       <div class="my-2 flex items-stretch">
         <!-- 左栏 -->
         <div class="ml-2 mr-1 flow-root flex-1 truncate">
-          <!-- 回复的消息 -->
-          <div v-if="chatReplyMessage != null">
-            <div
-              class="flex cursor-pointer items-center"
-              @click="replyMessagesPositioningFn"
-            >
-              <!-- 头像 -->
-              <div class="ml-[4px] mr-[6px]">
-                <div
-                  class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
-                  :style="{
-                    backgroundImage: `url('${chatReplyMessageUserAvatarUrl}')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }"
-                ></div>
-              </div>
-              <!-- 内容 -->
-              <div class="truncate">
-                <div class="select-none truncate text-[12px] text-color-text">
-                  {{ chatReplyMessage.content }}
-                </div>
-              </div>
-              <!-- 取消按钮 -->
+          <!-- 输入框 -->
+          <template
+            v-if="
+              chatInputBarFunctionChoose === 'menu' ||
+              chatInputBarFunctionChoose === 'send'
+            "
+          >
+            <!-- 回复的消息 -->
+            <div v-if="chatReplyMessage != null">
               <div
-                class="flow-root cursor-pointer"
-                @click="chatReplyMessageCancel"
+                class="flex cursor-pointer items-center"
+                @click="replyMessagesPositioningFn"
               >
-                <div class="ml-[6px] mr-[10px] text-color-text">
-                  <RiCloseCircleFill size="18px"></RiCloseCircleFill>
+                <!-- 头像 -->
+                <div class="ml-[4px] mr-[6px]">
+                  <div
+                    class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                    :style="{
+                      backgroundImage: `url('${chatReplyMessageUserAvatarUrl}')`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }"
+                  ></div>
+                </div>
+                <!-- 内容 -->
+                <div class="truncate">
+                  <div class="select-none truncate text-[12px] text-color-text">
+                    {{ chatReplyMessage.content }}
+                  </div>
+                </div>
+                <!-- 取消按钮 -->
+                <div
+                  class="flow-root cursor-pointer"
+                  @click="chatReplyMessageCancel"
+                >
+                  <div class="ml-[6px] mr-[10px] text-color-text">
+                    <RiCloseCircleFill size="18px"></RiCloseCircleFill>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <!-- 聊天输入框 -->
-          <div class="mt-[1px]">
-            <ElInput
-              v-model="chatInputContent"
-              size="large"
-              type="textarea"
-              resize="none"
-              :rows="1"
-              :autosize="{ minRows: 1, maxRows: 10 }"
-            />
-          </div>
+            <!-- 聊天输入框 -->
+            <div class="mt-[1px]">
+              <ElInput
+                v-model="chatInputContent"
+                size="large"
+                type="textarea"
+                resize="none"
+                :rows="1"
+                :autosize="{ minRows: 1, maxRows: 10 }"
+              />
+            </div>
+          </template>
+          <!-- 回到底部文字 -->
+          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
+            <div class="mr-[4px] flex h-full items-center justify-end">
+              <div
+                class="select-none truncate text-[14px] font-bold text-color-text"
+              >
+                {{ i18nStore.t('chatInputBarBackBottomText')() }}
+              </div>
+            </div>
+          </template>
         </div>
         <!-- 右栏 按钮 -->
         <div class="mr-2 flex flex-col-reverse">
-          <ElButton
-            circle
-            type="primary"
-            :loading="messageSendSubmitRunning"
-            @click="messageSendSubmit()"
-          >
-            <template #icon>
-              <RiSendPlane2Fill></RiSendPlane2Fill>
-            </template>
-          </ElButton>
+          <!-- 菜单按钮 -->
+          <template v-if="chatInputBarFunctionChoose === 'menu'">
+            <ElButton circle type="info" @click="() => {}">
+              <template #icon>
+                <RiAttachmentLine></RiAttachmentLine>
+              </template>
+            </ElButton>
+          </template>
+          <!-- 发送按钮 -->
+          <template v-if="chatInputBarFunctionChoose === 'send'">
+            <ElButton
+              circle
+              type="primary"
+              :loading="messageSendSubmitRunning"
+              @click="messageSendSubmit()"
+            >
+              <template #icon>
+                <RiSendPlane2Fill></RiSendPlane2Fill>
+              </template>
+            </ElButton>
+          </template>
+          <!-- 回到底部按钮 -->
+          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
+            <ElButton circle type="info" @click="chatBackBottomFn">
+              <template #icon>
+                <RiArrowDownLongLine></RiArrowDownLongLine>
+              </template>
+            </ElButton>
+          </template>
         </div>
       </div>
     </div>
