@@ -54,6 +54,7 @@ const props = defineProps<{
   chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
   chatBackBottomDisplayable: boolean
   chatBackBottomFn: () => Promise<void>
+  chatRoomMessagesRealtimeUnReadNumber: number
 }>()
 
 // 消息详情对话框
@@ -259,6 +260,8 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
             :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
             :chatBackBottomDisplayable="chatBackBottomDisplayable"
             :chatBackBottomFn="chatBackBottomFn"
+            :chatRoomMessagesRealtimeUnReadNumber="chatRoomMessagesRealtimeUnReadNumber"
+
           ></ChatInputBar>
         </div>
       </template>

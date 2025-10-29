@@ -317,6 +317,7 @@ export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
   chatRoomMessagesLimitTopCursor: ChatRoomMessagesLimitTopCursorType
   chatRoomMessagesLimitBottomCursor: ChatRoomMessagesLimitTopCursorType
   refChatColTemplateBase: RefChatColTemplateBaseType
+  chatRoomMessagesRealtimeUnReadNumber: ComputedRef<number>
 }) => {
   const {
     //
@@ -329,6 +330,7 @@ export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
     chatRoomMessagesLimitTopCursor,
     chatRoomMessagesLimitBottomCursor,
     refChatColTemplateBase,
+    chatRoomMessagesRealtimeUnReadNumber,
   } = data
 
   const routerHistoryStore = useRouterHistoryStore()
@@ -374,6 +376,8 @@ export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
       chatReplyMessage,
       dialogMessageId,
       refScrollWarpScrollTop,
+      chatRoomMessagesRealtimeUnReadNumber:
+        chatRoomMessagesRealtimeUnReadNumber.value,
     })
     console.log(routerHistoryStore.pageRecoverDataForChatCol)
   }

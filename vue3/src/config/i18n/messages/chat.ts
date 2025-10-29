@@ -40,6 +40,12 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '回到底部' as const,
     'zh-TW': () => '回到底部' as const,
   },
+  chatInputBarNewMessageText: {
+    'en-US': (num: number) =>
+      `${num} new message${num > 1 ? 's' : ''}` as const,
+    'zh-CN': (num: number) => `${num} 条新消息` as const,
+    'zh-TW': (num: number) => `${num} 則新訊息` as const,
+  },
   chatInputBarBackMenuImage: {
     'en-US': () => 'Image' as const,
     'zh-CN': () => '图片' as const,

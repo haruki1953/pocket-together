@@ -34,6 +34,7 @@ export type PageRecoverDataForChatColItemType = {
     chatReplyMessage: MessagesResponseWidthExpand | null
     dialogMessageId: string | null
     refScrollWarpScrollTop: number
+    chatRoomMessagesRealtimeUnReadNumber: number
   }
 }
 

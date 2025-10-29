@@ -35,6 +35,7 @@ import type {
 import { ChatTopBarMoreMenuItem } from '.'
 import { onClickOutside } from '@vueuse/core'
 import type { ElButton } from 'element-plus'
+import { useAutoCyclicValue } from '@/composables'
 
 const props = defineProps<{
   /** 房间id，空字符串为全局聊天 */
@@ -50,6 +51,7 @@ const props = defineProps<{
   chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
   chatBackBottomDisplayable: boolean
   chatBackBottomFn: () => Promise<void>
+  chatRoomMessagesRealtimeUnReadNumber: number
 }>()
 
 // 聊天输入框内容
@@ -251,6 +253,19 @@ onClickOutside(targetMoreMenu, (event) => {
   }
   closeMoreMenu()
 })
+
+// 实现回到底部和新消息提示循环闪烁显示，间隔 2000ms
+const autoCyclicValueToShowNewMessageAndBackBottom = useAutoCyclicValue(
+  ['NewMessage', 'BackBottom'] as const,
+  2000
+)
+// 是否有新消息
+const isHaveNewMessage = computed(() => {
+  if (props.chatRoomMessagesRealtimeUnReadNumber > 0) {
+    return true
+  }
+  return false
+})
 </script>
 
 <template>
@@ -357,14 +372,31 @@ onClickOutside(targetMoreMenu, (event) => {
               />
             </div>
           </template>
-          <!-- 回到底部文字 -->
+          <!-- 回到底部文字，有新消息时与新消息通知循环闪烁显示 -->
           <template v-if="chatInputBarFunctionChoose === 'backBottom'">
             <div class="mr-[4px] flex h-full items-center justify-end">
-              <div
-                class="select-none truncate text-[14px] font-bold text-color-text"
-              >
-                {{ i18nStore.t('chatInputBarBackBottomText')() }}
-              </div>
+              <Transition name="fade800ms" mode="out-in">
+                <div
+                  v-if="
+                    isHaveNewMessage &&
+                    autoCyclicValueToShowNewMessageAndBackBottom ===
+                      'NewMessage'
+                  "
+                  class="select-none truncate text-[14px] font-bold text-color-text"
+                >
+                  {{
+                    i18nStore.t('chatInputBarNewMessageText')(
+                      chatRoomMessagesRealtimeUnReadNumber
+                    )
+                  }}
+                </div>
+                <div
+                  v-else
+                  class="select-none truncate text-[14px] font-bold text-color-text"
+                >
+                  {{ i18nStore.t('chatInputBarBackBottomText')() }}
+                </div>
+              </Transition>
             </div>
           </template>
         </div>

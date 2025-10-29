@@ -7,6 +7,7 @@ import {
   useChatDisplayDependentDataDefinition,
   useChatDisplayDependentDataInitialization,
   useChatDisplayDependentDataInitializationChoose,
+  useChatRoomMessagesRealtimeUnReadNotes,
   useChatScrollMessageChangeTwoway,
   useChatScrollToShowMore,
   useChatShowLimitControlTwoway,
@@ -14,6 +15,7 @@ import {
   useTwowayPositioningCursorDataInitialization,
 } from './composables'
 import ChatColTemplateBase from './ChatColTemplateBase.vue'
+import { useScroll } from '@vueuse/core'
 
 const props = defineProps<{
   /** 滚动容器元素 */
@@ -217,6 +219,16 @@ const refChatColTemplateBase = ref<InstanceType<
 > | null>(null)
 export type RefChatColTemplateBaseType = typeof refChatColTemplateBase
 
+// 未读实时消息统计
+const { chatRoomMessagesRealtimeUnReadNumber } =
+  useChatRoomMessagesRealtimeUnReadNotes({
+    chatRoomMessagesRealtime,
+    props,
+    isChatBottomHasMore,
+    chatDisplayDependentDataInitializationChoose,
+    chatColPageRecoverDataCheck,
+  })
+
 // 页面恢复数据收集
 useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
   props,
@@ -228,6 +240,7 @@ useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
   chatRoomMessagesLimitTopCursor,
   chatRoomMessagesLimitBottomCursor,
   refChatColTemplateBase,
+  chatRoomMessagesRealtimeUnReadNumber,
 })
 </script>
 
@@ -261,6 +274,9 @@ useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
         :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
         :chatBackBottomDisplayable="chatBackBottomDisplayable"
         :chatBackBottomFn="chatBackBottomFn"
+        :chatRoomMessagesRealtimeUnReadNumber="
+          chatRoomMessagesRealtimeUnReadNumber
+        "
       >
         <template #chatTopBarMoreMenu>
           <!-- 聊天顶栏菜单项 插槽 -->
