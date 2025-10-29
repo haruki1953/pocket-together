@@ -40,4 +40,14 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '回到底部' as const,
     'zh-TW': () => '回到底部' as const,
   },
+  chatInputBarBackMenuImage: {
+    'en-US': () => 'Image' as const,
+    'zh-CN': () => '图片' as const,
+    'zh-TW': () => '圖片' as const,
+  },
+  chatInputBarBackMenuFile: {
+    'en-US': () => 'File' as const,
+    'zh-CN': () => '文件' as const,
+    'zh-TW': () => '檔案' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

@@ -58,3 +58,6 @@ export const chatRoomMessagesClassIdNamingFnConfig = (messageId: string) => {
 /** 聊天页输入栏，页面滚动距底部距离大于此值时，可以显示回到顶部，单位px */
 export const chatRoomMessagesScrollBottomGtThisValueCanBackTopConfig =
   500 as const
+
+/** 聊天页输入栏默认高度（为空时的高度） */
+export const chatInputBarDefaultHeightConfig = 64 as const

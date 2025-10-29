@@ -4,7 +4,11 @@ import {
   type MessagesResponseWidthExpand,
   type PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
-import { appUserDefaultAvatar, fileUserAvatarConfig } from '@/config'
+import {
+  appUserDefaultAvatar,
+  chatInputBarDefaultHeightConfig,
+  fileUserAvatarConfig,
+} from '@/config'
 import { Collections } from '@/lib'
 import { pb, type Create } from '@/lib'
 import { queryRetryPbNetworkError, useProfileQuery } from '@/queries'
@@ -19,6 +23,7 @@ import {
   RiArrowDownLongLine,
   RiAttachmentLine,
   RiCloseCircleFill,
+  RiImageLine,
   RiSendPlane2Fill,
   RiSendPlane2Line,
 } from '@remixicon/vue'
@@ -27,6 +32,9 @@ import type {
   ChatDisplayDependentDataInitializationChooseType,
   ChatColPageRecoverDataCheckType,
 } from './dependencies'
+import { ChatTopBarMoreMenuItem } from '.'
+import { onClickOutside } from '@vueuse/core'
+import type { ElButton } from 'element-plus'
 
 const props = defineProps<{
   /** 房间id，空字符串为全局聊天 */
@@ -188,17 +196,13 @@ const messageSendSubmit = async () => {
 // send 输入文字（或设置回复）后为 输入栏+发送按钮
 // backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
 const chatInputBarFunctionChoose = computed(() => {
+  // send 设置回复后，输入文字后，或正处于发送中，为 输入栏+发送按钮
   if (
     chatInputContent.value !== '' ||
     chatReplyMessage.value != null ||
     messageSendSubmitRunning.value
   ) {
-    // send 输入文字后，或正处于发送中，为 输入栏+发送按钮
-    if (chatInputContent.value !== '' || messageSendSubmitRunning.value) {
-      return 'send' as const
-    }
-    // 设置回复后，无输入文字，也为 menu 输入栏+菜单按钮
-    return 'menu' as const
+    return 'send' as const
   }
   // backTop 底部仍有未显示的消息，或距底部距离大于大于一定值后为 回到底部文字+按钮
   if (props.chatBackBottomDisplayable) {
@@ -209,11 +213,93 @@ const chatInputBarFunctionChoose = computed(() => {
 })
 
 const i18nStore = useI18nStore()
+
+const isShowMoreMenu = ref(false)
+const openMoreMenu = () => {
+  isShowMoreMenu.value = true
+}
+const closeMoreMenu = () => {
+  isShowMoreMenu.value = false
+}
+const toggleShowMoreMenu = () => {
+  isShowMoreMenu.value = !isShowMoreMenu.value
+}
+
+// 当菜单展开时，点击菜单外部可以关闭菜单
+const targetMoreMenu = useTemplateRef<HTMLElement>('targetMoreMenu')
+const targetMoreMenuToggleShowButtonEl = useTemplateRef<
+  InstanceType<typeof ElButton>
+>('targetMoreMenuToggleShowButtonEl')
+const targetMoreMenuToggleShowButton = computed(() => {
+  if (targetMoreMenuToggleShowButtonEl.value == null) {
+    return null
+  }
+  return targetMoreMenuToggleShowButtonEl.value.$el as HTMLElement
+})
+onClickOutside(targetMoreMenu, (event) => {
+  console.log(event)
+  // 菜单未打开，直接返回
+  if (targetMoreMenu == null || isShowMoreMenu.value === false) {
+    return
+  }
+  // 点击正好是在菜单开关按钮上，直接返回
+  if (
+    targetMoreMenuToggleShowButton.value != null &&
+    targetMoreMenuToggleShowButton.value?.contains(event.target as Node)
+  ) {
+    return
+  }
+  closeMoreMenu()
+})
 </script>
 
 <template>
-  <div class="chat-input-bar flow-root">
-    <div class="chat-input-box flow-root bg-color-background-soft pb-1">
+  <div class="chat-input-bar relative flow-root">
+    <!-- 展开菜单 -->
+    <Transition name="fade-up-down">
+      <div
+        v-if="isShowMoreMenu"
+        ref="targetMoreMenu"
+        class="more-menu absolute bottom-0 z-[2] bg-color-background-soft"
+      >
+        <!-- 收起 -->
+        <div
+          class="more-menu-close-button flow-root cursor-pointer select-none hover:bg-el-primary-light-4"
+          @click="closeMoreMenu"
+        >
+          <div class="button-box flex items-center justify-center">
+            <RiArrowDownWideLine size="20px"></RiArrowDownWideLine>
+          </div>
+        </div>
+        <!-- 菜单项 图片 -->
+        <ChatTopBarMoreMenuItem @click="() => {}">
+          <template #icon>
+            <RiImageLine size="18px"></RiImageLine>
+          </template>
+          <template #text>
+            {{ i18nStore.t('chatInputBarBackMenuImage')() }}
+          </template>
+        </ChatTopBarMoreMenuItem>
+        <!-- 菜单项 文件 -->
+        <ChatTopBarMoreMenuItem @click="() => {}">
+          <template #icon>
+            <RiFolderLine size="18px"></RiFolderLine>
+          </template>
+          <template #text>
+            {{ i18nStore.t('chatInputBarBackMenuFile')() }}
+          </template>
+        </ChatTopBarMoreMenuItem>
+        <!-- 垫片 -->
+        <div
+          :style="{
+            height: `${chatInputBarDefaultHeightConfig}px`,
+          }"
+        ></div>
+      </div>
+    </Transition>
+    <div
+      class="chat-input-box relative z-[3] flow-root bg-color-background-soft pb-1"
+    >
       <!-- <div class="m-3 h-16 bg-red-950">输入框</div> -->
       <div class="my-2 flex items-stretch">
         <!-- 左栏 -->
@@ -286,7 +372,12 @@ const i18nStore = useI18nStore()
         <div class="mr-2 flex flex-col-reverse">
           <!-- 菜单按钮 -->
           <template v-if="chatInputBarFunctionChoose === 'menu'">
-            <ElButton circle type="info" @click="() => {}">
+            <ElButton
+              ref="targetMoreMenuToggleShowButtonEl"
+              circle
+              type="info"
+              @click="toggleShowMoreMenu"
+            >
               <template #icon>
                 <RiAttachmentLine></RiAttachmentLine>
               </template>
@@ -298,6 +389,7 @@ const i18nStore = useI18nStore()
               circle
               type="primary"
               :loading="messageSendSubmitRunning"
+              :disabled="chatInputContent === '' && !messageSendSubmitRunning"
               @click="messageSendSubmit()"
             >
               <template #icon>
@@ -362,6 +454,22 @@ const i18nStore = useI18nStore()
     //     // text-align: center;
     //   }
     // }
+  }
+}
+
+.more-menu {
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 0 6px 6px var(--color-background);
+  right: 24px;
+  max-width: calc(100% - (2 * 24px));
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.more-menu-close-button {
+  .button-box {
+    height: 24px;
   }
 }
 </style>

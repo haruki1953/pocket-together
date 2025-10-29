@@ -16,6 +16,7 @@ import type {
   ChatDisplayDependentDataInitializationChooseType,
   ChatColPageRecoverDataCheckType,
 } from './types'
+import { chatInputBarDefaultHeightConfig } from '@/config'
 
 const i18nStore = useI18nStore()
 
@@ -121,7 +122,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
     ></MessageInfoDialog>
     <!-- bottomHeight测量的高度会有延时，如果需要立即测量滚动高度就会导致问题，此时可以通过此参数指定默认高度 -->
     <!-- 聊天页的滚动控制，初始需要在底部，需要指定默认高度（输入框为空时的高度） -->
-    <ContainerBar :defaultBarHeight="64">
+    <ContainerBar :defaultBarHeight="chatInputBarDefaultHeightConfig">
       <template #default>
         <div class="relative">
           <!-- 聊天页顶栏 -->
@@ -258,7 +259,6 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
             :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
             :chatBackBottomDisplayable="chatBackBottomDisplayable"
             :chatBackBottomFn="chatBackBottomFn"
-
           ></ChatInputBar>
         </div>
       </template>
