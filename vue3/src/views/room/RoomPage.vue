@@ -9,6 +9,9 @@ import { RiHomeLine, RiMessage3Line } from '@remixicon/vue'
 import { useWindowSize } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 
+// inject获取应用主滚动实例
+const appMainElScrollbar = injectAppMainElScrollbar()
+
 const { width: windowWidth } = useWindowSize()
 
 /** 大于等于768显示两列，小于则显示一列（只显示用户列表，聊天在另外的页面） */
@@ -42,9 +45,6 @@ const col1StyleValue = computed(() => {
     width: `${chatWidthSmallerWidth}px`,
   }
 })
-
-// inject获取应用主滚动实例
-const appMainElScrollbar = injectAppMainElScrollbar()
 
 const i18nStore = useI18nStore()
 

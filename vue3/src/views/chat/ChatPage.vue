@@ -13,6 +13,7 @@ import { ContainerCol2 } from '@/components'
 import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
 import { pbMessagesSendChatApi } from '@/api'
 import { RiFlaskLine } from '@remixicon/vue'
+import { injectAppMainElScrollbar } from '@/composables'
 
 console.log('ChatPage setup')
 

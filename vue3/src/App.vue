@@ -52,7 +52,11 @@ provideAppMainElScrollbar(appMainElScrollbar)
   >
     <!-- ElConfigProvider 国际化控制 -->
     <ElConfigProvider :locale="i18nLocaleInfo[i18nStore.locale].elLocale">
-      <ElScrollbar ref="appMainElScrollbar" height="100vh">
+      <ElScrollbar
+        ref="appMainElScrollbar"
+        height="100vh"
+        class="appMainElScrollbar"
+      >
         <RouterView></RouterView>
       </ElScrollbar>
     </ElConfigProvider>

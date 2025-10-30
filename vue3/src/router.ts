@@ -19,6 +19,8 @@ import {
   TestPage,
 } from './views'
 import { useRouterHistoryStore } from './stores'
+import { injectAppMainElScrollbar } from './composables'
+import { getAppMainElScrollbarWrap } from './utils'
 
 // 路由
 const router = createRouter({
@@ -101,23 +103,27 @@ const router = createRouter({
 
 // 路由访问拦截
 router.beforeEach((to, from) => {
-  // 路由滚动行为定制
-  // 之所以不用 createRouter 中的 scrollBehavior 来控制，是因为 scrollBehavior 会等到组件onMounted后再进行，会影响聊天页的滚动控制
-  // router.beforeEach 是在组件setup前就进行
-  // 【251005】发现有问题，在从房间详情页返回时还是会导致滚动问题
-  // ;(() => {
-  //   // 点中当前路径时，不滚动
-  //   if (to.path === from.path) {
-  //     return
-  //   }
-  //   // 回到顶部
-  //   window.scrollTo({ top: 0 })
-  // })()
-
   // 路由不存在，拦截到首页
   if (router.resolve(to.path).matched.length === 0) {
     return routerDict.HomePage.path
   }
+})
+
+// 新页面回到顶部
+router.afterEach((to, from) => {
+  // 之所以不用 createRouter 中的 scrollBehavior 来控制，是因为 scrollBehavior 会等到组件onMounted后再进行，会影响聊天页的滚动控制
+  // router.afterEach 是在组件setup前进行
+
+  // 路径不变时（query可以改变），不滚动
+  if (to.path === from.path) {
+    return
+  }
+  // 回到顶部（不使用页面原生滚动条，使用的是自设的滚动条）
+  const appMainElScrollbarWrap = getAppMainElScrollbarWrap()
+  appMainElScrollbarWrap?.scrollTo({
+    top: 0,
+    behavior: 'instant',
+  })
 })
 
 // 自建路由历史栈

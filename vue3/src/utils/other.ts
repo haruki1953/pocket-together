@@ -274,3 +274,9 @@ export function hideLoadingMask() {
     }, 300) // 300ms matches the transition duration in the CSS
   }
 }
+
+// 获取应用主滚动实例 scrollbar__wrap HTMLElement
+export const getAppMainElScrollbarWrap = () =>
+  document.querySelector<HTMLElement>(
+    '.appMainElScrollbar > .el-scrollbar__wrap'
+  )
