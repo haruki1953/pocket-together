@@ -26,12 +26,11 @@ import type {
   ChatDisplayDependentDataInitializationChooseType,
   ChatColPageRecoverDataCheckType,
 } from './dependencies'
+import type { ChatInputBar } from '.'
 
 const props = defineProps<{
-  /** 聊天输入栏正在回复的消息 */
-  chatReplyMessage: MessagesResponseWidthExpand | null
-  /** 聊天输入栏正在回复的消息，设置值 */
-  chatReplyMessageSet: (val: MessagesResponseWidthExpand | null) => void
+  /** 聊天输入栏，将使用其中的数据 */
+  refChatInputBar: InstanceType<typeof ChatInputBar> | null
   /** 聊天回复定位 */
   chatRoomMessagesReplyPositioningFn: (
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
@@ -156,18 +155,25 @@ const messageReplyMessageUserAvatarUrl = computed(() => {
   }
 
   // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
-  if (chatRoomMessagesGetOneQuery.data.value.expand.author == null) {
+  if (
+    chatRoomMessagesGetOneQuery.data.value.expand.replyMessage?.expand.author ==
+    null
+  ) {
     console.error('props.chatRoomMessagesItem.expand.author == null')
     return appUserDefaultAvatar
   }
   // 无头像，返回默认头像
-  if (chatRoomMessagesGetOneQuery.data.value.expand.author.avatar === '') {
+  if (
+    chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.expand.author
+      .avatar === ''
+  ) {
     return appUserDefaultAvatar
   }
   // 有头像，返回头像url
   return pb.files.getURL(
-    chatRoomMessagesGetOneQuery.data.value.expand.author,
-    chatRoomMessagesGetOneQuery.data.value.expand.author.avatar,
+    chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.expand.author,
+    chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.expand.author
+      .avatar,
     { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
@@ -262,7 +268,25 @@ const actionButtonchatReplyMessageSet = () => {
   }
 
   // 设置为回复此消息
-  props.chatReplyMessageSet(chatRoomMessagesGetOneQuery.data.value)
+  props.refChatInputBar?.chatReplyMessageSet(
+    chatRoomMessagesGetOneQuery.data.value
+  )
+  // 设置后关闭对话框
+  dialogClose()
+}
+
+/** 让聊天输入栏编辑此消息 */
+const actionButtonchatEditMessageSet = () => {
+  // 无数据，是不正常的，返回
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+
+  // 设置为编辑此消息
+  props.refChatInputBar?.chatEditMessageSet(
+    chatRoomMessagesGetOneQuery.data.value
+  )
   // 设置后关闭对话框
   dialogClose()
 }
@@ -284,6 +308,40 @@ const replyMessagesPositioningFn = async () => {
     created: chatRoomMessagesGetOneQuery.data.value.expand.replyMessage.created,
   })
 }
+
+/**
+ * 是否应显示回复按钮。
+ * - 当正在修改一个消息时，不能回复此消息。
+ * - 当正在修改一个消息时，不能回复发送时间比自己大的（避免循环回复）
+ */
+const shouldShowActionButtonchatReplyMessageSet = computed(() => {
+  // 无数据，是不正常的，返回 true 即默认显示
+  if (chatRoomMessagesGetOneQuery.data.value == null) {
+    console.error('chatRoomMessagesGetOneQuery.data.value == null')
+    return
+  }
+  // 无输入栏的引用是不正常的，返回 true 即默认显示
+  if (props.refChatInputBar == null) {
+    return true
+  }
+  const chatEditMessage = props.refChatInputBar.chatEditMessage
+  // 无chatEditMessage，返回true
+  if (chatEditMessage == null) {
+    return true
+  }
+  // 当正在修改一个消息时，不能回复此消息。
+  if (chatEditMessage.id === chatRoomMessagesGetOneQuery.data.value.id) {
+    return false
+  }
+  // 当正在修改一个消息时，不能回复发送时间比自己大的（避免循环回复）
+  if (
+    chatEditMessage.created <= chatRoomMessagesGetOneQuery.data.value.created
+  ) {
+    return false
+  }
+  // 返回 true 即默认显示
+  return true
+})
 </script>
 
 <template>
@@ -417,7 +475,7 @@ const replyMessagesPositioningFn = async () => {
             </div>
           </div>
         </div>
-        <!-- 操作按钮 TODO -->
+        <!-- 操作按钮 -->
         <div class="mr-[10px] mt-[5px]">
           <div class="flex items-center justify-end">
             <!-- 复制消息链接 -->
@@ -438,18 +496,24 @@ const replyMessagesPositioningFn = async () => {
               </div>
             </div>
             <!-- 回复 -->
-            <div
-              class="flow-root cursor-pointer transition-colors hover:text-el-success"
-              @click="actionButtonchatReplyMessageSet"
-            >
-              <div class="m-[5px]">
-                <RiDiscussLine size="24px"></RiDiscussLine>
+            <Transition name="fade">
+              <div
+                v-if="shouldShowActionButtonchatReplyMessageSet"
+                class="flow-root cursor-pointer transition-colors hover:text-el-success"
+                @click="actionButtonchatReplyMessageSet"
+              >
+                <div class="m-[5px]">
+                  <RiDiscussLine size="24px"></RiDiscussLine>
+                </div>
               </div>
-            </div>
+            </Transition>
+
+            <!-- isMessageSendByCurrentUser 消息为当前用户发送才能进行的操作 -->
             <template v-if="isMessageSendByCurrentUser">
               <!-- 修改 -->
               <div
                 class="flow-root cursor-pointer transition-colors hover:text-el-info"
+                @click="actionButtonchatEditMessageSet"
               >
                 <div class="m-[5px]">
                   <RiEditLine size="24px"></RiEditLine>

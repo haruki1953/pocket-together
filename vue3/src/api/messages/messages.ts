@@ -8,6 +8,7 @@ import {
   type MessagesRecord,
   type MessagesResponse,
   type RoomsResponse,
+  type Update,
   type UsersResponse,
 } from '@/lib'
 import type { Group, KeyValueMirror } from '@/types'
@@ -60,6 +61,48 @@ export const pbMessagesSendChatApi = async (data: {
   const pbRes = await pb
     .collection(Collections.Messages)
     .create(createData, {
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+    .catch((error) => {
+      // 出现鉴权失败则清除authStore
+      onPbResErrorStatus401AuthClear(error)
+      throw error
+    })
+  return pbRes
+}
+
+/** messages集合 修改消息 需登录 */
+export const pbMessagesEditChatApi = async (data: {
+  // 修改的消息的id
+  chatEditMessageId: string
+  // 消息内容
+  content: string
+  /** 回复的帖子id，空字符串或null都可代表无 */
+  replyMessageId?: string | null
+}) => {
+  const { chatEditMessageId, content, replyMessageId } = data
+
+  // 未登录，抛出错误
+  if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+    throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
+  }
+
+  // 准备数据
+  const updateData: Update<Collections.Messages> = {
+    content: content,
+    replyMessage: (() => {
+      if (replyMessageId == null) {
+        return ''
+      }
+      return replyMessageId
+    })(),
+  }
+
+  // 通过 pocketbase SDK 请求
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .update(chatEditMessageId, updateData, {
       // timeout为5000
       fetch: fetchWithTimeoutPreferred,
     })

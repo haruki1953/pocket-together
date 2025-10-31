@@ -18,6 +18,7 @@ import type {
   PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
 import { RiDiscussFill } from '@remixicon/vue'
+import type { ChatInputBar } from '.'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -35,8 +36,9 @@ const props = defineProps<{
   linkPositioningFlagMessageId: string | null
   linkPositioningFlagShow: boolean
   linkPositioningFlagClose: () => void
-  /** 聊天输入栏正在回复的消息 */
-  chatReplyMessage: MessagesResponseWidthExpand | null
+  /** 聊天输入栏，正在回复的消息 */
+  // chatReplyMessage: MessagesResponseWidthExpand | null
+  refChatInputBar: InstanceType<typeof ChatInputBar> | null
   /** 聊天回复定位 */
   chatRoomMessagesReplyPositioningFn: (
     replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
@@ -314,10 +316,27 @@ const replyPositioningFlagClickFn = async () => {
 
 // 是否显示回复（正在回复）标记
 const isShowChatReplyMessageFlag = computed(() => {
-  if (props.chatReplyMessage == null) {
+  // if (props.chatReplyMessage == null) {
+  if (props.refChatInputBar?.chatReplyMessage == null) {
     return false
   }
-  if (props.chatReplyMessage.id === props.chatRoomMessagesItem.id) {
+  if (
+    props.refChatInputBar.chatReplyMessage.id === props.chatRoomMessagesItem.id
+  ) {
+    return true
+  }
+  return false
+})
+
+// 是否显示编辑标记
+const isShowChatEditMessageFlag = computed(() => {
+  // if (props.chatReplyMessage == null) {
+  if (props.refChatInputBar?.chatEditMessage == null) {
+    return false
+  }
+  if (
+    props.refChatInputBar.chatEditMessage.id === props.chatRoomMessagesItem.id
+  ) {
     return true
   }
   return false
@@ -444,9 +463,17 @@ const replyMessagesPositioningFn = async () => {
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
             <Transition name="fade150ms" mode="out-in">
+              <!-- 编辑标记 -->
+              <div
+                v-if="isShowChatEditMessageFlag"
+                class="cursor-pointer text-el-info"
+                @click="openMessageInfoDialogFn"
+              >
+                <RiEditFill></RiEditFill>
+              </div>
               <!-- 回复标记 -->
               <div
-                v-if="isShowChatReplyMessageFlag"
+                v-else-if="isShowChatReplyMessageFlag"
                 class="cursor-pointer text-el-success"
                 @click="openMessageInfoDialogFn"
               >

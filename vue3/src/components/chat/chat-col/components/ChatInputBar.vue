@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {
+  pbMessagesEditChatApi,
   pbMessagesSendChatApi,
   type MessagesResponseWidthExpand,
+  type MessagesResponseWidthExpandReplyMessage,
   type PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
 import {
@@ -22,6 +24,7 @@ import {
   RiArrowDownLine,
   RiArrowDownLongLine,
   RiAttachmentLine,
+  RiCheckFill,
   RiCloseCircleFill,
   RiImageLine,
   RiSendPlane2Fill,
@@ -58,9 +61,27 @@ const props = defineProps<{
 const chatInputContent = ref('')
 
 // 回复的消息，将导出给外部组件使用
-const chatReplyMessage = ref<MessagesResponseWidthExpand | null>(null)
-const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
+const chatReplyMessage = ref<MessagesResponseWidthExpandReplyMessage | null>(
+  null
+)
+const chatReplyMessageSet = (
+  val: MessagesResponseWidthExpandReplyMessage | null
+) => {
   chatReplyMessage.value = val
+}
+
+// 修改的消息，将导出给外部组件使用
+const chatEditMessage = ref<MessagesResponseWidthExpand | null>(null)
+const chatEditMessageSet = (val: MessagesResponseWidthExpand | null) => {
+  if (val == null) {
+    chatEditMessage.value = null
+    chatInputContent.value = ''
+    chatReplyMessage.value = null
+  } else {
+    chatEditMessage.value = val
+    chatInputContent.value = val.content
+    chatReplyMessage.value = val.expand.replyMessage ?? null
+  }
 }
 
 const { chooseInitialization, chatColPageRecoverData } =
@@ -86,6 +107,8 @@ defineExpose({
   chatInputContent,
   chatReplyMessage,
   chatReplyMessageSet,
+  chatEditMessage,
+  chatEditMessageSet,
 })
 
 // 回复的消息的用户头像
@@ -169,13 +192,17 @@ const messageSendMutation = useMutation({
       message: '发送失败',
     })
   },
-  // ✅ 在网络错误时重试
-  retry: queryRetryPbNetworkError,
+  // 此接口非幂等，不重试，避免重复发送
+  // // ✅ 在网络错误时重试
+  // retry: queryRetryPbNetworkError,
 })
 
 const messageSendSubmitRunning = ref(false)
 // 消息发送提交
 const messageSendSubmit = async () => {
+  if (messageSendSubmitRunning.value === true) {
+    return
+  }
   messageSendSubmitRunning.value = true
   try {
     const resData = await messageSendMutation.mutateAsync()
@@ -193,11 +220,87 @@ const messageSendSubmit = async () => {
   }
 }
 
+// 消息编辑Mutation
+const messageEditMutation = useMutation({
+  // mutation函数
+  mutationFn: async () => {
+    // 未登录，抛出错误
+    if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+      throw new Error(
+        '!pb.authStore.isValid || pb.authStore.record?.id == null'
+      )
+    }
+    // 无chatEditMessage.value，抛出错误
+    if (chatEditMessage.value == null) {
+      throw new Error('chatEditMessage.value == null')
+    }
+
+    // 通过 pocketbase SDK 请求
+    const pbRes = await pbMessagesEditChatApi({
+      chatEditMessageId: chatEditMessage.value.id,
+      content: chatInputContent.value,
+      replyMessageId: chatReplyMessage.value?.id,
+    })
+    console.log(pbRes)
+    return pbRes
+  },
+  // 一些收尾工作
+  onSuccess: (data) => {
+    // 发送后重置输入栏
+    chatEditMessageSet(null)
+  },
+  // 错误处理
+  onError: (error) => {
+    potoMessage({
+      type: 'error',
+      message: '修改失败',
+    })
+  },
+  // // 此接口幂等，可重试
+  // ✅ 在网络错误时重试
+  retry: queryRetryPbNetworkError,
+})
+
+const messageEditSubmitRunning = ref(false)
+// 消息编辑提交
+const messageEditSubmit = async () => {
+  if (messageEditSubmitRunning.value === true) {
+    return
+  }
+  messageEditSubmitRunning.value = true
+  try {
+    const resData = await messageEditMutation.mutateAsync()
+    // 发送后，仍应等待realtime收到更新情况
+    await watchUntilSourceCondition(
+      computed(() => {
+        const find = realtimeMessagesStore.updateList.find((i) => {
+          // 需消息id与updated更新时间才能确认是此次更新
+          return i.id === resData.id && i.updated === resData.updated
+        })
+        return find != null
+      }),
+      (val) => val === true
+    )
+  } finally {
+    messageEditSubmitRunning.value = false
+  }
+}
+
+// 消息编辑取消
+const messageEditCancel = () => {
+  chatEditMessageSet(null)
+}
+
 // 输入栏不同功能判断
 // menu 正常状时为 输入栏+菜单按钮
 // send 输入文字（或设置回复）后为 输入栏+发送按钮
+// edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
 // backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
 const chatInputBarFunctionChoose = computed(() => {
+  // edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
+  if (chatEditMessage.value != null || messageEditSubmitRunning.value) {
+    return 'edit'
+  }
   // send 设置回复后，输入文字后，或正处于发送中，为 输入栏+发送按钮
   if (
     chatInputContent.value !== '' ||
@@ -319,13 +422,35 @@ const isHaveNewMessage = computed(() => {
       <div class="my-2 flex items-stretch">
         <!-- 左栏 -->
         <div class="ml-2 mr-1 flow-root flex-1 truncate">
+          <!-- 回到底部文字，有新消息时与新消息通知循环闪烁显示 -->
+          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
+            <div class="mr-[4px] flex h-full items-center justify-end">
+              <Transition name="fade800ms" mode="out-in">
+                <div
+                  v-if="
+                    isHaveNewMessage &&
+                    autoCyclicValueToShowNewMessageAndBackBottom ===
+                      'NewMessage'
+                  "
+                  class="select-none truncate text-[14px] font-bold text-color-text"
+                >
+                  {{
+                    i18nStore.t('chatInputBarNewMessageText')(
+                      chatRoomMessagesRealtimeUnReadNumber
+                    )
+                  }}
+                </div>
+                <div
+                  v-else
+                  class="select-none truncate text-[14px] font-bold text-color-text"
+                >
+                  {{ i18nStore.t('chatInputBarBackBottomText')() }}
+                </div>
+              </Transition>
+            </div>
+          </template>
           <!-- 输入框 -->
-          <template
-            v-if="
-              chatInputBarFunctionChoose === 'menu' ||
-              chatInputBarFunctionChoose === 'send'
-            "
-          >
+          <template v-else>
             <!-- 回复的消息 -->
             <div v-if="chatReplyMessage != null">
               <div
@@ -372,51 +497,41 @@ const isHaveNewMessage = computed(() => {
               />
             </div>
           </template>
-          <!-- 回到底部文字，有新消息时与新消息通知循环闪烁显示 -->
-          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
-            <div class="mr-[4px] flex h-full items-center justify-end">
-              <Transition name="fade800ms" mode="out-in">
-                <div
-                  v-if="
-                    isHaveNewMessage &&
-                    autoCyclicValueToShowNewMessageAndBackBottom ===
-                      'NewMessage'
-                  "
-                  class="select-none truncate text-[14px] font-bold text-color-text"
-                >
-                  {{
-                    i18nStore.t('chatInputBarNewMessageText')(
-                      chatRoomMessagesRealtimeUnReadNumber
-                    )
-                  }}
-                </div>
-                <div
-                  v-else
-                  class="select-none truncate text-[14px] font-bold text-color-text"
-                >
-                  {{ i18nStore.t('chatInputBarBackBottomText')() }}
-                </div>
-              </Transition>
-            </div>
-          </template>
         </div>
         <!-- 右栏 按钮 -->
         <div class="mr-2 flex flex-col-reverse">
-          <!-- 菜单按钮 -->
-          <template v-if="chatInputBarFunctionChoose === 'menu'">
-            <ElButton
-              ref="targetMoreMenuToggleShowButtonEl"
-              circle
-              type="info"
-              @click="toggleShowMoreMenu"
-            >
-              <template #icon>
-                <RiAttachmentLine></RiAttachmentLine>
-              </template>
-            </ElButton>
+          <!-- 编辑按钮组 -->
+          <template v-if="chatInputBarFunctionChoose === 'edit'">
+            <div class="flex">
+              <div>
+                <!-- 取消 -->
+                <ElButton circle type="info" @click="messageEditCancel">
+                  <template #icon>
+                    <RiCloseFill></RiCloseFill>
+                  </template>
+                </ElButton>
+              </div>
+              <div class="ml-[8px]">
+                <!-- 确认 -->
+                <ElButton
+                  class=""
+                  circle
+                  type="primary"
+                  :loading="messageEditSubmitRunning"
+                  :disabled="
+                    chatInputContent === '' && !messageEditSubmitRunning
+                  "
+                  @click="messageEditSubmit"
+                >
+                  <template #icon>
+                    <RiCheckFill></RiCheckFill>
+                  </template>
+                </ElButton>
+              </div>
+            </div>
           </template>
           <!-- 发送按钮 -->
-          <template v-if="chatInputBarFunctionChoose === 'send'">
+          <template v-else-if="chatInputBarFunctionChoose === 'send'">
             <ElButton
               circle
               type="primary"
@@ -430,10 +545,23 @@ const isHaveNewMessage = computed(() => {
             </ElButton>
           </template>
           <!-- 回到底部按钮 -->
-          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
+          <template v-else-if="chatInputBarFunctionChoose === 'backBottom'">
             <ElButton circle type="info" @click="chatBackBottomFn">
               <template #icon>
                 <RiArrowDownLongLine></RiArrowDownLongLine>
+              </template>
+            </ElButton>
+          </template>
+          <!-- 菜单按钮 -->
+          <template v-else>
+            <ElButton
+              ref="targetMoreMenuToggleShowButtonEl"
+              circle
+              type="info"
+              @click="toggleShowMoreMenu"
+            >
+              <template #icon>
+                <RiAttachmentLine></RiAttachmentLine>
               </template>
             </ElButton>
           </template>

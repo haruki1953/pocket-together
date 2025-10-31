@@ -73,21 +73,6 @@ export type OpenMessageInfoDialogType = typeof openMessageInfoDialog;
 
 // 聊天输入栏
 const refChatInputBar = ref<InstanceType<typeof ChatInputBar> | null>(null)
-// 聊天输入栏导出的一些数据和方法
-/** 聊天输入栏正在回复的消息 */
-const chatReplyMessage = computed(() => {
-  if (refChatInputBar.value == null) {
-    return null
-  }
-  return refChatInputBar.value.chatReplyMessage
-})
-/** 聊天输入栏正在回复的消息，设置值 */
-const chatReplyMessageSet = (val: MessagesResponseWidthExpand | null) => {
-  if (refChatInputBar.value == null) {
-    return
-  }
-  refChatInputBar.value.chatReplyMessageSet(val)
-}
 
 // 导出聊天输入栏引用以便于页面回复数据收集
 defineExpose({
@@ -113,8 +98,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
     <!-- 消息详情对话框 -->
     <MessageInfoDialog
       ref="refMessageInfoDialog"
-      :chatReplyMessage="chatReplyMessage"
-      :chatReplyMessageSet="chatReplyMessageSet"
+      :refChatInputBar="refChatInputBar"
       :chatRoomMessagesReplyPositioningFn="chatRoomMessagesReplyPositioningFn"
       :chatDisplayDependentDataInitializationChoose="
         chatDisplayDependentDataInitializationChoose
@@ -208,7 +192,7 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
                   :linkPositioningFlagMessageId="linkPositioningFlagMessageId"
                   :linkPositioningFlagShow="linkPositioningFlagShow"
                   :linkPositioningFlagClose="linkPositioningFlagClose"
-                  :chatReplyMessage="chatReplyMessage"
+                  :refChatInputBar="refChatInputBar"
                   :chatRoomMessagesReplyPositioningFn="
                     chatRoomMessagesReplyPositioningFn
                   "
@@ -260,8 +244,9 @@ const chatRoomMessagesForShowWithOnMounted = computed(() => {
             :chatColPageRecoverDataCheck="chatColPageRecoverDataCheck"
             :chatBackBottomDisplayable="chatBackBottomDisplayable"
             :chatBackBottomFn="chatBackBottomFn"
-            :chatRoomMessagesRealtimeUnReadNumber="chatRoomMessagesRealtimeUnReadNumber"
-
+            :chatRoomMessagesRealtimeUnReadNumber="
+              chatRoomMessagesRealtimeUnReadNumber
+            "
           ></ChatInputBar>
         </div>
       </template>

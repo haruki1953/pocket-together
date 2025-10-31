@@ -10,13 +10,17 @@ import type {
 import type { Group, KeyValueMirror } from '@/types'
 
 // 📦 定义 PocketBase 扩展字段的响应类型
+// 完整的消息类型
 export type MessagesResponseWidthExpand = MessagesResponse<MessagesRecordExpand>
+// 辅助类型，消息中replyMessage的类型
+export type MessagesResponseWidthExpandReplyMessage =
+  MessagesResponse<MessagesRecordExpandReplyMessage>
 // 🎯 指定集合中需要展开的关联字段及其响应类型
 type MessagesRecordExpand = {
   author?: UsersResponse
   quoteRoom?: RoomsResponse
   quoteFile?: FilesResponse
-  replyMessage?: MessagesResponse<MessagesRecordExpandReplyMessage>
+  replyMessage?: MessagesResponseWidthExpandReplyMessage
 }
 type MessagesRecordExpandReplyMessage = {
   author?: UsersResponse
