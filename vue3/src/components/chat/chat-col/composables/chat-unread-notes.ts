@@ -44,7 +44,7 @@ export const useChatRoomMessagesRealtimeUnReadNotes = (data: {
     chatColPageRecoverDataCheck === true
   ) {
     chatRoomMessagesRealtimeReadNumber.value =
-      chatColPageRecoverData.data.chatRoomMessagesRealtimeUnReadNumber
+      chatColPageRecoverData.data.chatRoomMessagesRealtimeReadNumber
   }
   // 普通初始化
   else {
@@ -79,5 +79,6 @@ export const useChatRoomMessagesRealtimeUnReadNotes = (data: {
 
   return {
     chatRoomMessagesRealtimeUnReadNumber,
+    chatRoomMessagesRealtimeReadNumber,
   }
 }

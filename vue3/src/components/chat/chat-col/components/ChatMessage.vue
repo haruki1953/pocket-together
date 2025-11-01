@@ -9,7 +9,7 @@ import type {
   ChatRoomMessagesItem,
   OpenMessageInfoDialogType,
 } from './dependencies'
-import { useAuthStore, useI18nStore } from '@/stores'
+import { useAuthStore, useI18nStore, useRealtimeMessagesStore } from '@/stores'
 import { compareDatesSafeGetSecondsBetween } from '@/utils'
 import { pb } from '@/lib'
 import { onLongPress, useTimeAgo } from '@vueuse/core'
@@ -17,7 +17,7 @@ import type {
   MessagesResponseWidthExpand,
   PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
-import { RiDiscussFill } from '@remixicon/vue'
+import { RiDiscussFill, RiRefreshLine } from '@remixicon/vue'
 import type { ChatInputBar } from '.'
 
 const props = defineProps<{
@@ -48,6 +48,65 @@ const props = defineProps<{
   replyPositioningFlagClose: () => void
 }>()
 
+// 实时消息，将根据其中的更新和删除
+const realtimeMessagesStore = useRealtimeMessagesStore()
+// 本消息的更新
+const messageRealtimeUpdateItems = computed(() => {
+  const filter = realtimeMessagesStore.updateList.filter(
+    (i) => i.id === props.chatRoomMessagesItem.id
+  )
+  return filter
+})
+
+// 根据此值对应messageRealtimeUpdateItems之中每一项的updated，控制其中显示哪个，null即为原消息chatRoomMessagesItem
+const currentMessageRealtimeUpdated = ref<string | null>(null)
+
+// 当前应显示的消息
+const currentMessageData = computed(() => {
+  if (currentMessageRealtimeUpdated.value == null) {
+    return props.chatRoomMessagesItem
+  }
+  const find = messageRealtimeUpdateItems.value.find(
+    (i) => i.updated === currentMessageRealtimeUpdated.value
+  )
+  if (find == null) {
+    return props.chatRoomMessagesItem
+  }
+  return find
+})
+
+// 当前消息是否应更新
+const isCurrentMessageShouldUpdateRealtimeUpdated = computed(() => {
+  const length = messageRealtimeUpdateItems.value.length
+  // 无实时更新，返回false
+  if (length === 0) {
+    return false
+  }
+  // 有实时更新且当前currentMessageRealtimeUpdated为null，返回true
+  if (currentMessageRealtimeUpdated.value == null) {
+    return true
+  }
+  const latest = messageRealtimeUpdateItems.value[length - 1]
+  // 当前currentMessageRealtimeUpdated不等与最新的，返回true
+  if (latest.updated !== currentMessageRealtimeUpdated.value) {
+    return true
+  }
+  return false
+})
+
+// 更新当前消息
+const updateCurrentMessageRealtimeUpdated = () => {
+  const length = messageRealtimeUpdateItems.value.length
+  // 无实时更新，返回false
+  if (length === 0) {
+    return
+  }
+  const latest = messageRealtimeUpdateItems.value[length - 1]
+  currentMessageRealtimeUpdated.value = latest.updated
+}
+// 组件setup时就执行一次，类似初始化
+updateCurrentMessageRealtimeUpdated()
+
 // 响应式的 pb.authStore
 const authStore = useAuthStore()
 
@@ -72,7 +131,7 @@ const determineMessageCurrentUserFn = (
 
 /** 当前消息是否为当前用户发送 */
 const isMessageCurrentUser = computed(() =>
-  determineMessageCurrentUserFn(props.chatRoomMessagesItem)
+  determineMessageCurrentUserFn(currentMessageData.value)
 )
 
 /**
@@ -188,18 +247,18 @@ const isMessageBoxroundedBR = computed(() => {
 // 头像
 const messageUserAvatarUrl = computed(() => {
   // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
-  if (props.chatRoomMessagesItem.expand.author == null) {
-    console.error('props.chatRoomMessagesItem.expand.author == null')
+  if (currentMessageData.value.expand.author == null) {
+    console.error('currentMessageData.value.expand.author == null')
     return appUserDefaultAvatar
   }
   // 无头像，返回默认头像
-  if (props.chatRoomMessagesItem.expand.author.avatar === '') {
+  if (currentMessageData.value.expand.author.avatar === '') {
     return appUserDefaultAvatar
   }
   // 有头像，返回头像url
   return pb.files.getURL(
-    props.chatRoomMessagesItem.expand.author,
-    props.chatRoomMessagesItem.expand.author.avatar,
+    currentMessageData.value.expand.author,
+    currentMessageData.value.expand.author.avatar,
     { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
@@ -207,23 +266,23 @@ const messageUserAvatarUrl = computed(() => {
 // 用户名
 const messageUserName = computed(() => {
   // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回空字符串算了
-  if (props.chatRoomMessagesItem.expand.author == null) {
-    console.error('props.chatRoomMessagesItem.expand.author == null')
+  if (currentMessageData.value.expand.author == null) {
+    console.error('currentMessageData.value.expand.author == null')
     return ''
   }
   // 无名称，返回用户名
-  if (props.chatRoomMessagesItem.expand.author.name === '') {
-    return props.chatRoomMessagesItem.expand.author.username
+  if (currentMessageData.value.expand.author.name === '') {
+    return currentMessageData.value.expand.author.username
   }
   // 有名称，返回名称
-  return props.chatRoomMessagesItem.expand.author.name
+  return currentMessageData.value.expand.author.name
 })
 
 const i18nStore = useI18nStore()
 
 // 时间
 const timeAgo = useTimeAgo(
-  computed(() => props.chatRoomMessagesItem.created),
+  computed(() => currentMessageData.value.created),
   {
     // i18n
     messages: i18nStore.t('useTimeAgoMessages')(),
@@ -233,25 +292,25 @@ const timeAgo = useTimeAgo(
 // 回复的消息的用户头像
 const messageReplyMessageUserAvatarUrl = computed(() => {
   // expand.replyMessage == null，此情况不会显示，返回默认头像
-  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+  if (currentMessageData.value.expand.replyMessage == null) {
     return appUserDefaultAvatar
   }
 
   // expand.author == null 这是异常（可能pb配置或前端api调用有误），但不抛错了，返回默认头像算了
-  if (props.chatRoomMessagesItem.expand.replyMessage.expand.author == null) {
-    console.error('props.chatRoomMessagesItem.expand.author == null')
+  if (currentMessageData.value.expand.replyMessage.expand.author == null) {
+    console.error('currentMessageData.value.expand.author == null')
     return appUserDefaultAvatar
   }
   // 无头像，返回默认头像
   if (
-    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar === ''
+    currentMessageData.value.expand.replyMessage.expand.author.avatar === ''
   ) {
     return appUserDefaultAvatar
   }
   // 有头像，返回头像url
   return pb.files.getURL(
-    props.chatRoomMessagesItem.expand.replyMessage.expand.author,
-    props.chatRoomMessagesItem.expand.replyMessage.expand.author.avatar,
+    currentMessageData.value.expand.replyMessage.expand.author,
+    currentMessageData.value.expand.replyMessage.expand.author.avatar,
     { thumb: fileUserAvatarConfig.thumb200x200f }
   )
 })
@@ -259,8 +318,8 @@ const messageReplyMessageUserAvatarUrl = computed(() => {
 // 打开消息详情对话框函数
 const openMessageInfoDialogFn = () => {
   props.openMessageInfoDialog(
-    props.chatRoomMessagesItem.id,
-    props.chatRoomMessagesItem
+    currentMessageData.value.id,
+    currentMessageData.value
   )
 }
 
@@ -269,6 +328,11 @@ const onLongPressTargetRef = ref<HTMLElement | null>(null)
 onLongPress(
   onLongPressTargetRef,
   () => {
+    // 长按时如果需要更新消息则优先
+    if (isCurrentMessageShouldUpdateRealtimeUpdated.value) {
+      updateCurrentMessageRealtimeUpdated()
+      return
+    }
     openMessageInfoDialogFn()
   },
   {
@@ -283,7 +347,7 @@ onLongPress(
 // 是否显示链接定位标记
 const isShowLinkPositioningFlag = computed(() => {
   if (
-    props.linkPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.linkPositioningFlagMessageId === currentMessageData.value.id &&
     props.linkPositioningFlagShow === true
   ) {
     return true
@@ -300,7 +364,7 @@ const linkPositioningFlagClickFn = async () => {
 // 是否显示回复定位标记
 const isShowReplyPositioningFlag = computed(() => {
   if (
-    props.replyPositioningFlagMessageId === props.chatRoomMessagesItem.id &&
+    props.replyPositioningFlagMessageId === currentMessageData.value.id &&
     props.replyPositioningFlagShow === true
   ) {
     return true
@@ -321,7 +385,7 @@ const isShowChatReplyMessageFlag = computed(() => {
     return false
   }
   if (
-    props.refChatInputBar.chatReplyMessage.id === props.chatRoomMessagesItem.id
+    props.refChatInputBar.chatReplyMessage.id === currentMessageData.value.id
   ) {
     return true
   }
@@ -335,7 +399,7 @@ const isShowChatEditMessageFlag = computed(() => {
     return false
   }
   if (
-    props.refChatInputBar.chatEditMessage.id === props.chatRoomMessagesItem.id
+    props.refChatInputBar.chatEditMessage.id === currentMessageData.value.id
   ) {
     return true
   }
@@ -345,24 +409,24 @@ const isShowChatEditMessageFlag = computed(() => {
 /** 聊天回复定位 */
 const replyMessagesPositioningFn = async () => {
   // 本消息无回复，直接返回
-  if (props.chatRoomMessagesItem.expand.replyMessage == null) {
+  if (currentMessageData.value.expand.replyMessage == null) {
     return
   }
   await props.chatRoomMessagesReplyPositioningFn({
-    id: props.chatRoomMessagesItem.expand.replyMessage.id,
-    created: props.chatRoomMessagesItem.expand.replyMessage.created,
+    id: currentMessageData.value.expand.replyMessage.id,
+    created: currentMessageData.value.expand.replyMessage.created,
   })
 }
 </script>
 
 <template>
   <!--
-   chat-message-${chatRoomMessagesItem.id}，data-message-id，用于聊天页处理滚动的收集元素数据
+   chat-message-${currentMessageData.id}，data-message-id，用于聊天页处理滚动的收集元素数据
   -->
   <div
     class="chat-message flow-root"
-    :class="chatRoomMessagesClassIdNamingFnConfig(chatRoomMessagesItem.id)"
-    :data-message-id="chatRoomMessagesItem.id"
+    :class="chatRoomMessagesClassIdNamingFnConfig(currentMessageData.id)"
+    :data-message-id="currentMessageData.id"
   >
     <div class="mt-1">
       <!-- 头像与消息 -->
@@ -419,10 +483,15 @@ const replyMessagesPositioningFn = async () => {
               }"
             >
               <div class="flex-1 truncate">
-                <div class="my-2">
+                <div
+                  class="my-2"
+                  :class="{
+                    'blinking-2s': isCurrentMessageShouldUpdateRealtimeUpdated,
+                  }"
+                >
                   <!-- 回复的消息 -->
                   <div
-                    v-if="chatRoomMessagesItem.expand.replyMessage != null"
+                    v-if="currentMessageData.expand.replyMessage != null"
                     class="mb-[4px] ml-[4px] mr-[12px]"
                   >
                     <div
@@ -445,14 +514,14 @@ const replyMessagesPositioningFn = async () => {
                         <div
                           class="select-none truncate text-[12px] text-color-text"
                         >
-                          {{ chatRoomMessagesItem.expand.replyMessage.content }}
+                          {{ currentMessageData.expand.replyMessage.content }}
                         </div>
                       </div>
                     </div>
                   </div>
                   <!-- 消息文字内容 -->
                   <div class="wrap-long-text mx-3 text-[15px] text-color-text">
-                    {{ chatRoomMessagesItem.content }}
+                    {{ currentMessageData.content }}
                   </div>
                 </div>
               </div>
@@ -462,10 +531,18 @@ const replyMessagesPositioningFn = async () => {
         <!-- 图标列（详情按钮） -->
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
-            <Transition name="fade150ms" mode="out-in">
+            <Transition name="fade-pop" mode="out-in">
+              <!-- 更新标记 -->
+              <div
+                v-if="isCurrentMessageShouldUpdateRealtimeUpdated"
+                class="cursor-pointer text-el-primary"
+                @click="updateCurrentMessageRealtimeUpdated"
+              >
+                <RiRefreshLine></RiRefreshLine>
+              </div>
               <!-- 编辑标记 -->
               <div
-                v-if="isShowChatEditMessageFlag"
+                v-else-if="isShowChatEditMessageFlag"
                 class="cursor-pointer text-el-info"
                 @click="openMessageInfoDialogFn"
               >

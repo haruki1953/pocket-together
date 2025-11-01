@@ -220,14 +220,16 @@ const refChatColTemplateBase = ref<InstanceType<
 export type RefChatColTemplateBaseType = typeof refChatColTemplateBase
 
 // 未读实时消息统计
-const { chatRoomMessagesRealtimeUnReadNumber } =
-  useChatRoomMessagesRealtimeUnReadNotes({
-    chatRoomMessagesRealtime,
-    props,
-    isChatBottomHasMore,
-    chatDisplayDependentDataInitializationChoose,
-    chatColPageRecoverDataCheck,
-  })
+const {
+  chatRoomMessagesRealtimeUnReadNumber,
+  chatRoomMessagesRealtimeReadNumber,
+} = useChatRoomMessagesRealtimeUnReadNotes({
+  chatRoomMessagesRealtime,
+  props,
+  isChatBottomHasMore,
+  chatDisplayDependentDataInitializationChoose,
+  chatColPageRecoverDataCheck,
+})
 
 // 页面恢复数据收集
 useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
@@ -240,7 +242,7 @@ useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave({
   chatRoomMessagesLimitTopCursor,
   chatRoomMessagesLimitBottomCursor,
   refChatColTemplateBase,
-  chatRoomMessagesRealtimeUnReadNumber,
+  chatRoomMessagesRealtimeReadNumber,
 })
 </script>
 
