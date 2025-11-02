@@ -1,0 +1,270 @@
+<script setup lang="ts">
+import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
+import { ContainerDialog } from '@/components'
+import { useRouteControlDialog } from '@/composables'
+import { useDateFormatYYYYMMDDHHmmss } from '@/utils'
+import type {
+  ChatDisplayDependentDataInitializationChooseType,
+  ChatColPageRecoverDataCheckType,
+} from './dependencies'
+import type { ChatInputBar } from './dependencies'
+import { useMessageControl, useMessageDispaly } from './composables'
+
+const props = defineProps<{
+  /** 聊天输入栏，将使用其中的数据 */
+  refChatInputBar: InstanceType<typeof ChatInputBar> | null
+  /** 聊天回复定位 */
+  chatRoomMessagesReplyPositioningFn: (
+    replyMessagePositioningData: PMLRCApiParameters0DataPageParamNonNullable
+  ) => Promise<void>
+  // 各种初始化情况的对应数据，决定使用哪种初始化
+  chatDisplayDependentDataInitializationChoose: ChatDisplayDependentDataInitializationChooseType
+  // “页面恢复数据”是否正确
+  chatColPageRecoverDataCheck: ChatColPageRecoverDataCheckType
+}>()
+export type MessageInfoDialogPropsType = typeof props
+
+const { dialogVisible, dialogOpen, dialogClose } = useRouteControlDialog({
+  dialogQueryKey: 'MessageInfoDialog',
+})
+
+// 封装 消息显示相关数据逻辑
+// useMessageDispaly
+const {
+  dialogMessageId,
+  chatRoomMessagesGetOneQuery,
+  messageUserAvatarUrl,
+  messageUserName,
+  messageReplyMessageUserAvatarUrl,
+  isMessageSendByCurrentUser,
+} = useMessageDispaly({
+  props,
+})
+export type ChatRoomMessagesGetOneQueryType = typeof chatRoomMessagesGetOneQuery
+
+// 封装 消息操作相关数据逻辑
+// useMessageControl
+const {
+  openMessageInfoDialog,
+  actionButtonCopyMessageLink,
+  actionButtonchatReplyMessageSet,
+  actionButtonchatEditMessageSet,
+  replyMessagesPositioningFn,
+  shouldShowActionButtonchatReplyMessageSet,
+} = useMessageControl({
+  props,
+  chatRoomMessagesGetOneQuery,
+  dialogMessageId,
+  dialogOpen,
+  dialogClose,
+})
+
+defineExpose({
+  dialogMessageId,
+  openMessageInfoDialog,
+  dialogClose,
+})
+</script>
+
+<template>
+  <div>
+    <ContainerDialog
+      :dialogVisible="dialogVisible"
+      :dialogCloseFn="dialogClose"
+    >
+      <!-- 显示消息数据 -->
+      <template v-if="chatRoomMessagesGetOneQuery.data.value != null">
+        <!-- 测试 数据显示 -->
+        <!-- <div class="wrap-long-text font-mono">
+          {{ JSON.stringify(chatRoomMessagesGetOneQuery.data.value, null, 2) }}
+        </div> -->
+
+        <!-- 用户信息 + 关闭按钮 -->
+        <div class="ml-[15px] flex items-center justify-between">
+          <!-- 头像 名称 用户名 -->
+          <div class="flex-1 truncate">
+            <div class="flex items-center">
+              <!-- 头像 -->
+              <div
+                class="h-[44px] w-[44px] rounded-full border-[2px] border-color-background-soft bg-color-background-soft"
+                :style="{
+                  backgroundImage: `url('${messageUserAvatarUrl}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }"
+              ></div>
+              <!-- 名称 用户名 -->
+              <div class="flex-1 truncate">
+                <div class="ml-[10px]">
+                  <div class="truncate font-bold text-color-text">
+                    {{ messageUserName }}
+                  </div>
+                  <div class="truncate text-[12px] text-color-text-soft">
+                    @{{
+                      chatRoomMessagesGetOneQuery.data.value.expand.author
+                        ?.username
+                    }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 关闭按钮 -->
+          <div class="mx-[10px] cursor-pointer" @click="dialogClose()">
+            <RiCloseFill></RiCloseFill>
+          </div>
+        </div>
+        <!-- 消息卡片 -->
+        <div class="mt-[10px]">
+          <div class="flow-root rounded-[20px] bg-color-background-soft">
+            <div class="my-[10px]">
+              <!-- 回复的消息 -->
+              <div
+                v-if="
+                  chatRoomMessagesGetOneQuery.data.value.expand.replyMessage !=
+                  null
+                "
+                class="mb-[6px] ml-[10px] mr-[12px]"
+              >
+                <div
+                  class="flex cursor-pointer items-center"
+                  @click="replyMessagesPositioningFn"
+                >
+                  <!-- 头像 -->
+                  <div class="ml-[4px] mr-[6px]">
+                    <div
+                      class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                      :style="{
+                        backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }"
+                    ></div>
+                  </div>
+                  <!-- 内容 -->
+                  <div class="truncate">
+                    <div
+                      class="select-none truncate text-[12px] text-color-text"
+                    >
+                      {{
+                        chatRoomMessagesGetOneQuery.data.value.expand
+                          .replyMessage.content
+                      }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- 消息 -->
+              <div class="wrap-long-text mx-[15px] text-[16px]">
+                {{ chatRoomMessagesGetOneQuery.data.value.content }}
+              </div>
+              <!-- 时间 -->
+              <div class="mx-[15px] mt-[5px] flex items-center justify-end">
+                <!-- 已修改图标 是否已修改 -->
+                <div
+                  v-if="
+                    chatRoomMessagesGetOneQuery.data.value.created !==
+                    chatRoomMessagesGetOneQuery.data.value.updated
+                  "
+                  class="mr-[6px] mt-[1px]"
+                >
+                  <ElTooltip
+                    :content="
+                      useDateFormatYYYYMMDDHHmmss(
+                        chatRoomMessagesGetOneQuery.data.value.updated
+                      ).value
+                    "
+                    placement="top"
+                    effect="light"
+                  >
+                    <div>
+                      <RiEditFill
+                        size="12px"
+                        class="text-color-text-soft"
+                      ></RiEditFill>
+                    </div>
+                  </ElTooltip>
+                </div>
+                <!-- 时间 -->
+                <div class="text-[12px] text-color-text-soft">
+                  {{
+                    useDateFormatYYYYMMDDHHmmss(
+                      chatRoomMessagesGetOneQuery.data.value.created
+                    ).value
+                  }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 操作按钮 -->
+        <div class="mr-[10px] mt-[5px]">
+          <div class="flex items-center justify-end">
+            <!-- 复制消息链接 -->
+            <div
+              class="flow-root cursor-pointer transition-colors hover:text-el-primary"
+              @click="actionButtonCopyMessageLink"
+            >
+              <div class="m-[5px]">
+                <RiLink size="24px"></RiLink>
+              </div>
+            </div>
+            <!-- 收藏 -->
+            <div
+              class="flow-root cursor-pointer transition-colors hover:text-el-warning"
+            >
+              <div class="m-[5px]">
+                <RiBookmarkLine size="24px"></RiBookmarkLine>
+              </div>
+            </div>
+            <!-- 回复 -->
+            <Transition name="fade">
+              <div
+                v-if="shouldShowActionButtonchatReplyMessageSet"
+                class="flow-root cursor-pointer transition-colors hover:text-el-success"
+                @click="actionButtonchatReplyMessageSet"
+              >
+                <div class="m-[5px]">
+                  <RiDiscussLine size="24px"></RiDiscussLine>
+                </div>
+              </div>
+            </Transition>
+
+            <!-- isMessageSendByCurrentUser 消息为当前用户发送才能进行的操作 -->
+            <template v-if="isMessageSendByCurrentUser">
+              <!-- 修改 -->
+              <div
+                class="flow-root cursor-pointer transition-colors hover:text-el-info"
+                @click="actionButtonchatEditMessageSet"
+              >
+                <div class="m-[5px]">
+                  <RiEditLine size="24px"></RiEditLine>
+                </div>
+              </div>
+              <!-- 删除 -->
+              <div
+                class="flow-root cursor-pointer transition-colors hover:text-el-danger"
+              >
+                <div class="m-[5px]">
+                  <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <!-- 垫片，视觉高度调整 -->
+        <div class="h-[16px]"></div>
+      </template>
+      <template v-else>
+        <!-- 显示获取中 -->
+        <template v-if="chatRoomMessagesGetOneQuery.isFetching.value === true">
+          获取中
+        </template>
+        <!-- 消息不存在 -->
+        <template v-else> 消息不存在 </template>
+      </template>
+    </ContainerDialog>
+  </div>
+</template>
+
+<style lang="scss" scoped></style>

@@ -5,7 +5,6 @@ import type {
   OpenMessageInfoDialogType,
   ChatInputBar,
 } from './dependencies'
-import { onLongPress } from '@vueuse/core'
 import type { PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
 import {
   useMessageControl,
