@@ -114,6 +114,33 @@ export const pbMessagesEditChatApi = async (data: {
   return pbRes
 }
 
+/** messages集合 删除消息 需登录 */
+export const pbMessagesDeleteChatApi = async (data: {
+  // 修改的消息的id
+  messageId: string
+}) => {
+  const { messageId } = data
+
+  // 未登录，抛出错误
+  if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+    throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
+  }
+
+  // 通过 pocketbase SDK 请求
+  const pbRes = await pb
+    .collection(Collections.Messages)
+    .delete(messageId, {
+      // timeout为5000
+      fetch: fetchWithTimeoutPreferred,
+    })
+    .catch((error) => {
+      // 出现鉴权失败则清除authStore
+      onPbResErrorStatus401AuthClear(error)
+      throw error
+    })
+  return pbRes
+}
+
 /** messages集合 消息实时订阅 */
 export const pbMessagesSubscribeAllApi = async (
   callback: (data: RecordSubscription<MessagesResponseWidthExpand>) => void

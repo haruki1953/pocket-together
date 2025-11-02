@@ -10,10 +10,16 @@ const props = withDefaults(
     closeOnClickOverlay?: boolean
     /** 垂直对齐比例，应为小于1的数字，0.5表示居中，默认为0.3，将据此设置动态的上边距 */
     verticalAlignRatio?: number
+    /** 是否模糊遮遮罩，默认为true */
+    overlayBlur?: boolean
+    /** 是否半透明遮罩，为false即全透明，默认为true */
+    overlayTranslucent?: boolean
   }>(),
   {
     closeOnClickOverlay: true,
     verticalAlignRatio: 0.3,
+    overlayBlur: true,
+    overlayTranslucent: true,
   }
 )
 
@@ -58,8 +64,9 @@ const dialogOverlayOnClickFn = () => {
           class="dialog-overlay fixed bottom-0 left-0 right-0 top-0 z-[30]"
           :class="{
             // 明暗主题时的背景色稍有区别
-            'bg-color-background-a80': !isDark,
-            'bg-color-background-a90': isDark,
+            'bg-color-background-a80': !isDark && overlayTranslucent,
+            'bg-color-background-a90': isDark && overlayTranslucent,
+            'overlay-blur': overlayBlur,
           }"
           @click="dialogOverlayOnClickFn"
         >
@@ -107,8 +114,10 @@ const dialogOverlayOnClickFn = () => {
 
 <style lang="scss" scoped>
 .dialog-overlay {
-  backdrop-filter: blur(15px); /* 模糊背景内容 */
-  -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
+  &.overlay-blur {
+    backdrop-filter: blur(15px); /* 模糊背景内容 */
+    -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
+  }
   transition: all 0.3s;
 }
 .dialog-content {

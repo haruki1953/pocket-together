@@ -117,6 +117,19 @@ const confirm = async () => {
 defineExpose({
   confirm,
 })
+
+/**
+ * 组件卸载时的清理逻辑：
+ * - 如果 confirm() 返回的 Promise 尚未被 resolve/reject（即用户还未点击“确认”或“取消”），
+ *   那么组件卸载后将导致该 Promise 永远悬挂，父组件的 await 无法继续执行。
+ * - 为避免这种逻辑悬挂，组件卸载时主动调用 confirmReject()，使 Promise 被 reject。
+ * - 同时清空 confirmResolve 和 confirmReject 引用，避免潜在的内存泄漏。
+ */
+onUnmounted(() => {
+  confirmReject?.()
+  confirmResolve = null
+  confirmReject = null
+})
 </script>
 
 <template>
