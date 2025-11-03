@@ -48,7 +48,7 @@ const messageDeleteMutation = useMutation({
   onError: (error) => {
     potoMessage({
       type: 'error',
-      message: '删除失败',
+      message: i18nStore.t('chatMessageDeleteErrorText')(),
     })
   },
   // 此接口非幂等，不重试
@@ -108,8 +108,8 @@ defineExpose({
         <div class="m-[20px]">
           <div class="mb-[10px]">
             <div class="text-center text-[14px] font-bold text-color-text-soft">
-              <!--  -->
-              确认要删除此消息吗？
+              <!-- 确认要删除此消息吗？ -->
+              {{ i18nStore.t('chatMessageDeleteConfirmAskText')() }}
             </div>
           </div>
           <div class="flex justify-center">

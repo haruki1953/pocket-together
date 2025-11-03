@@ -56,4 +56,24 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '文件' as const,
     'zh-TW': () => '檔案' as const,
   },
+  chatMessageSendErrorText: {
+    'en-US': () => 'Failed to send message' as const,
+    'zh-CN': () => '发送失败' as const,
+    'zh-TW': () => '傳送失敗' as const,
+  },
+  chatMessageEditErrorText: {
+    'en-US': () => 'Failed to edit message' as const,
+    'zh-CN': () => '修改失败' as const,
+    'zh-TW': () => '修改失敗' as const,
+  },
+  chatMessageDeleteErrorText: {
+    'en-US': () => 'Failed to delete message' as const,
+    'zh-CN': () => '删除失败' as const,
+    'zh-TW': () => '刪除失敗' as const,
+  },
+  chatMessageDeleteConfirmAskText: {
+    'en-US': () => 'Are you sure you want to delete this message?' as const,
+    'zh-CN': () => '确认要删除此消息吗？' as const,
+    'zh-TW': () => '確定要刪除此訊息嗎？' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

@@ -52,29 +52,16 @@ const {
   actionButtonchatEditMessageSet,
   replyMessagesPositioningFn,
   shouldShowActionButtonchatReplyMessageSet,
+  refMessageDeleteDialog,
+  actionButtonDeleteMessage,
+  shouldShowActionButtonDeleteMessage,
+  messageDeleteDialogDialogVisible,
 } = useMessageControl({
   props,
   chatRoomMessagesGetOneQuery,
   dialogMessageId,
   dialogOpen,
   dialogClose,
-})
-
-// 消息删除对话框
-const refMessageDeleteDialog = ref<InstanceType<
-  typeof MessageDeleteDialog
-> | null>(null)
-
-// 删除消息
-const actionButtonDeleteMessage = () => {
-  refMessageDeleteDialog.value?.dialogOpen()
-}
-// 删除消息对话框是否正在显示
-const messageDeleteDialogDialogVisible = computed(() => {
-  if (refMessageDeleteDialog.value == null) {
-    return false
-  }
-  return refMessageDeleteDialog.value.dialogVisible
 })
 
 defineExpose({
@@ -266,14 +253,17 @@ defineExpose({
                   </div>
                 </div>
                 <!-- 删除 -->
-                <div
-                  class="flow-root cursor-pointer transition-colors hover:text-el-danger"
-                  @click="actionButtonDeleteMessage"
-                >
-                  <div class="m-[5px]">
-                    <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                <Transition name="fade">
+                  <div
+                    v-if="shouldShowActionButtonDeleteMessage"
+                    class="flow-root cursor-pointer transition-colors hover:text-el-danger"
+                    @click="actionButtonDeleteMessage"
+                  >
+                    <div class="m-[5px]">
+                      <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                    </div>
                   </div>
-                </div>
+                </Transition>
               </template>
             </div>
           </div>

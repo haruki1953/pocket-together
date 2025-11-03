@@ -9,6 +9,7 @@ import type {
   ChatRoomMessagesGetOneQueryType,
   MessageInfoDialogPropsType,
 } from './dependencies'
+import type { MessageDeleteDialog } from '../components'
 
 export const useMessageControl = (data: {
   //
@@ -174,7 +175,7 @@ export const useMessageControl = (data: {
     // 无数据，是不正常的，返回 true 即默认显示
     if (chatRoomMessagesGetOneQuery.data.value == null) {
       console.error('chatRoomMessagesGetOneQuery.data.value == null')
-      return
+      return true
     }
     // 无输入栏的引用是不正常的，返回 true 即默认显示
     if (props.refChatInputBar == null) {
@@ -199,6 +200,68 @@ export const useMessageControl = (data: {
     return true
   })
 
+  // 消息删除对话框
+  const refMessageDeleteDialog = ref<InstanceType<
+    typeof MessageDeleteDialog
+  > | null>(null)
+
+  // 删除消息
+  const actionButtonDeleteMessage = () => {
+    refMessageDeleteDialog.value?.dialogOpen()
+  }
+  // 是否应显示删除按钮，当输入栏正在编辑或回复此消息时，不显示删除按钮
+  const shouldShowActionButtonDeleteMessage = computed(() => {
+    // 无数据，是不正常的，返回 true 即默认显示
+    if (chatRoomMessagesGetOneQuery.data.value == null) {
+      console.error('chatRoomMessagesGetOneQuery.data.value == null')
+      return true
+    }
+    // 无输入栏的引用是不正常的，返回 true 即默认显示
+    if (props.refChatInputBar == null) {
+      return true
+    }
+
+    // 编辑的消息
+    const chatEditMessage = props.refChatInputBar.chatEditMessage
+    // 编辑的消息是否为此消息
+    const isChatEditMessageIsThisMessage = (() => {
+      if (chatEditMessage == null) {
+        return false
+      }
+      if (chatEditMessage.id === chatRoomMessagesGetOneQuery.data.value.id) {
+        return true
+      }
+      return false
+    })()
+
+    // 回复的消息
+    const chatReplyMessage = props.refChatInputBar.chatReplyMessage
+    // 回复的消息是否为此消息
+    const isChatReplyMessageIsThisMessage = (() => {
+      if (chatReplyMessage == null) {
+        return false
+      }
+      if (chatReplyMessage.id === chatRoomMessagesGetOneQuery.data.value.id) {
+        return true
+      }
+      return false
+    })()
+
+    // 当输入栏正在编辑或回复此消息时，不显示删除按钮（即返回false）
+    if (isChatEditMessageIsThisMessage || isChatReplyMessageIsThisMessage) {
+      return false
+    }
+    return true
+  })
+
+  // 删除消息对话框是否正在显示
+  const messageDeleteDialogDialogVisible = computed(() => {
+    if (refMessageDeleteDialog.value == null) {
+      return false
+    }
+    return refMessageDeleteDialog.value.dialogVisible
+  })
+
   return {
     //
     openMessageInfoDialog,
@@ -207,5 +270,9 @@ export const useMessageControl = (data: {
     actionButtonchatEditMessageSet,
     replyMessagesPositioningFn,
     shouldShowActionButtonchatReplyMessageSet,
+    refMessageDeleteDialog,
+    actionButtonDeleteMessage,
+    shouldShowActionButtonDeleteMessage,
+    messageDeleteDialogDialogVisible,
   }
 }

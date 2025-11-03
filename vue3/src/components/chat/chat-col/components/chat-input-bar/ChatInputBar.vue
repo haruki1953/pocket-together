@@ -35,7 +35,7 @@ import type {
   ChatDisplayDependentDataInitializationChooseType,
   ChatColPageRecoverDataCheckType,
 } from './dependencies'
-import { ChatTopBarMoreMenuItem } from '.'
+import { ChatTopBarMoreMenuItem } from './dependencies'
 import { onClickOutside } from '@vueuse/core'
 import type { ElButton } from 'element-plus'
 import { useAutoCyclicValue } from '@/composables'
@@ -56,6 +56,9 @@ const props = defineProps<{
   chatBackBottomFn: () => Promise<void>
   chatRoomMessagesRealtimeUnReadNumber: number
 }>()
+
+// 封装 聊天输入栏数据逻辑
+// useChatInputBarData
 
 // 聊天输入框内容
 const chatInputContent = ref('')
@@ -97,19 +100,15 @@ if (
 ) {
   chatInputContent.value = chatColPageRecoverData.data.chatInputContent
   chatReplyMessage.value = chatColPageRecoverData.data.chatReplyMessage
+  chatEditMessage.value = chatColPageRecoverData.data.chatEditMessage
 }
 // 正常的初始化
 else {
   // 无
 }
 
-defineExpose({
-  chatInputContent,
-  chatReplyMessage,
-  chatReplyMessageSet,
-  chatEditMessage,
-  chatEditMessageSet,
-})
+// 封装 聊天输入栏显示逻辑
+// useChatInputBarDispaly
 
 // 回复的消息的用户头像
 const chatReplyMessageUserAvatarUrl = computed(() => {
@@ -135,6 +134,88 @@ const chatReplyMessageUserAvatarUrl = computed(() => {
   )
 })
 
+// 输入栏不同功能判断
+// menu 正常状时为 输入栏+菜单按钮
+// send 输入文字（或设置回复）后为 输入栏+发送按钮
+// edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
+// backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
+const chatInputBarFunctionChoose = computed(() => {
+  // edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
+  if (chatEditMessage.value != null || messageEditSubmitRunning.value) {
+    return 'edit'
+  }
+  // send 设置回复后，输入文字后，或正处于发送中，为 输入栏+发送按钮
+  if (
+    chatInputContent.value !== '' ||
+    chatReplyMessage.value != null ||
+    messageSendSubmitRunning.value
+  ) {
+    return 'send' as const
+  }
+  // backTop 底部仍有未显示的消息，或距底部距离大于大于一定值后为 回到底部文字+按钮
+  if (props.chatBackBottomDisplayable) {
+    return 'backBottom' as const
+  }
+  // menu 正常状时为 输入栏+菜单按钮
+  return 'menu' as const
+})
+
+const i18nStore = useI18nStore()
+
+// 实现回到底部和新消息提示循环闪烁显示，间隔 2000ms
+const autoCyclicValueToShowNewMessageAndBackBottom = useAutoCyclicValue(
+  ['NewMessage', 'BackBottom'] as const,
+  2000
+)
+// 是否有新消息
+const isHaveNewMessage = computed(() => {
+  if (props.chatRoomMessagesRealtimeUnReadNumber > 0) {
+    return true
+  }
+  return false
+})
+
+const isShowMoreMenu = ref(false)
+const openMoreMenu = () => {
+  isShowMoreMenu.value = true
+}
+const closeMoreMenu = () => {
+  isShowMoreMenu.value = false
+}
+const toggleShowMoreMenu = () => {
+  isShowMoreMenu.value = !isShowMoreMenu.value
+}
+
+// 当菜单展开时，点击菜单外部可以关闭菜单
+const targetMoreMenu = useTemplateRef<HTMLElement>('targetMoreMenu')
+const targetMoreMenuToggleShowButtonEl = useTemplateRef<
+  InstanceType<typeof ElButton>
+>('targetMoreMenuToggleShowButtonEl')
+const targetMoreMenuToggleShowButton = computed(() => {
+  if (targetMoreMenuToggleShowButtonEl.value == null) {
+    return null
+  }
+  return targetMoreMenuToggleShowButtonEl.value.$el as HTMLElement
+})
+onClickOutside(targetMoreMenu, (event) => {
+  console.log(event)
+  // 菜单未打开，直接返回
+  if (targetMoreMenu == null || isShowMoreMenu.value === false) {
+    return
+  }
+  // 点击正好是在菜单开关按钮上，直接返回
+  if (
+    targetMoreMenuToggleShowButton.value != null &&
+    targetMoreMenuToggleShowButton.value?.contains(event.target as Node)
+  ) {
+    return
+  }
+  closeMoreMenu()
+})
+
+// 封装 聊天输入栏的操作逻辑
+// useChatInputBarControl
+
 // 取消回复消息
 const chatReplyMessageCancel = () => {
   chatReplyMessage.value = null
@@ -154,8 +235,6 @@ const replyMessagesPositioningFn = async () => {
     false
   )
 }
-
-const profileQuery = useProfileQuery()
 
 const realtimeMessagesStore = useRealtimeMessagesStore()
 // 消息发送Mutation
@@ -189,7 +268,7 @@ const messageSendMutation = useMutation({
   onError: (error) => {
     potoMessage({
       type: 'error',
-      message: '发送失败',
+      message: i18nStore.t('chatMessageSendErrorText')(),
     })
   },
   // 此接口非幂等，不重试，避免重复发送
@@ -253,7 +332,7 @@ const messageEditMutation = useMutation({
   onError: (error) => {
     potoMessage({
       type: 'error',
-      message: '修改失败',
+      message: i18nStore.t('chatMessageEditErrorText')(),
     })
   },
   // // 此接口幂等，可重试
@@ -291,83 +370,12 @@ const messageEditCancel = () => {
   chatEditMessageSet(null)
 }
 
-// 输入栏不同功能判断
-// menu 正常状时为 输入栏+菜单按钮
-// send 输入文字（或设置回复）后为 输入栏+发送按钮
-// edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
-// backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
-const chatInputBarFunctionChoose = computed(() => {
-  // edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
-  if (chatEditMessage.value != null || messageEditSubmitRunning.value) {
-    return 'edit'
-  }
-  // send 设置回复后，输入文字后，或正处于发送中，为 输入栏+发送按钮
-  if (
-    chatInputContent.value !== '' ||
-    chatReplyMessage.value != null ||
-    messageSendSubmitRunning.value
-  ) {
-    return 'send' as const
-  }
-  // backTop 底部仍有未显示的消息，或距底部距离大于大于一定值后为 回到底部文字+按钮
-  if (props.chatBackBottomDisplayable) {
-    return 'backBottom' as const
-  }
-  // menu 正常状时为 输入栏+菜单按钮
-  return 'menu' as const
-})
-
-const i18nStore = useI18nStore()
-
-const isShowMoreMenu = ref(false)
-const openMoreMenu = () => {
-  isShowMoreMenu.value = true
-}
-const closeMoreMenu = () => {
-  isShowMoreMenu.value = false
-}
-const toggleShowMoreMenu = () => {
-  isShowMoreMenu.value = !isShowMoreMenu.value
-}
-
-// 当菜单展开时，点击菜单外部可以关闭菜单
-const targetMoreMenu = useTemplateRef<HTMLElement>('targetMoreMenu')
-const targetMoreMenuToggleShowButtonEl = useTemplateRef<
-  InstanceType<typeof ElButton>
->('targetMoreMenuToggleShowButtonEl')
-const targetMoreMenuToggleShowButton = computed(() => {
-  if (targetMoreMenuToggleShowButtonEl.value == null) {
-    return null
-  }
-  return targetMoreMenuToggleShowButtonEl.value.$el as HTMLElement
-})
-onClickOutside(targetMoreMenu, (event) => {
-  console.log(event)
-  // 菜单未打开，直接返回
-  if (targetMoreMenu == null || isShowMoreMenu.value === false) {
-    return
-  }
-  // 点击正好是在菜单开关按钮上，直接返回
-  if (
-    targetMoreMenuToggleShowButton.value != null &&
-    targetMoreMenuToggleShowButton.value?.contains(event.target as Node)
-  ) {
-    return
-  }
-  closeMoreMenu()
-})
-
-// 实现回到底部和新消息提示循环闪烁显示，间隔 2000ms
-const autoCyclicValueToShowNewMessageAndBackBottom = useAutoCyclicValue(
-  ['NewMessage', 'BackBottom'] as const,
-  2000
-)
-// 是否有新消息
-const isHaveNewMessage = computed(() => {
-  if (props.chatRoomMessagesRealtimeUnReadNumber > 0) {
-    return true
-  }
-  return false
+defineExpose({
+  chatInputContent,
+  chatReplyMessage,
+  chatReplyMessageSet,
+  chatEditMessage,
+  chatEditMessageSet,
 })
 </script>
 

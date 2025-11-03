@@ -358,6 +358,8 @@ export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
       refChatColTemplateBase.value.refChatInputBar.chatInputContent
     const chatReplyMessage =
       refChatColTemplateBase.value.refChatInputBar.chatReplyMessage
+    const chatEditMessage =
+      refChatColTemplateBase.value.refChatInputBar.chatEditMessage
     const dialogMessageId =
       refChatColTemplateBase.value.refMessageInfoDialog.dialogMessageId
     const refScrollWarpScrollTop = props.refScrollWarp.scrollTop
@@ -374,6 +376,7 @@ export const useChatColPageRecoverDataSetOnBeforeUnmountAndRouteLeave = (data: {
         chatRoomMessagesLimitBottomCursor.value,
       chatInputContent,
       chatReplyMessage,
+      chatEditMessage,
       dialogMessageId,
       refScrollWarpScrollTop,
       chatRoomMessagesRealtimeReadNumber:

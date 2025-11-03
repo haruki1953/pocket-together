@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import type {
   MessagesResponseWidthExpand,
+  MessagesResponseWidthExpandReplyMessage,
   PMLRCApiParameters0DataPageParamNonNullable,
 } from '@/api'
 import type { ChatRoomMessagesLimitCursorValType } from '@/components'
@@ -31,7 +32,8 @@ export type PageRecoverDataForChatColItemType = {
     chatRoomMessagesLimitTopCursor: ChatRoomMessagesLimitCursorValType
     chatRoomMessagesLimitBottomCursor: ChatRoomMessagesLimitCursorValType
     chatInputContent: string
-    chatReplyMessage: MessagesResponseWidthExpand | null
+    chatReplyMessage: MessagesResponseWidthExpandReplyMessage | null
+    chatEditMessage: MessagesResponseWidthExpand | null
     dialogMessageId: string | null
     refScrollWarpScrollTop: number
     chatRoomMessagesRealtimeReadNumber: number
