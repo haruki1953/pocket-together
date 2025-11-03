@@ -9,6 +9,7 @@ export const useMessageControl = (data: {
   currentMessageData: ComputedRef<MessagesResponseWidthExpand>
   isCurrentMessageShouldUpdateRealtimeUpdated: ComputedRef<boolean>
   updateCurrentMessageRealtimeUpdated: () => void
+  isCurrentMessageRealtimeUpdatedIsDeleted: ComputedRef<boolean>
 }) => {
   const {
     //
@@ -16,6 +17,7 @@ export const useMessageControl = (data: {
     currentMessageData,
     isCurrentMessageShouldUpdateRealtimeUpdated,
     updateCurrentMessageRealtimeUpdated,
+    isCurrentMessageRealtimeUpdatedIsDeleted,
   } = data
 
   // 打开消息详情对话框函数
@@ -31,6 +33,10 @@ export const useMessageControl = (data: {
   onLongPress(
     onLongPressTargetRef,
     () => {
+      // 消息已删除，返回
+      if (isCurrentMessageRealtimeUpdatedIsDeleted.value) {
+        return
+      }
       // 长按时如果需要更新消息则优先
       if (isCurrentMessageShouldUpdateRealtimeUpdated.value) {
         updateCurrentMessageRealtimeUpdated()

@@ -11,6 +11,7 @@ import {
   useMessageDisplay,
   useMessageRealtimeUpdate,
 } from './composables'
+import { RiDeleteBin7Fill } from '@remixicon/vue'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -49,6 +50,7 @@ const {
   updateCurrentMessageRealtimeUpdated,
   isCurrentMessageShouldUpdateRealtimeUpdated,
   currentMessageData,
+  isCurrentMessageRealtimeUpdatedIsDeleted,
 } = useMessageRealtimeUpdate({
   props,
 })
@@ -88,6 +90,7 @@ const {
   currentMessageData,
   isCurrentMessageShouldUpdateRealtimeUpdated,
   updateCurrentMessageRealtimeUpdated,
+  isCurrentMessageRealtimeUpdatedIsDeleted,
 })
 </script>
 
@@ -138,11 +141,17 @@ const {
             }"
           >
             <div
-              class="flex min-h-[40px] items-center truncate"
+              class="flex min-h-[40px] items-center truncate transition-colors"
               :class="{
                 // 消息为当前用户发送，显示不同的消息背景色
-                'bg-el-primary-light-4': isMessageCurrentUser,
-                'bg-color-background-soft': !isMessageCurrentUser,
+                'bg-el-primary-light-4':
+                  isMessageCurrentUser &&
+                  !isCurrentMessageRealtimeUpdatedIsDeleted,
+                'bg-color-background-soft':
+                  !isMessageCurrentUser &&
+                  !isCurrentMessageRealtimeUpdatedIsDeleted,
+                'bg-el-danger-light-4':
+                  isCurrentMessageRealtimeUpdatedIsDeleted,
                 // 圆角控制
                 'rounded-tl-[20px]': isMessageBoxroundedTL,
                 'rounded-tr-[20px]': isMessageBoxroundedTR,
@@ -156,44 +165,62 @@ const {
             >
               <div class="flex-1 truncate">
                 <div
-                  class="my-2"
+                  class="message-content-box relative flow-root"
                   :class="{
-                    'blinking-2s': isCurrentMessageShouldUpdateRealtimeUpdated,
+                    isCurrentMessageRealtimeUpdatedIsDeleted:
+                      isCurrentMessageRealtimeUpdatedIsDeleted,
                   }"
                 >
-                  <!-- 回复的消息 -->
-                  <div
-                    v-if="currentMessageData.expand.replyMessage != null"
-                    class="mb-[4px] ml-[4px] mr-[12px]"
-                  >
+                  <!-- 删除时的遮罩，效果不太好 -->
+                  <!-- <Transition name="fade">
                     <div
-                      class="flex cursor-pointer items-center"
-                      @click="replyMessagesPositioningFn"
+                      v-if="isCurrentMessageRealtimeUpdatedIsDeleted"
+                      class="deleted-overlay absolute bottom-0 left-0 right-0 top-0"
+                    ></div>
+                  </Transition> -->
+                  <div
+                    class="my-2"
+                    :class="{
+                      'blinking-2s':
+                        isCurrentMessageShouldUpdateRealtimeUpdated,
+                    }"
+                  >
+                    <!-- 回复的消息 -->
+                    <div
+                      v-if="currentMessageData.expand.replyMessage != null"
+                      class="mb-[4px] ml-[4px] mr-[12px]"
                     >
-                      <!-- 头像 -->
-                      <div class="ml-[4px] mr-[6px]">
-                        <div
-                          class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
-                          :style="{
-                            backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                          }"
-                        ></div>
-                      </div>
-                      <!-- 内容 -->
-                      <div class="truncate">
-                        <div
-                          class="select-none truncate text-[12px] text-color-text"
-                        >
-                          {{ currentMessageData.expand.replyMessage.content }}
+                      <div
+                        class="flex cursor-pointer items-center"
+                        @click="replyMessagesPositioningFn"
+                      >
+                        <!-- 头像 -->
+                        <div class="ml-[4px] mr-[6px]">
+                          <div
+                            class="h-[20px] w-[20px] rounded-full bg-color-background-soft"
+                            :style="{
+                              backgroundImage: `url('${messageReplyMessageUserAvatarUrl}')`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                            }"
+                          ></div>
+                        </div>
+                        <!-- 内容 -->
+                        <div class="truncate">
+                          <div
+                            class="select-none truncate text-[12px] text-color-text"
+                          >
+                            {{ currentMessageData.expand.replyMessage.content }}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- 消息文字内容 -->
-                  <div class="wrap-long-text mx-3 text-[15px] text-color-text">
-                    {{ currentMessageData.content }}
+                    <!-- 消息文字内容 -->
+                    <div
+                      class="wrap-long-text mx-3 text-[15px] text-color-text"
+                    >
+                      {{ currentMessageData.content }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -204,9 +231,16 @@ const {
         <div class="col-icon">
           <div class="flex h-full flex-col-reverse items-center justify-center">
             <Transition name="fade-pop" mode="out-in">
+              <!-- 删除标记 -->
+              <div
+                v-if="isCurrentMessageRealtimeUpdatedIsDeleted"
+                class="cursor-not-allowed text-el-danger"
+              >
+                <RiDeleteBin7Fill></RiDeleteBin7Fill>
+              </div>
               <!-- 更新标记 -->
               <div
-                v-if="isCurrentMessageShouldUpdateRealtimeUpdated"
+                v-else-if="isCurrentMessageShouldUpdateRealtimeUpdated"
                 class="cursor-pointer text-el-primary"
                 @click="updateCurrentMessageRealtimeUpdated"
               >
@@ -330,6 +364,26 @@ const {
   &:hover {
     .more-button {
       // display: block;
+      opacity: 1;
+    }
+  }
+}
+
+.deleted-overlay {
+  backdrop-filter: blur(15px); /* 模糊背景内容 */
+  -webkit-backdrop-filter: blur(15px); /* Safari 支持 */
+  transition: all 0.3s;
+  // 悬停时透明
+  &:hover {
+    opacity: 0;
+  }
+}
+
+.message-content-box {
+  transition: all 0.3s;
+  &.isCurrentMessageRealtimeUpdatedIsDeleted {
+    opacity: 0;
+    &:hover {
       opacity: 1;
     }
   }

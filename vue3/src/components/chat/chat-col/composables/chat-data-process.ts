@@ -67,8 +67,9 @@ export const useChatDataProcessMessagesTwoway = (data: {
     )
   })
 
+  // 【251103】将此从 chatRoomMessagesListAndRealtime 重命名为 chatRoomMessagesListAndRealtimeStep1Process ，即融合的初步处理 Step1Process
   // 将 MessagesRealtime 和 MessagesList 融合
-  const chatRoomMessagesListAndRealtime = computed(() => {
+  const chatRoomMessagesListAndRealtimeStep1Process = computed(() => {
     if (chatRoomMessagesList.value == null) {
       return null
     }
@@ -103,6 +104,30 @@ export const useChatDataProcessMessagesTwoway = (data: {
     })()
     return [...chatRoomMessagesList.value, ...messagesRealtimeMoreRecentList]
   })
+
+  // 【251103】实现删除的效果：消息在Query中为isDeleted则不显示，否则仍然显示（显示删除状态）
+  // Query查询中的isDeleted的消息id
+  const chatQueryMessagesListIsDeletedMessageId = computed(() => {
+    if (chatRoomMessagesList.value == null) {
+      return []
+    }
+    const itemList = chatRoomMessagesList.value.filter(
+      (i) => i.isDeleted === true
+    )
+    const idList = itemList.map((i) => i.id)
+    return idList
+  })
+  // 在chatRoomMessagesListAndRealtime中去除isDeleted的消息 Step2Process
+  const chatRoomMessagesListAndRealtimeStep2Process = computed(() => {
+    if (chatRoomMessagesListAndRealtimeStep1Process.value == null) {
+      return null
+    }
+    return chatRoomMessagesListAndRealtimeStep1Process.value.filter(
+      (i) => !chatQueryMessagesListIsDeletedMessageId.value.includes(i.id)
+    )
+  })
+  const chatRoomMessagesListAndRealtime =
+    chatRoomMessagesListAndRealtimeStep2Process
 
   return {
     chatRoomMessagesInfiniteTwowayQuery,
