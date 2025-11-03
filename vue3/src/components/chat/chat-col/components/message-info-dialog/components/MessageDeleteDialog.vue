@@ -65,20 +65,23 @@ const messageDeleteSubmit = async () => {
   }
   messageDeleteSubmitRunning.value = true
   try {
-    const messageId = props.dialogMessageId
-    await messageDeleteMutation.mutateAsync()
-    // 发送请求后，仍应等待realtime收到删除情况
+    const resData = await messageDeleteMutation.mutateAsync()
+    // 发送后，仍应等待realtime收到更新情况
     await watchUntilSourceCondition(
-      computed(
-        () =>
-          realtimeMessagesStore.deleteList.find((i) => i.id === messageId) !=
-          null
-      ),
+      computed(() => {
+        const find = realtimeMessagesStore.updateList.find((i) => {
+          // 需消息id与updated更新时间才能确认是此次更新
+          return i.id === resData.id && i.updated === resData.updated
+        })
+        return find != null
+      }),
       (val) => val === true
     )
     // 关闭对话框
     dialogClose()
     props.messageInfoDialogClose()
+    // 等待对话框关闭
+    await new Promise((resolve) => setTimeout(resolve, 300))
   } finally {
     messageDeleteSubmitRunning.value = false
   }

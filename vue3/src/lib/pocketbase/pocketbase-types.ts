@@ -118,6 +118,7 @@ export type MessagesRecord = {
 	content?: string
 	created?: IsoDateString
 	id: string
+	isDeleted?: boolean
 	quoteFile?: RecordIdString
 	quoteRoom?: RecordIdString
 	replyMessage?: RecordIdString

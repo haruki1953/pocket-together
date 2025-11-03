@@ -126,10 +126,15 @@ export const pbMessagesDeleteChatApi = async (data: {
     throw new Error('!pb.authStore.isValid || pb.authStore.record?.id == null')
   }
 
+  // 准备数据
+  const updateData: Update<Collections.Messages> = {
+    isDeleted: true,
+  }
+
   // 通过 pocketbase SDK 请求
   const pbRes = await pb
     .collection(Collections.Messages)
-    .delete(messageId, {
+    .update(messageId, updateData, {
       // timeout为5000
       fetch: fetchWithTimeoutPreferred,
     })
