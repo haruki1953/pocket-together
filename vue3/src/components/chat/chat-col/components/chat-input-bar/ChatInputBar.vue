@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type PMLRCApiParameters0DataPageParamNonNullable } from '@/api'
-import { chatInputBarDefaultHeightConfig } from '@/config'
+import { chatInputBarDefaultHeightConfig, routerDict } from '@/config'
 import { useI18nStore } from '@/stores'
 import type {
   ChatDisplayDependentDataInitializationChooseType,
@@ -13,6 +13,8 @@ import {
   useChatInputBarData,
   useChatInputBarDispaly,
 } from './composables'
+import { RouterLink } from 'vue-router'
+import { RiLoginBoxLine } from '@remixicon/vue'
 
 const props = defineProps<{
   /** 房间id，空字符串为全局聊天 */
@@ -140,8 +142,18 @@ defineExpose({
       <div class="my-2 flex items-stretch">
         <!-- 左栏 -->
         <div class="ml-2 mr-1 flow-root flex-1 truncate">
+          <!-- 登录提示 -->
+          <template v-if="chatInputBarFunctionChoose === 'login'">
+            <div class="mr-[4px] flex h-full items-center justify-end">
+              <div
+                class="select-none truncate text-[14px] font-bold text-color-text"
+              >
+                {{ i18nStore.t('chatInputBarLoginText')() }}
+              </div>
+            </div>
+          </template>
           <!-- 回到底部文字，有新消息时与新消息通知循环闪烁显示 -->
-          <template v-if="chatInputBarFunctionChoose === 'backBottom'">
+          <template v-else-if="chatInputBarFunctionChoose === 'backBottom'">
             <div class="mr-[4px] flex h-full items-center justify-end">
               <Transition name="fade800ms" mode="out-in">
                 <div
@@ -243,8 +255,21 @@ defineExpose({
         </div>
         <!-- 右栏 按钮 -->
         <div class="mr-2 flex flex-col-reverse">
+          <!-- 登录按钮 -->
+          <template v-if="chatInputBarFunctionChoose === 'login'">
+            <ElButton
+              circle
+              type="primary"
+              :tag="RouterLink"
+              :to="routerDict.LoginPage.path"
+            >
+              <template #icon>
+                <RiLoginBoxLine></RiLoginBoxLine>
+              </template>
+            </ElButton>
+          </template>
           <!-- 编辑按钮组 -->
-          <template v-if="chatInputBarFunctionChoose === 'edit'">
+          <template v-else-if="chatInputBarFunctionChoose === 'edit'">
             <div class="flex">
               <div>
                 <!-- 取消 -->

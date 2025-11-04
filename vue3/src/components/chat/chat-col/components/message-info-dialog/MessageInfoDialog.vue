@@ -10,7 +10,7 @@ import type {
 import type { ChatInputBar } from './dependencies'
 import { useMessageControl, useMessageDispaly } from './composables'
 import { MessageDeleteDialog } from './components'
-import { useI18nStore } from '@/stores'
+import { useAuthStore, useI18nStore } from '@/stores'
 
 const props = defineProps<{
   /** 聊天输入栏，将使用其中的数据 */
@@ -72,6 +72,7 @@ defineExpose({
 })
 
 const i18nStore = useI18nStore()
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -258,50 +259,53 @@ const i18nStore = useI18nStore()
                   <RiLink size="24px"></RiLink>
                 </div>
               </div>
-              <!-- 收藏 -->
-              <div
-                class="flow-root cursor-pointer transition-colors hover:text-el-warning"
-              >
-                <div class="m-[5px]">
-                  <RiBookmarkLine size="24px"></RiBookmarkLine>
-                </div>
-              </div>
-              <!-- 回复 -->
-              <Transition name="fade">
+              <!-- 用户已登录才显示的操作按钮 -->
+              <template v-if="authStore.isValid">
+                <!-- 收藏 -->
                 <div
-                  v-if="shouldShowActionButtonchatReplyMessageSet"
-                  class="flow-root cursor-pointer transition-colors hover:text-el-success"
-                  @click="actionButtonchatReplyMessageSet"
+                  class="flow-root cursor-pointer transition-colors hover:text-el-warning"
                 >
                   <div class="m-[5px]">
-                    <RiDiscussLine size="24px"></RiDiscussLine>
+                    <RiBookmarkLine size="24px"></RiBookmarkLine>
                   </div>
                 </div>
-              </Transition>
-
-              <!-- isMessageSendByCurrentUser 消息为当前用户发送才能进行的操作 -->
-              <template v-if="isMessageSendByCurrentUser">
-                <!-- 修改 -->
-                <div
-                  class="flow-root cursor-pointer transition-colors hover:text-el-info"
-                  @click="actionButtonchatEditMessageSet"
-                >
-                  <div class="m-[5px]">
-                    <RiEditLine size="24px"></RiEditLine>
-                  </div>
-                </div>
-                <!-- 删除 -->
+                <!-- 回复 -->
                 <Transition name="fade">
                   <div
-                    v-if="shouldShowActionButtonDeleteMessage"
-                    class="flow-root cursor-pointer transition-colors hover:text-el-danger"
-                    @click="actionButtonDeleteMessage"
+                    v-if="shouldShowActionButtonchatReplyMessageSet"
+                    class="flow-root cursor-pointer transition-colors hover:text-el-success"
+                    @click="actionButtonchatReplyMessageSet"
                   >
                     <div class="m-[5px]">
-                      <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                      <RiDiscussLine size="24px"></RiDiscussLine>
                     </div>
                   </div>
                 </Transition>
+
+                <!-- isMessageSendByCurrentUser 消息为当前用户发送才能进行的操作 -->
+                <template v-if="isMessageSendByCurrentUser">
+                  <!-- 修改 -->
+                  <div
+                    class="flow-root cursor-pointer transition-colors hover:text-el-info"
+                    @click="actionButtonchatEditMessageSet"
+                  >
+                    <div class="m-[5px]">
+                      <RiEditLine size="24px"></RiEditLine>
+                    </div>
+                  </div>
+                  <!-- 删除 -->
+                  <Transition name="fade">
+                    <div
+                      v-if="shouldShowActionButtonDeleteMessage"
+                      class="flow-root cursor-pointer transition-colors hover:text-el-danger"
+                      @click="actionButtonDeleteMessage"
+                    >
+                      <div class="m-[5px]">
+                        <RiDeleteBin7Line size="24px"></RiDeleteBin7Line>
+                      </div>
+                    </div>
+                  </Transition>
+                </template>
               </template>
             </div>
           </div>

@@ -5,6 +5,7 @@ import type { ElButton } from 'element-plus'
 import { useAutoCyclicValue } from '@/composables'
 import type { ChatInputBarDataType } from './chat-data'
 import type { ChatInputBarPropsType } from './dependencies'
+import { useAuthStore } from '@/stores'
 
 // 封装 聊天输入栏显示逻辑
 // useChatInputBarDispaly
@@ -51,12 +52,24 @@ export const useChatInputBarDispaly = (
     )
   })
 
+  const authStore = useAuthStore()
+
   // 输入栏不同功能判断
+  // login 未登录时，显示登录按钮
   // menu 正常状时为 输入栏+菜单按钮
   // send 输入文字（或设置回复）后为 输入栏+发送按钮
   // edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
   // backTop 距底部距离大于大于一定值后为 回到底部文字+按钮
   const chatInputBarFunctionChoose = computed(() => {
+    // login 未登录时，显示登录按钮，backTop还会根据情况显示
+    if (authStore.isValid === false) {
+      if (props.chatBackBottomDisplayable === true) {
+        return 'backBottom' as const
+      } else {
+        return 'login' as const
+      }
+    }
+
     // edit 编辑 chatEditMessage 不为null时为，输入栏+编辑按钮组
     if (chatEditMessage.value != null || messageEditSubmitRunning.value) {
       return 'edit'

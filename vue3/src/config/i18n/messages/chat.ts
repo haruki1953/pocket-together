@@ -35,6 +35,11 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '全局聊天' as const,
     'zh-TW': () => '全域聊天' as const,
   },
+  chatInputBarLoginText: {
+    'en-US': () => 'Sign in to start chatting' as const,
+    'zh-CN': () => '登录后开始聊天' as const,
+    'zh-TW': () => '登入後開始聊天' as const,
+  },
   chatInputBarBackBottomText: {
     'en-US': () => 'Back to bottom' as const,
     'zh-CN': () => '回到底部' as const,

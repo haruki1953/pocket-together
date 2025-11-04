@@ -240,7 +240,8 @@ export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
         return undefined
       }
       // lastPage.queryNextInfo.totalPages === 1 即上次查询的总页数只有1页，即没有下一页，返回 undefined
-      if (lastPage.queryNextInfo.totalPages === 1) {
+      // 【251104】 === 1 改为 <= 1 ，因为其在查询到0个项目时totalPages是为0的
+      if (lastPage.queryNextInfo.totalPages <= 1) {
         return undefined
       }
       const cursorItem = lastPage.items[lastPage.items.length - 1]
@@ -263,9 +264,11 @@ export const useChatRoomMessagesInfiniteTwowayQuery = (data: {
         return undefined
       }
       // firstPage.queryPreviousInfo.totalPages === 1 即上次查询的总页数只有1页，即没有下一页，返回 undefined
-      if (firstPage.queryPreviousInfo.totalPages === 1) {
+      // 【251104】 === 1 改为 <= 1 ，因为其在查询到0个项目时totalPages是为0的
+      if (firstPage.queryPreviousInfo.totalPages <= 1) {
         return undefined
       }
+
       const cursorItem = firstPage.items[0]
       return {
         ...cursorItem,
