@@ -12,6 +12,7 @@ import {
   useMessageRealtimeUpdate,
 } from './composables'
 import { RiDeleteBin7Fill } from '@remixicon/vue'
+import { useI18nStore } from '@/stores'
 
 const props = defineProps<{
   /** 消息数据 */
@@ -42,7 +43,7 @@ const props = defineProps<{
 }>()
 export type ChatMessagePropsType = typeof props
 
-// const i18nStore = useI18nStore()
+const i18nStore = useI18nStore()
 
 // 封装 消息的实时更新逻辑
 // useMessageRealtimeUpdate
@@ -191,8 +192,24 @@ const {
                       class="mb-[4px] ml-[4px] mr-[12px]"
                     >
                       <div
-                        class="flex cursor-pointer items-center"
-                        @click="replyMessagesPositioningFn"
+                        class="flex items-center"
+                        :class="{
+                          'cursor-pointer':
+                            !currentMessageData.expand.replyMessage.isDeleted,
+                          'cursor-not-allowed':
+                            currentMessageData.expand.replyMessage.isDeleted,
+                        }"
+                        @click="
+                          () => {
+                            if (
+                              currentMessageData.expand.replyMessage != null &&
+                              currentMessageData.expand.replyMessage.isDeleted
+                            ) {
+                              return
+                            }
+                            replyMessagesPositioningFn()
+                          }
+                        "
                       >
                         <!-- 头像 -->
                         <div class="ml-[4px] mr-[6px]">
@@ -208,6 +225,19 @@ const {
                         <!-- 内容 -->
                         <div class="truncate">
                           <div
+                            v-if="
+                              currentMessageData.expand.replyMessage.isDeleted
+                            "
+                            class="select-none truncate text-[12px] text-color-text"
+                          >
+                            {{
+                              i18nStore.t(
+                                'chatMessageReplyMessageDeletedShowText'
+                              )()
+                            }}
+                          </div>
+                          <div
+                            v-else
                             class="select-none truncate text-[12px] text-color-text"
                           >
                             {{ currentMessageData.expand.replyMessage.content }}

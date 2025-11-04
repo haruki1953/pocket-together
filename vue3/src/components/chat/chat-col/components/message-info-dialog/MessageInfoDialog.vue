@@ -10,6 +10,7 @@ import type {
 import type { ChatInputBar } from './dependencies'
 import { useMessageControl, useMessageDispaly } from './composables'
 import { MessageDeleteDialog } from './components'
+import { useI18nStore } from '@/stores'
 
 const props = defineProps<{
   /** 聊天输入栏，将使用其中的数据 */
@@ -69,6 +70,8 @@ defineExpose({
   openMessageInfoDialog,
   dialogClose,
 })
+
+const i18nStore = useI18nStore()
 </script>
 
 <template>
@@ -138,8 +141,29 @@ defineExpose({
                   class="mb-[6px] ml-[10px] mr-[12px]"
                 >
                   <div
-                    class="flex cursor-pointer items-center"
-                    @click="replyMessagesPositioningFn"
+                    class="flex items-center"
+                    :class="{
+                      'cursor-pointer':
+                        !chatRoomMessagesGetOneQuery.data.value.expand
+                          .replyMessage.isDeleted,
+                      'cursor-not-allowed':
+                        chatRoomMessagesGetOneQuery.data.value.expand
+                          .replyMessage.isDeleted,
+                    }"
+                    @click="
+                      () => {
+                        if (
+                          chatRoomMessagesGetOneQuery.data.value != null &&
+                          chatRoomMessagesGetOneQuery.data.value.expand
+                            .replyMessage != null &&
+                          chatRoomMessagesGetOneQuery.data.value.expand
+                            .replyMessage.isDeleted
+                        ) {
+                          return
+                        }
+                        replyMessagesPositioningFn()
+                      }
+                    "
                   >
                     <!-- 头像 -->
                     <div class="ml-[4px] mr-[6px]">
@@ -155,6 +179,20 @@ defineExpose({
                     <!-- 内容 -->
                     <div class="truncate">
                       <div
+                        v-if="
+                          chatRoomMessagesGetOneQuery.data.value.expand
+                            .replyMessage.isDeleted
+                        "
+                        class="select-none truncate text-[12px] text-color-text"
+                      >
+                        {{
+                          i18nStore.t(
+                            'chatMessageReplyMessageDeletedShowText'
+                          )()
+                        }}
+                      </div>
+                      <div
+                        v-else
                         class="select-none truncate text-[12px] text-color-text"
                       >
                         {{

@@ -76,4 +76,9 @@ export const i18nMessagesChatPart = {
     'zh-CN': () => '确认要删除此消息吗？' as const,
     'zh-TW': () => '確定要刪除此訊息嗎？' as const,
   },
+  chatMessageReplyMessageDeletedShowText: {
+    'en-US': () => '[Message deleted]' as const,
+    'zh-CN': () => '[消息已删除]' as const,
+    'zh-TW': () => '[訊息已刪除]' as const,
+  },
 } as const satisfies I18nMessagesSatisfiesType

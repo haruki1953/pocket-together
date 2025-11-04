@@ -462,8 +462,22 @@ defineExpose({
             <!-- 回复的消息 -->
             <div v-if="chatReplyMessage != null">
               <div
-                class="flex cursor-pointer items-center"
-                @click="replyMessagesPositioningFn"
+                class="flex items-center"
+                :class="{
+                  'cursor-pointer': !chatReplyMessage.isDeleted,
+                  'cursor-not-allowed': chatReplyMessage.isDeleted,
+                }"
+                @click="
+                  () => {
+                    if (
+                      chatReplyMessage != null &&
+                      chatReplyMessage.isDeleted
+                    ) {
+                      return
+                    }
+                    replyMessagesPositioningFn()
+                  }
+                "
               >
                 <!-- 头像 -->
                 <div class="ml-[4px] mr-[6px]">
@@ -478,7 +492,18 @@ defineExpose({
                 </div>
                 <!-- 内容 -->
                 <div class="truncate">
-                  <div class="select-none truncate text-[12px] text-color-text">
+                  <div
+                    v-if="chatReplyMessage.isDeleted"
+                    class="select-none truncate text-[12px] text-color-text"
+                  >
+                    {{
+                      i18nStore.t('chatMessageReplyMessageDeletedShowText')()
+                    }}
+                  </div>
+                  <div
+                    v-else
+                    class="select-none truncate text-[12px] text-color-text"
+                  >
                     {{ chatReplyMessage.content }}
                   </div>
                 </div>
