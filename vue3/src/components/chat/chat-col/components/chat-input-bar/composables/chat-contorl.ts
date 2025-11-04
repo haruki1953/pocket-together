@@ -1,0 +1,204 @@
+import { pbMessagesEditChatApi, pbMessagesSendChatApi } from '@/api'
+import { pb } from '@/lib'
+import { queryRetryPbNetworkError } from '@/queries'
+import { useI18nStore, useRealtimeMessagesStore } from '@/stores'
+import { potoMessage, watchUntilSourceCondition } from '@/utils'
+import { useMutation } from '@tanstack/vue-query'
+import type { ChatInputBarPropsType } from './dependencies'
+import type { ChatInputBarDispalyType } from './chat-dispaly'
+import type { ChatInputBarDataType } from './chat-data'
+
+// 封装 聊天输入栏的操作逻辑
+// useChatInputBarControl
+export const useChatInputBarControl = (
+  data: {
+    //
+    props: ChatInputBarPropsType
+  } & ChatInputBarDataType &
+    ChatInputBarDispalyType
+) => {
+  const {
+    //
+    props,
+    chatInputContent,
+    chatReplyMessage,
+    // chatReplyMessageSet,
+    chatEditMessage,
+    chatEditMessageSet,
+    messageSendSubmitRunning,
+    messageEditSubmitRunning,
+    // chatReplyMessageUserAvatarUrl,
+    // chatInputBarFunctionChoose,
+    // autoCyclicValueToShowNewMessageAndBackBottom,
+    // isHaveNewMessage,
+    // isShowMoreMenu,
+    // closeMoreMenu,
+    // toggleShowMoreMenu,
+    // targetMoreMenu,
+    // targetMoreMenuToggleShowButtonEl,
+  } = data
+
+  // 取消回复消息
+  const chatReplyMessageCancel = () => {
+    chatReplyMessage.value = null
+  }
+
+  /** 回复消息定位 */
+  const replyMessagesPositioningFn = async () => {
+    // 无回复消息，直接返回
+    if (chatReplyMessage.value == null) {
+      return
+    }
+    await props.chatRoomMessagesReplyPositioningFn(
+      {
+        id: chatReplyMessage.value.id,
+        created: chatReplyMessage.value.created,
+      },
+      false
+    )
+  }
+
+  const i18nStore = useI18nStore()
+
+  const realtimeMessagesStore = useRealtimeMessagesStore()
+  // 消息发送Mutation
+  const messageSendMutation = useMutation({
+    // mutation函数
+    mutationFn: async () => {
+      // 未登录，抛出错误
+      if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+        throw new Error(
+          '!pb.authStore.isValid || pb.authStore.record?.id == null'
+        )
+      }
+
+      // 通过 pocketbase SDK 请求
+      const pbRes = await pbMessagesSendChatApi({
+        content: chatInputContent.value,
+        roomId: props.roomId,
+        replyMessageId: chatReplyMessage.value?.id,
+      })
+      console.log(pbRes)
+      return pbRes
+    },
+    // 一些收尾工作
+    onSuccess: (data) => {
+      // 发送后重置输入栏
+      chatInputContent.value = ''
+      // 发送后取消刚刚的回复消息
+      chatReplyMessage.value = null
+    },
+    // 错误处理
+    onError: (error) => {
+      potoMessage({
+        type: 'error',
+        message: i18nStore.t('chatMessageSendErrorText')(),
+      })
+    },
+    // 此接口非幂等，不重试，避免重复发送
+    // // ✅ 在网络错误时重试
+    // retry: queryRetryPbNetworkError,
+  })
+
+  // 消息发送提交
+  const messageSendSubmit = async () => {
+    if (messageSendSubmitRunning.value === true) {
+      return
+    }
+    messageSendSubmitRunning.value = true
+    try {
+      const resData = await messageSendMutation.mutateAsync()
+      // 发送后，仍应等待realtime收到自己发的消息
+      await watchUntilSourceCondition(
+        computed(
+          () =>
+            realtimeMessagesStore.createList.find((i) => i.id === resData.id) !=
+            null
+        ),
+        (val) => val === true
+      )
+    } finally {
+      messageSendSubmitRunning.value = false
+    }
+  }
+
+  // 消息编辑Mutation
+  const messageEditMutation = useMutation({
+    // mutation函数
+    mutationFn: async () => {
+      // 未登录，抛出错误
+      if (!pb.authStore.isValid || pb.authStore.record?.id == null) {
+        throw new Error(
+          '!pb.authStore.isValid || pb.authStore.record?.id == null'
+        )
+      }
+      // 无chatEditMessage.value，抛出错误
+      if (chatEditMessage.value == null) {
+        throw new Error('chatEditMessage.value == null')
+      }
+
+      // 通过 pocketbase SDK 请求
+      const pbRes = await pbMessagesEditChatApi({
+        chatEditMessageId: chatEditMessage.value.id,
+        content: chatInputContent.value,
+        replyMessageId: chatReplyMessage.value?.id,
+      })
+      console.log(pbRes)
+      return pbRes
+    },
+    // 一些收尾工作
+    onSuccess: (data) => {
+      // 发送后重置输入栏
+      chatEditMessageSet(null)
+    },
+    // 错误处理
+    onError: (error) => {
+      potoMessage({
+        type: 'error',
+        message: i18nStore.t('chatMessageEditErrorText')(),
+      })
+    },
+    // // 此接口幂等，可重试
+    // ✅ 在网络错误时重试
+    retry: queryRetryPbNetworkError,
+  })
+
+  // 消息编辑提交
+  const messageEditSubmit = async () => {
+    if (messageEditSubmitRunning.value === true) {
+      return
+    }
+    messageEditSubmitRunning.value = true
+    try {
+      const resData = await messageEditMutation.mutateAsync()
+      // 发送后，仍应等待realtime收到更新情况
+      await watchUntilSourceCondition(
+        computed(() => {
+          const find = realtimeMessagesStore.updateList.find((i) => {
+            // 需消息id与updated更新时间才能确认是此次更新
+            return i.id === resData.id && i.updated === resData.updated
+          })
+          return find != null
+        }),
+        (val) => val === true
+      )
+    } finally {
+      messageEditSubmitRunning.value = false
+    }
+  }
+
+  // 消息编辑取消
+  const messageEditCancel = () => {
+    chatEditMessageSet(null)
+  }
+
+  return {
+    //
+    chatReplyMessageCancel,
+    replyMessagesPositioningFn,
+    messageSendSubmit,
+    messageEditSubmit,
+    messageEditCancel,
+  }
+}
+export type ChatInputBarControlType = ReturnType<typeof useChatInputBarControl>
