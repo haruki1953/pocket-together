@@ -17,9 +17,9 @@ import {
   CreateRoomPage,
   CreateRoomOK,
   TestPage,
+  ImagePage,
 } from './views'
 import { useRouterHistoryStore } from './stores'
-import { injectAppMainElScrollbar } from './composables'
 import { getAppMainElScrollbarWrap } from './utils'
 
 // 路由
@@ -47,6 +47,10 @@ const router = createRouter({
         {
           ...routerDict.FilePage,
           component: FilePage,
+        },
+        {
+          ...routerDict.ImagePage,
+          component: ImagePage,
         },
         {
           ...routerDict.SettingPage,

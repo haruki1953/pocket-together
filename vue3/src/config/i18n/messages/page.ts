@@ -19,6 +19,11 @@ export const i18nMessagesPagePart = {
     'zh-CN': () => '文件' as const,
     'zh-TW': () => '文件' as const,
   },
+  pageImage: {
+    'en-US': () => 'Image' as const,
+    'zh-CN': () => '图片' as const,
+    'zh-TW': () => '圖片' as const,
+  },
   pageSetting: {
     'en-US': () => 'Setting' as const,
     'zh-CN': () => '设置' as const,

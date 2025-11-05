@@ -75,6 +75,7 @@ export const layoutChatPageConfig = {
   /** 移动端全局聊天页最大宽度 */
   chatPageMobileMaxWidth: 500,
 } as const
+/** 房间页布局配置 */
 export const layoutRoomPageConfig = {
   /**
    * Col2 >= 768 > Col1
@@ -97,8 +98,30 @@ export const layoutRoomPageConfig = {
   /** 房间详情页，内容的最大宽度 */
   roomInfoPageContentMaxWidth: 500,
 }
-/** 房间页布局配置 */
 
+/** 图片页布局配置 */
+export const layoutImagePageConfig = {
+  /**
+   * Col2 >= 768 > Col1
+   * 大于等于768显示两列，小于则显示一列
+   * useWindowSize
+   */
+  breakpointCol2ToCol1: 768,
+  /**
+   * WidthLarger >= 1024 > WidthSmaller
+   * 大于1024时左栏宽度较大，小于则左栏宽度较小
+   * useWindowSize
+   */
+  breakpointLeftBarWidthLargerToWidthSmaller: 1024,
+  /** 左栏宽度较大时的宽度 */
+  leftBarWidthLargerWidth: 500,
+  /** 左栏宽度较小时的宽度 */
+  leftBarWidthSmallerWidth: 350,
+  /**
+   * 导航栏位于底部时（小屏），内容的最大宽度
+   */
+  contentMaxWidthOnNavBottom: 500,
+} as const
 // 参考
 // breakpoints: {
 //   xs: 480, // 超小屏幕

@@ -3,6 +3,7 @@ import type { Component } from 'vue'
 import {
   RiFolderFill,
   RiHomeFill,
+  RiImageFill,
   RiMessage3Fill,
   RiSettingsFill,
   RiUserLine,
@@ -45,6 +46,11 @@ export const routerDict = {
   FilePage: {
     path: '/file',
     name: 'FilePage',
+  },
+  // 图片页
+  ImagePage: {
+    path: '/image',
+    name: 'ImagePage',
   },
   SettingPage: {
     path: '/setting',
@@ -142,10 +148,15 @@ export const routerNavInfo = {
       titleI18nMessageKey: 'pageChat',
       icon: markRaw(RiMessage3Fill),
     },
+    // {
+    //   ...routerDict.FilePage,
+    //   titleI18nMessageKey: 'pageFile',
+    //   icon: markRaw(RiFolderFill),
+    // },
     {
-      ...routerDict.FilePage,
-      titleI18nMessageKey: 'pageFile',
-      icon: markRaw(RiFolderFill),
+      ...routerDict.ImagePage,
+      titleI18nMessageKey: 'pageImage',
+      icon: markRaw(RiImageFill),
     },
     {
       ...routerDict.SettingPage,

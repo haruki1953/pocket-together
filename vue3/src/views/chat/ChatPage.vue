@@ -7,15 +7,11 @@ import {
   routerDict,
 } from '@/config'
 import { ChatCol, ChatTopBarMoreMenuItem } from '@/components'
-import type { GlobalComponents } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ContainerCol2 } from '@/components'
 import { generateRandomIntegerBetween, generateRandomKey } from '@/utils'
 import { pbMessagesSendChatApi } from '@/api'
 import { RiFlaskLine } from '@remixicon/vue'
-import { injectAppMainElScrollbar } from '@/composables'
-
-console.log('ChatPage setup')
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -58,13 +54,6 @@ const refContainerCol2 = ref<InstanceType<typeof ContainerCol2> | null>(null)
 
 const route = useRoute()
 const router = useRouter()
-
-router.replace({
-  path: route.path,
-  query: {
-    test: '测试',
-  },
-})
 
 // 如果当前为小屏，但有路由消息参数（消息定位），则跳转到ChatPageMobile
 if (showCol2TrueCol1False.value === false) {
