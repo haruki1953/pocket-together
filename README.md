@@ -9,6 +9,36 @@ note 笔记
 scripts 用于 项目启动、项目构建 的一些脚本
 ```
 
+```
+项目名 pocket-together
+功能 群聊、同步观看
+技术栈：
+后端 pocketbase
+前端 vue3 ts element-plus pinia tanstack/query
+相关细节 前端使用pocketbase jsSDK并通过pocketbase-typegen来完善其类型
+
+一期：
+登陆注册 设置 房间 聊天 文件 在线状态
+二期：
+音视频播放 同步观看
+三期：
+electron桌面应用 文件下载 bt文件 bt下载
+四期：
+自动创建番剧房间，根据rss更新，提供番剧种子文件或磁链
+五期：
+移动端应用app，计划使用tauri
+```
+
+## 半成品项目 pocket-chat
+pocket-together内容比较多，距完成遥遥无期。克隆为一个新项目 pocket-chat 只有：登录、聊天、设置
+
+目的
+```
+练习部署，标准化部署方式
+试运营来进一步了解 pocketbase
+练习 github-actions 发布
+```
+
 ## pocketbase 后端
 下载 PocketBase
 ```
