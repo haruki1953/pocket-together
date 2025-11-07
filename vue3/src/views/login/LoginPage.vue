@@ -52,8 +52,7 @@ const allowUsersToRegister = computed(() => {
   if (val == null) {
     return true
   }
-  // return val
-  return true
+  return val
 })
 </script>
 
