@@ -3,28 +3,26 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Vite App</title>
+  <title>PocketTogether</title>
 
   <!-- Open Graph Meta Tags -->
-  <!--
-  <meta property="og:title" content="Tweblog">
-  <meta property="og:description" content="一个社交媒体博客化工具，针对推特等平台的内容进行导入与转发">
+  <meta property="og:title" content="PocketTogether">
+  <meta property="og:description"
+    content="一个基于 PocketBase 与 Vue3 的实时群聊与同步观看平台 | A real-time group chat and synchronized viewing platform built with PocketBase and Vue3.">
   <meta property="og:image" content="/social.jpg">
-  <meta property="og:url" content="https://tweblog.com/">
+  <meta property="og:url" content="https://sakiko.top/">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Tweblog">
-  -->
+  <meta property="og:site_name" content="PocketTogether">
 
   <!-- Twitter Card Meta Tags -->
-  <!-- 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Tweblog">
-  <meta name="twitter:description" content="一个社交媒体博客化工具，针对推特等平台的内容进行导入与转发">
+  <meta name="twitter:title" content="PocketTogether">
+  <meta name="twitter:description"
+    content="一个基于 PocketBase 与 Vue3 的实时群聊与同步观看平台 | A real-time group chat and synchronized viewing platform built with PocketBase and Vue3.">
   <meta name="twitter:image" content="/social.jpg">
   <meta name="twitter:site" content="@harukiO_0">
-  -->
 
   <link href="/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet" />
   <link rel="preload" href="/remixicon@4.6.0/fonts/remixicon.woff2" as="font" type="font/woff2"
@@ -46,12 +44,12 @@
       --color-text: var(--vt-c-text-dark-2);
     }
 
-    html {
-      color: var(--color-text);
-      background: var(--color-background);
-      /* 初始化滚动条，避免加载瞬间的抖动 */
-      overflow-y: hidden;
-      overflow-x: hidden;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      font-weight: normal;
     }
 
     * {
@@ -61,9 +59,40 @@
       scrollbar-color: var(--my-neutral) transparent;
     }
 
-    body {
+    html {
       color: var(--color-text);
       background: var(--color-background);
+      /* 初始化滚动条，避免加载瞬间的抖动 */
+      overflow-y: hidden;
+      overflow-x: hidden;
+    }
+
+    body {
+      height: 100vh;
+      color: var(--color-text);
+      background: var(--color-background);
+      transition:
+        color 0.5s,
+        background-color 0.5s;
+      line-height: 1.6;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Fira Sans',
+        'Droid Sans',
+        'Helvetica Neue',
+        sans-serif;
+      font-size: 15px;
+      /* font-size: 16px; */
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* 伴随 index.html 的加载遮罩，将在 App.vue onMounted 中取消 */
@@ -86,64 +115,39 @@
     }
 
     #index-loading .decoration-box {
-      display: flex;
-    }
-
-    #index-loading .dot-box {
-      --dot-size: 20px;
-      --dot-interval: 0.24s;
-      --dot-delay: 0s;
-      width: var(--dot-size);
-      height: var(--dot-size);
-      border-radius: calc(var(--dot-size) / 2);
-      margin: 0 10px;
-      transition: transform 0.5s;
-      transform: scale(1);
+      width: 150px;
+      height: 150px;
+      color: #7899CC;
+      transition: transform 500ms;
       animation-name: loading;
-      animation-duration: calc(var(--dot-interval) * 5 + 0.3s);
+      animation-duration: 1500ms;
       animation-iteration-count: infinite;
-    }
-
-    #index-loading .sakiko {
-      background-color: #7899CC;
-      animation-delay: var(--dot-delay);
-    }
-
-    #index-loading .umiri {
-      background-color: #5a7583;
-      animation-delay: calc((var(--dot-interval) * 1) + var(--dot-delay));
-    }
-
-    #index-loading .uika {
-      background-color: #BB9854;
-      animation-delay: calc((var(--dot-interval) * 2) + var(--dot-delay));
-    }
-
-    #index-loading .nyamu {
-      background-color: #AB4378;
-      animation-delay: calc((var(--dot-interval) * 3) + var(--dot-delay));
-    }
-
-    #index-loading .mutsumi {
-      background-color: #799978;
-      animation-delay: calc((var(--dot-interval) * 4) + var(--dot-delay));
+      animation-delay: 2s;
     }
 
     @keyframes loading {
       0% {
-        transform: scale(1);
+        transform: rotate(0deg);
       }
 
-      10% {
-        transform: scale(1.5);
+      20% {
+        transform: rotate(-5deg);
       }
 
-      33% {
-        transform: scale(1);
+      40% {
+        transform: rotate(5deg);
+      }
+
+      60% {
+        transform: rotate(-5deg);
+      }
+
+      80% {
+        transform: rotate(0deg);
       }
 
       100% {
-        transform: scale(1);
+        transform: rotate(0deg);
       }
     }
   </style>
@@ -171,11 +175,11 @@
   <div id="index-mask">
     <div id="index-loading">
       <div class="decoration-box">
-        <div class="dot-box sakiko"></div>
-        <div class="dot-box umiri"></div>
-        <div class="dot-box uika"></div>
-        <div class="dot-box nyamu"></div>
-        <div class="dot-box mutsumi"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M2 8.99374C2 5.68349 4.67654 3 8.00066 3H15.9993C19.3134 3 22 5.69478 22 8.99374V21H8.00066C4.68659 21 2 18.3052 2 15.0063V8.99374ZM14 11V13H16V11H14ZM8 11V13H10V11H8Z">
+          </path>
+        </svg>
       </div>
     </div>
   </div>

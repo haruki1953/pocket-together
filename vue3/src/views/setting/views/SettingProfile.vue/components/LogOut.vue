@@ -2,7 +2,6 @@
 import { ConfirmContainer } from '@/components'
 import { pb } from '@/lib'
 import { useI18nStore } from '@/stores'
-import type { GlobalComponents } from 'vue'
 
 const i18nStore = useI18nStore()
 
@@ -27,6 +26,7 @@ const submit = async () => {
     <ConfirmContainer
       ref="refConfirmContainer"
       backgroundColorTwcss="bg-color-background-soft"
+      confirmType="danger"
       :title="
         // 遮罩确认框内容
         // '确认要退出登录吗'
@@ -41,7 +41,7 @@ const submit = async () => {
       </div>
       <!-- 按钮盒子 -->
       <div class="poto-setting-button-box not-center">
-        <ElButton type="primary" class="bg-danger" round @click="submit()">
+        <ElButton type="danger" round @click="submit()">
           <!-- 退出登录 -->
           {{ i18nStore.t('settingProfileLogOutButtonSubmitText')() }}
         </ElButton>
@@ -50,8 +50,4 @@ const submit = async () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-.bg-danger:hover {
-  background-color: var(--el-color-danger);
-}
-</style>
+<style lang="scss" scoped></style>

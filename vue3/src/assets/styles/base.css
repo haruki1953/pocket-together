@@ -6,6 +6,13 @@
   font-weight: normal;
 }
 
+* {
+  /* 窄滚动条 */
+  scrollbar-width: thin;
+  /* 滑块颜色 + 轨道透明 */
+  scrollbar-color: var(--color-text-soft) transparent;
+}
+
 html {
   overflow-y: hidden;
   overflow-x: hidden;
@@ -16,7 +23,7 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   transition:
@@ -41,14 +48,6 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-
-* {
-  /* 窄滚动条 */
-  scrollbar-width: thin;
-  /* 滑块颜色 + 轨道透明 */
-  scrollbar-color: var(--color-text-soft) transparent;
 }
 
 /*

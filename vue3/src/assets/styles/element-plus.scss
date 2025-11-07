@@ -108,6 +108,10 @@ $dark-steps: 1, 2, 3, 4, 5, 6, 7, 8, 9;
   }
 }
 
+.el-notification.el-notification {
+  border-radius: 20px;
+}
+
 .el-notification.right {
   // width: var(--el-notification-width);
   transition:

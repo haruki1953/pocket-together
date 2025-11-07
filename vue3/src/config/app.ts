@@ -1,5 +1,5 @@
-import appLogo from '@/assets/logo.png'
-import appUserDefaultAvatar from '@/assets/logo.png'
+import appLogo from '@/assets/logo.jpg'
+import appUserDefaultAvatar from '@/assets/logo.jpg'
 
 import type { I18nLocaleType } from './i18n'
 // import appLogo from '@/assets/tweet.png'

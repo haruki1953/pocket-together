@@ -30,7 +30,7 @@ electron桌面应用 文件下载 bt文件 bt下载
 ```
 
 ## 半成品项目 pocket-chat
-pocket-together内容比较多，距完成遥遥无期。克隆为一个新项目 pocket-chat 只有：登录、聊天、设置
+pocket-together内容比较多，距完成遥遥无期。所以发布半成品项目 pocket-chat 只有：登录、聊天、设置
 
 目的
 ```
