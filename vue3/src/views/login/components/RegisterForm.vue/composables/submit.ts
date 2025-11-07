@@ -70,18 +70,35 @@ export const useRegisterFormSubmit = (data: {
     // 错误处理
     onError: (error) => {
       if (error instanceof ClientResponseError) {
+        // 是否为已知错误
+        let isKnowError = false
         if (error.data?.data?.username?.code === 'validation_not_unique') {
           // 用户名已存在
           errorUsernameList_validation_not_unique.value.push(
             formModel.value.username
           )
+          // 设置为已知错误
+          isKnowError = true
         }
         if (error.data?.data?.email?.code === 'validation_not_unique') {
           // 邮箱已存在
           errorEmailList_validation_not_unique.value.push(formModel.value.email)
+          // 设置为已知错误
+          isKnowError = true
         }
-        // 触发校验以显示错误
-        form.value?.validate()
+        // 为已知错误
+        if (isKnowError) {
+          // 触发校验以显示错误
+          form.value?.validate()
+        }
+        // 为未知错误
+        else {
+          // 未知错误
+          potoMessage({
+            type: 'error',
+            message: i18nStore.t('registerFailedErrorUnknow')(),
+          })
+        }
       } else if (error instanceof PotoFormValidationError) {
         // 这是表单校验抛出的错误，什么都不用做
       } else {
