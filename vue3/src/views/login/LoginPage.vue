@@ -44,6 +44,16 @@ const externalLinks = computed(
       'external-links-to-social-media-icons-etc'
     ]
 )
+
+// 是否允许注册
+const allowUsersToRegister = computed(() => {
+  const val = pbCollectionConfigQuery.data.value?.['allow-users-to-register']
+  // val == null 只为了类型确定，理论上此值不会为空，默认为true
+  if (val == null) {
+    return true
+  }
+  return val
+})
 </script>
 
 <template>
@@ -61,6 +71,7 @@ const externalLinks = computed(
               'mx-2': !showCol2TrueCol1False,
             }"
           >
+            <!-- 标题 -->
             <div
               :class="{
                 'text-5xl': showCol2TrueCol1False,
@@ -70,71 +81,93 @@ const externalLinks = computed(
             >
               {{ websiteName }}
             </div>
-            <!-- 两列 -->
-            <div
-              v-if="showCol2TrueCol1False"
-              class="flex items-center justify-center"
-            >
-              <!-- 左栏 -->
+            <!-- 允许注册 -->
+            <template v-if="allowUsersToRegister">
+              <!-- 大屏两列，登录与注册 -->
               <div
-                ref="refBoxLeft"
-                :style="styleBoxLeftRight.left"
-                class="flex-1 rounded-3xl bg-color-background-soft"
+                v-if="showCol2TrueCol1False"
+                class="flex items-center justify-center"
               >
-                <!-- 左侧上栏 -->
-                <div class="mx-auto max-w-96">
-                  <div class="m-8">
-                    <LoginForm></LoginForm>
+                <!-- 左栏 -->
+                <div
+                  ref="refBoxLeft"
+                  :style="styleBoxLeftRight.left"
+                  class="flex-1 rounded-3xl bg-color-background-soft"
+                >
+                  <!-- 左侧上栏 -->
+                  <div class="mx-auto max-w-96">
+                    <div class="m-8">
+                      <LoginForm></LoginForm>
+                    </div>
                   </div>
+                  <!-- 左侧水平分割线 -->
+                  <!-- 左侧下栏 -->
+                  <!-- 都在Oauth2List -->
+                  <Oauth2List></Oauth2List>
                 </div>
-                <!-- 左侧水平分割线 -->
-                <!-- 左侧下栏 -->
-                <!-- 都在Oauth2List -->
-                <Oauth2List></Oauth2List>
-              </div>
-              <!-- 中间垂直分割线 -->
-              <div class="w-0 border border-transparent"></div>
-              <!-- 右栏 -->
-              <div
-                ref="refBoxRight"
-                :style="styleBoxLeftRight.right"
-                class="flex-1 rounded-3xl bg-color-background-soft"
-              >
-                <div class="mx-auto max-w-96">
-                  <div class="m-8">
-                    <RegisterForm></RegisterForm>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- 一列 -->
-            <div v-else class="flex items-center justify-center">
-              <div
-                class="w-full max-w-[400px] rounded-3xl bg-color-background-soft"
-              >
-                <div class="mx-auto max-w-96">
-                  <div class="m-8">
-                    <LoginForm></LoginForm>
-                  </div>
-                </div>
-                <Oauth2List></Oauth2List>
-                <div class="border border-color-background"></div>
-                <div class="mx-auto max-w-96">
-                  <div class="m-8">
-                    <RegisterForm></RegisterForm>
+                <!-- 中间垂直分割线 -->
+                <div class="w-0 border border-transparent"></div>
+                <!-- 右栏 -->
+                <div
+                  ref="refBoxRight"
+                  :style="styleBoxLeftRight.right"
+                  class="flex-1 rounded-3xl bg-color-background-soft"
+                >
+                  <div class="mx-auto max-w-96">
+                    <div class="m-8">
+                      <RegisterForm></RegisterForm>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <!-- 小屏一列 -->
+              <div v-else class="flex items-center justify-center">
+                <div
+                  class="w-full max-w-[400px] rounded-3xl bg-color-background-soft"
+                >
+                  <div class="mx-auto max-w-96">
+                    <div class="m-8">
+                      <LoginForm></LoginForm>
+                    </div>
+                  </div>
+                  <Oauth2List></Oauth2List>
+                  <div class="border border-color-background"></div>
+                  <div class="mx-auto max-w-96">
+                    <div class="m-8">
+                      <RegisterForm></RegisterForm>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <!-- 不允许注册 -->
+            <template v-else>
+              <div class="flex items-center justify-center">
+                <div
+                  class="w-full rounded-3xl bg-color-background-soft"
+                  :class="{
+                    // 大屏，较宽
+                    'max-w-[500px]': showCol2TrueCol1False,
+                    // 小屏，较窄
+                    'max-w-[400px]': !showCol2TrueCol1False,
+                  }"
+                >
+                  <div class="mx-auto max-w-96">
+                    <div class="m-8">
+                      <LoginForm></LoginForm>
+                    </div>
+                  </div>
+                  <Oauth2List></Oauth2List>
+                </div>
+              </div>
+            </template>
+
+            <!-- 图标组 -->
             <div class="m-10 flex items-center justify-center">
               <LoginDarkI18n></LoginDarkI18n>
               <template v-if="externalLinks != null">
                 <div v-for="(item, index) in externalLinks" :key="index">
-                  <ElTooltip
-                    :content="item.name"
-                    effect="light"
-                    placement="top"
-                  >
+                  <ElTooltip :content="item.name" effect="light">
                     <a
                       class="mx-1 cursor-pointer p-1"
                       :href="item.link"

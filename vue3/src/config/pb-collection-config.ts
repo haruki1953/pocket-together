@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 // pocketbase 集合 config 其值的 zodSchema
 export const pbCollectionConfigSchema = {
+  'allow-users-to-register': z.boolean(),
+  'allow-anonymous-view': z.boolean(),
   'allow-basic-users-upload': z.boolean(),
   'email-update-rate-limit-second': z.number(),
   'email-verify-rate-limit-second': z.number(),
@@ -36,7 +38,10 @@ export const pbCollectionConfigDefaultGetFn = () => {
       - vue3\src\config\pb-collection-config.ts
       - pocketbase\pb_hooks\init-config.pb.js
     */
-
+    /** 是否允许用户注册 */
+    'allow-users-to-register': true,
+    /** 是否允许任何人查看，不登录也能查看（游客访问） */
+    'allow-anonymous-view': true,
     /** 是否允许基础用户上传文件 */
     'allow-basic-users-upload': true,
     /** 邮箱修改最短秒数（由 客户端/前端 实现的速率限制，单位秒） */
@@ -45,23 +50,31 @@ export const pbCollectionConfigDefaultGetFn = () => {
     'email-verify-rate-limit-second': 30,
     /** 密码修改最短秒数 */
     'password-update-rate-limit-second': 30,
-    /** 网站名称 */
-    'website-name': 'PocketTogether',
-    /** 社交媒体等图标外链（显示在登录页底部的图标链接） https://remixicon.com/ */
-    'external-links-to-social-media-icons-etc': [
-      {
-        icon: 'ri-github-line',
-        link: 'https://github.com/haruki1953/pocket-together',
-        name: 'github',
-      },
-      {
-        icon: 'ri-discord-line',
-        link: 'https://discord.gg/aZq6u3Asak',
-        name: 'discord',
-      },
-    ],
     /*
       【pbCollectionConfigDefault_public END】
     */
+
+    /**
+     * 网站名称
+     * 此值特殊，在前端为空字符串，在后端为'PocketTogether'
+     */
+    'website-name': '',
+    /**
+     * 社交媒体等图标外链（显示在登录页底部的图标链接） https://remixicon.com/
+     * 此值特殊，在前端为空数组，在后端为
+     * [
+     *   {
+     *     icon: 'ri-github-line',
+     *     link: 'https://github.com/haruki1953/pocket-together',
+     *     name: 'github',
+     *   },
+     *   {
+     *     icon: 'ri-discord-line',
+     *     link: 'https://discord.gg/aZq6u3Asak',
+     *     name: 'discord',
+     *   },
+     * ],
+     */
+    'external-links-to-social-media-icons-etc': [],
   } satisfies PbCollectionConfigType as PbCollectionConfigType
 }

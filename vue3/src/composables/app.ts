@@ -4,9 +4,11 @@ import { Collections, onPbResErrorStatus401AuthClear, pb } from '@/lib'
 import { useAuthStore } from '@/stores'
 import { useMutation } from '@tanstack/vue-query'
 import { fetchWithTimeoutPreferred } from '@/utils'
-import { queryRetryPbNetworkError } from '@/queries'
+import { queryRetryPbNetworkError, usePbCollectionConfigQuery } from '@/queries'
 import { ClientResponseError } from 'pocketbase'
 import { pbUsersAuthRefreshApi } from '@/api'
+import { useRouter } from 'vue-router'
+import { routerDict } from '@/config'
 
 // 组合式的意义就是封装和复用有状态逻辑
 // https://cn.vuejs.org/guide/reusability/composables.html
@@ -85,3 +87,34 @@ export const useInitPbAuth = () => {
     await mutation.mutateAsync()
   })
 }
+
+/** 监听 是否允许所有人查看 与 响应式的登录状态 的变化，在allowAnonymousView 变为false时，且当前未登录，应跳转至登录页 */
+export const useWatchAllowAnonymousViewAndAuthStoreIsValidCheckRouterLoginPage =
+  () => {
+    const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+
+    // 是否允许所有人查看（游客访问）
+    const allowAnonymousView = computed(() => {
+      const val = pbCollectionConfigQuery.data.value?.['allow-anonymous-view']
+      // val == null 只为了类型确定，理论上此值不会为空，默认为true
+      if (val == null) {
+        return true
+      }
+      return val
+    })
+    // 响应式的登录状态
+    const authStore = useAuthStore()
+
+    const router = useRouter()
+
+    // 检查条件，转到登录页
+    const checkRouterLoginPage = () => {
+      // allowAnonymousView 变为false时，且当前未登录，应跳转至登录页
+      if (allowAnonymousView.value === false && authStore.isValid === false) {
+        router.push(routerDict.LoginPage.path)
+      }
+    }
+    // 监听 是否允许所有人查看 与 响应式的登录状态 的变化
+    watch(allowAnonymousView, checkRouterLoginPage)
+    watch(() => authStore.isValid, checkRouterLoginPage)
+  }

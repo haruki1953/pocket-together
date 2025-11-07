@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { i18nLocaleInfo } from './config'
-import { useI18nStore, useRealtimeMessagesStore } from './stores'
+import { i18nLocaleInfo, routerDict } from './config'
+import { useAuthStore, useI18nStore, useRealtimeMessagesStore } from './stores'
 import { useDark } from '@vueuse/core'
 import { computed } from 'vue'
 import { darkTheme, lightTheme } from 'naive-ui'
@@ -8,11 +8,13 @@ import {
   provideAppMainElScrollbar,
   useFirstDataLoadingAndAnimationMaskClose,
   useInitPbAuth,
+  useWatchAllowAnonymousViewAndAuthStoreIsValidCheckRouterLoginPage,
   type AppMainElScrollbar,
 } from './composables'
 import type { ElScrollbar } from 'element-plus'
 import { usePbCollectionConfigQuery } from './queries'
 import { watchUntilQueryReady, watchUntilSourceCondition } from './utils'
+import { useRouter } from 'vue-router'
 
 const i18nStore = useI18nStore()
 const pbCollectionConfigQuery = usePbCollectionConfigQuery()
@@ -45,6 +47,9 @@ useFirstDataLoadingAndAnimationMaskClose({
 
 // 在程序初始化时，进行关于pocketbase身份验证的一些操作
 useInitPbAuth()
+
+// 监听，在禁止游客查看且未登录时跳转至登录页
+useWatchAllowAnonymousViewAndAuthStoreIsValidCheckRouterLoginPage()
 
 // 启动消息订阅
 const realtimeMessagesStore = useRealtimeMessagesStore()

@@ -4,6 +4,7 @@ import type { ElForm } from 'element-plus'
 import { useLoginFormRules, useLoginFormSubmit } from './composables'
 import ForgotPasswordDialog from './components/ForgotPasswordDialog.vue'
 import { routerDict } from '@/config'
+import { usePbCollectionConfigQuery } from '@/queries'
 
 const i18nStore = useI18nStore()
 
@@ -35,6 +36,18 @@ const clickForgotPassword = () => {
   // 打开忘记密码对话框
   refForgotPasswordDialog.value?.dialogOpen()
 }
+
+const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+
+// 是否允许所有人查看，否则不显示游客模式
+const allowAnonymousView = computed(() => {
+  const val = pbCollectionConfigQuery.data.value?.['allow-anonymous-view']
+  // val == null 只为了类型确定，理论上此值不会为空，默认为true
+  if (val == null) {
+    return true
+  }
+  return val
+})
 </script>
 
 <template>
@@ -87,8 +100,11 @@ const clickForgotPassword = () => {
   </ElButton>
   <div class="relative h-2">
     <div class="absolute top-2 flex w-full items-center justify-between">
+      <!-- 游客模式 -->
       <div class="flex flex-1 justify-start truncate">
+        <!-- 允许所有人查看时才显示游客模式 -->
         <span
+          v-if="allowAnonymousView"
           class="mx-2 cursor-pointer truncate text-xs text-el-primary hover:text-el-primary-light-3"
           @click="
             // 跳转至首页
@@ -98,6 +114,7 @@ const clickForgotPassword = () => {
           {{ i18nStore.t('loginVisitorText')() }}
         </span>
       </div>
+      <!-- 忘记密码 -->
       <div class="flex flex-1 justify-end truncate">
         <span
           class="mx-2 cursor-pointer truncate text-xs text-el-primary hover:text-el-primary-light-3"

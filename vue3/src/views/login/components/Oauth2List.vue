@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18nStore } from '@/stores'
-import { urlJoinUtil } from '@/utils'
+import { potoMessage, urlJoinUtil } from '@/utils'
 import { pocketbaseConfig } from '@/config'
 import type { AuthProviderInfo } from 'pocketbase'
 import { Collections } from '@/lib'
@@ -34,14 +34,21 @@ const authWithOAuth2 = async (providerName: AuthProviderInfo['name']) => {
     level: UsersLevelOptions.basic,
   }
 
-  // authWithOAuth2 比较复杂，暂不使用useMutation与fetchWithTimeoutPreferred
-  const res = await pb
-    .collection(Collections.Users)
-    .authWithOAuth2({ provider: providerName, createData })
+  try {
+    // authWithOAuth2 比较复杂，暂不使用useMutation与fetchWithTimeoutPreferred
+    const res = await pb
+      .collection(Collections.Users)
+      .authWithOAuth2({ provider: providerName, createData })
 
-  console.log(res)
+    console.log(res)
 
-  router.push(routerDict.HomePage.path)
+    router.push(routerDict.HomePage.path)
+  } catch (error) {
+    potoMessage({
+      type: 'error',
+      message: i18nStore.t('loginFailed')(),
+    })
+  }
 }
 </script>
 

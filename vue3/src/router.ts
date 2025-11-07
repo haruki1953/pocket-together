@@ -19,8 +19,10 @@ import {
   TestPage,
   ImagePage,
 } from './views'
-import { useRouterHistoryStore } from './stores'
+import { useAuthStore, useRouterHistoryStore } from './stores'
 import { getAppMainElScrollbarWrap } from './utils'
+import { usePbCollectionConfigQuery } from './queries'
+import { pb } from './lib'
 
 // 路由
 const router = createRouter({
@@ -107,6 +109,26 @@ const router = createRouter({
 
 // 路由访问拦截
 router.beforeEach((to, from) => {
+  // 登录页统统放行
+  if (to.name === routerDict.LoginPage.name) {
+    return
+  }
+
+  const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+  // 是否允许所有人查看
+  const allowAnonymousView = (() => {
+    const val = pbCollectionConfigQuery.data.value?.['allow-anonymous-view']
+    // val == null 只为了类型确定，理论上此值不会为空，默认为true
+    if (val == null) {
+      return true
+    }
+    return val
+  })()
+  // 如果当前为不允许所有人查看，且当前用户未登录，则拦截到登录页
+  if (!allowAnonymousView && !pb.authStore.isValid) {
+    return routerDict.LoginPage.path
+  }
+
   // 路由不存在，拦截到首页
   if (router.resolve(to.path).matched.length === 0) {
     return routerDict.HomePage.path
