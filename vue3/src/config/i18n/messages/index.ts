@@ -1,6 +1,5 @@
 import { i18nMessagesChatPart } from './chat'
 import { i18nMessagesDatePart } from './date'
-import { appNameI18n } from './dependencies'
 import type { I18nLocaleType } from './dependencies'
 import { i18nMessagesHomePart } from './home'
 import { i18nMessagesLoginPart } from './login'
@@ -22,7 +21,6 @@ export type I18nMessagesSatisfiesType = Record<
 // satisfies 确保其每一项不会缺少
 // 还需要确保每组函数类型是一样的，这个只能自己注意了
 export const i18nMessages = {
-  appNameI18n,
   // 主页相关部分
   ...i18nMessagesHomePart,
   // 标签相关部分

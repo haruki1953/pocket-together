@@ -26,7 +26,21 @@ onBootstrap((e) => {
     'email-verify-rate-limit-second': 30,
     /** 密码修改最短秒数 */
     'password-update-rate-limit-second': 30,
-
+    /** 网站名称 */
+    'website-name': 'PocketTogether',
+    /** 社交媒体等图标外链（显示在登录页底部的图标链接） https://remixicon.com/ */
+    'external-links-to-social-media-icons-etc': [
+      {
+        icon: 'ri-github-line',
+        link: 'https://github.com/haruki1953/pocket-together',
+        name: 'github',
+      },
+      {
+        icon: 'ri-discord-line',
+        link: 'https://discord.gg/aZq6u3Asak',
+        name: 'discord',
+      },
+    ],
     /*
       【pbCollectionConfigDefault_public END】
     */

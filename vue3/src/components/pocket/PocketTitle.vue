@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { useI18nStore } from '@/stores'
+import { usePbCollectionConfigQuery } from '@/queries'
 
-const i18nStore = useI18nStore()
+const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+
+const websiteName = computed(
+  () => pbCollectionConfigQuery.data.value?.['website-name']
+)
 </script>
 
 <template>
   <div
     class="gradient-text wrap-long-text mb-3 select-none py-2 text-center font-bold"
   >
-    {{ i18nStore.t('appNameI18n')() }}
+    {{ websiteName }}
   </div>
 </template>
 

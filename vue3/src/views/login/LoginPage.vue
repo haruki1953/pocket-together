@@ -7,6 +7,7 @@ import Oauth2List from './components/Oauth2List.vue'
 import { useLoginPageBoxLeftRightStyle } from './composables'
 import { useElementSize, useWindowSize } from '@vueuse/core'
 import { layoutLoginPageConfig } from '@/config'
+import { usePbCollectionConfigQuery } from '@/queries'
 
 const i18nStore = useI18nStore()
 useSeoMeta({
@@ -31,6 +32,18 @@ const isMounted = ref(false)
 onMounted(() => {
   isMounted.value = true
 })
+
+const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+
+const websiteName = computed(
+  () => pbCollectionConfigQuery.data.value?.['website-name']
+)
+const externalLinks = computed(
+  () =>
+    pbCollectionConfigQuery.data.value?.[
+      'external-links-to-social-media-icons-etc'
+    ]
+)
 </script>
 
 <template>
@@ -55,7 +68,7 @@ onMounted(() => {
               }"
               class="gradient-text wrap-long-text select-none py-10 text-center font-bold"
             >
-              {{ i18nStore.t('appNameI18n')() }}
+              {{ websiteName }}
             </div>
             <!-- 两列 -->
             <div
@@ -115,18 +128,27 @@ onMounted(() => {
             </div>
             <div class="m-10 flex items-center justify-center">
               <LoginDarkI18n></LoginDarkI18n>
-              <div class="mx-1 cursor-pointer p-1">
-                <i
-                  class="ri-discord-line"
-                  style="font-size: 24px; line-height: 24px"
-                ></i>
-              </div>
-              <div class="mx-1 cursor-pointer p-1">
-                <i
-                  class="ri-github-line"
-                  style="font-size: 24px; line-height: 24px"
-                ></i>
-              </div>
+              <template v-if="externalLinks != null">
+                <div v-for="(item, index) in externalLinks" :key="index">
+                  <ElTooltip
+                    :content="item.name"
+                    effect="light"
+                    placement="top"
+                  >
+                    <a
+                      class="mx-1 cursor-pointer p-1"
+                      :href="item.link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i
+                        :class="item.icon"
+                        style="font-size: 24px; line-height: 24px"
+                      ></i>
+                    </a>
+                  </ElTooltip>
+                </div>
+              </template>
             </div>
           </div>
         </div>

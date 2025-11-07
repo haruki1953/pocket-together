@@ -1,3 +1,5 @@
+/// <reference path="../pb_data/types.d.ts" />
+
 // 监听一下 rooms 更新前
 // 主要是为了处理收藏功能
 // 这个功能是前端发起的

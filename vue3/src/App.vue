@@ -11,22 +11,36 @@ import {
   type AppMainElScrollbar,
 } from './composables'
 import type { ElScrollbar } from 'element-plus'
+import { usePbCollectionConfigQuery } from './queries'
+import { watchUntilQueryReady, watchUntilSourceCondition } from './utils'
 
 const i18nStore = useI18nStore()
+const pbCollectionConfigQuery = usePbCollectionConfigQuery()
+
+const websiteName = computed(
+  () => pbCollectionConfigQuery.data.value?.['website-name']
+)
 
 // @unhead/vue
 useHead({
   htmlAttrs: { lang: computed(() => i18nStore.locale) }, // BCP 47 language code
 })
 useSeoMeta({
-  title: 'App',
-  titleTemplate: '%s - Vue',
-  description: 'Learn about our awesome site.',
+  titleTemplate: (titleChunk) => {
+    const siteName = websiteName.value ?? ''
+    if (titleChunk == null) {
+      return siteName
+    }
+    return `${titleChunk} - ${siteName}`
+  },
 })
 
 // 控制首次数据的加载，以及加载动画遮罩的关闭
 useFirstDataLoadingAndAnimationMaskClose({
-  dataFirstLoadService: async () => {},
+  dataFirstLoadService: async () => {
+    // 遮罩的关闭会等待pbCollectionConfigQuery
+    await watchUntilQueryReady(pbCollectionConfigQuery)
+  },
 })
 
 // 在程序初始化时，进行关于pocketbase身份验证的一些操作

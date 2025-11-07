@@ -6,6 +6,14 @@ export const pbCollectionConfigSchema = {
   'email-update-rate-limit-second': z.number(),
   'email-verify-rate-limit-second': z.number(),
   'password-update-rate-limit-second': z.number(),
+  'website-name': z.string(),
+  'external-links-to-social-media-icons-etc': z.array(
+    z.object({
+      icon: z.string(),
+      link: z.string(),
+      name: z.string(),
+    })
+  ),
 }
 // 类型体操：自动推导出类型结构
 export type PbCollectionConfigType = {
@@ -37,7 +45,21 @@ export const pbCollectionConfigDefaultGetFn = () => {
     'email-verify-rate-limit-second': 30,
     /** 密码修改最短秒数 */
     'password-update-rate-limit-second': 30,
-
+    /** 网站名称 */
+    'website-name': 'PocketTogether',
+    /** 社交媒体等图标外链（显示在登录页底部的图标链接） https://remixicon.com/ */
+    'external-links-to-social-media-icons-etc': [
+      {
+        icon: 'ri-github-line',
+        link: 'https://github.com/haruki1953/pocket-together',
+        name: 'github',
+      },
+      {
+        icon: 'ri-discord-line',
+        link: 'https://discord.gg/aZq6u3Asak',
+        name: 'discord',
+      },
+    ],
     /*
       【pbCollectionConfigDefault_public END】
     */
