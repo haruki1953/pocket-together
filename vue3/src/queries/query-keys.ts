@@ -36,7 +36,7 @@ export const queryKeys = {
   roomsListInfinite: (options: {
     searchTerm: Ref<string>
     onlyUserRooms: Ref<boolean>
-    onlyFavoriteRooms: Ref<boolean>
+    onlyJoinRooms: Ref<boolean>
     userId: string | null | undefined
   }) => ['rooms', 'list', 'infinite', options] as const,
 }

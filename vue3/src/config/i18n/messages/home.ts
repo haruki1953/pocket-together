@@ -20,9 +20,9 @@ export const i18nMessagesHomePart = {
     'zh-TW': () => '搜尋房間' as const,
   },
   homeMenuFavoriteRooms: {
-    'en-US': () => 'Favorite Rooms' as const,
-    'zh-CN': () => '收藏房间' as const,
-    'zh-TW': () => '收藏房間' as const,
+    'en-US': () => 'Joined Rooms' as const,
+    'zh-CN': () => '进驻房间' as const,
+    'zh-TW': () => '進駐房間' as const,
   },
   homeMenuCreateRoom: {
     'en-US': () => 'Create New Room' as const,
@@ -138,9 +138,9 @@ export const i18nMessagesHomePart = {
   // CreateRoomPage Errors
   createRoomError_fileTooLarge: {
     'en-US': () =>
-      'Image size cannot exceed 10MB, nya! Please select a smaller image, nya!' as const,
-    'zh-CN': () => '图片大小不能超过 10MB 喵，请选择更小的图片喵' as const,
-    'zh-TW': () => '圖片大小不能超過 10MB 喵，請選擇更小的圖片喵' as const,
+      'Image size cannot exceed 5MB, nya! Please select a smaller image, nya!' as const,
+    'zh-CN': () => '图片大小不能超过 5MB 喵，请选择更小的图片喵' as const,
+    'zh-TW': () => '圖片大小不能超過 5MB 喵，請選擇更小的圖片喵' as const,
   },
   createRoomError_notLoggedIn: {
     'en-US': () => 'Please log in first, nya!' as const,

@@ -1308,7 +1308,7 @@
                 "id": "relation3832111349",
                 "maxSelect": 999,
                 "minSelect": 0,
-                "name": "favorites",
+                "name": "join",
                 "presentable": false,
                 "required": false,
                 "system": false,

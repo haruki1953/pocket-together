@@ -133,8 +133,8 @@ export type RoomsRecord<Ttags = unknown> = {
 	coverWidth?: number
 	created?: IsoDateString
 	description?: string
-	favorites?: RecordIdString[]
 	id: string
+	join?: RecordIdString[]
 	password?: string
 	playlist?: RecordIdString[]
 	tags?: null | Ttags

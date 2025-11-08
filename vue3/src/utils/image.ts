@@ -439,7 +439,7 @@ export const imagePreloadFromUrlsService = (
     return new Promise<void>((resolve) => {
       const img = new Image()
       img.onload = () => resolve()
-      img.onerror = () => resolve() // Resolve on error as well to not break Promise.all
+      img.onerror = () => resolve()
       img.src = url
     })
   })

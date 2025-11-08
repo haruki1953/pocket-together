@@ -14,13 +14,13 @@ interface UseRoomsInfiniteQueryOptions {
   // 接收一个响应式的搜索词
   searchTerm: Ref<string>
   onlyUserRooms: Ref<boolean>
-  onlyFavoriteRooms: Ref<boolean>
+  onlyJoinRooms: Ref<boolean>
 }
 
 export const useRoomsInfiniteQuery = ({
   searchTerm,
   onlyUserRooms,
-  onlyFavoriteRooms,
+  onlyJoinRooms,
 }: UseRoomsInfiniteQueryOptions) => {
   // 状态说是
   const authStore = useAuthStore()
@@ -34,7 +34,7 @@ export const useRoomsInfiniteQuery = ({
       queryKeys.roomsListInfinite({
         searchTerm,
         onlyUserRooms,
-        onlyFavoriteRooms,
+        onlyJoinRooms,
         // 如果用户 A 退出，用户 B 登录，用户 B 可能看到用户 A 的房间列表
         // 用户的登录状态发生变化，queryKey 立刻更新
         userId: authStore.record?.id,
@@ -53,8 +53,8 @@ export const useRoomsInfiniteQuery = ({
       if (onlyUserRooms.value && authStore.record?.id != null) {
         filters.push(`author = '${authStore.record.id}'`)
       }
-      if (onlyFavoriteRooms.value && authStore.record?.id != null) {
-        filters.push(`favorites ~ '${authStore.record.id}'`)
+      if (onlyJoinRooms.value && authStore.record?.id != null) {
+        filters.push(`join ~ '${authStore.record.id}'`)
       }
       // 链接所有条件
       const filter = filters.join(' && ')
@@ -113,16 +113,14 @@ export const useRoomsGetOneQuery = (data: {
       }
       // pb请求
       const pbRes = await pbRoomsGetOneApi(roomId.value)
-
       // TODO 持久化
-
       return pbRes
     },
     // TODO 占位数据
     // 缓存时间
     gcTime: queryConfig.gcTimeLong,
     staleTime: queryConfig.staleTimeLong,
-    // ✅ 在网络错误时重试
+    // 在网络错误时重试
     retry: queryRetryPbNetworkError,
   })
 

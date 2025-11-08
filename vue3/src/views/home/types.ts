@@ -4,7 +4,8 @@ export interface HomeCardType {
   coverUrl: string
   title: string
   creator: string
+  creatorId: string
   avatarUrl: string
   tags: string[]
-  isFavorited: boolean
+  join: boolean
 }

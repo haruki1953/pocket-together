@@ -8,12 +8,12 @@ export const useRoomQueryStore = defineStore('room-query', () => {
   // 是否为只看用户的房间
   const onlyUserRooms = ref(false)
   // 只看收藏吗
-  const onlyFavoriteRooms = ref(false)
+  const onlyJoinRooms = ref(false)
 
   // 返回状态，以便在组件中使用
   return {
     searchTerm,
     onlyUserRooms,
-    onlyFavoriteRooms,
+    onlyJoinRooms,
   }
 })
