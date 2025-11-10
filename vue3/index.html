@@ -37,11 +37,13 @@
       --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
       --color-background: var(--vt-c-white);
       --color-text: var(--vt-c-text-light-1);
+      --color-text-soft: #6b6b70;
     }
 
     :root.dark {
       --color-background: var(--vt-c-black);
       --color-text: var(--vt-c-text-dark-2);
+      --color-text-soft: #96969d;
     }
 
     *,
@@ -56,7 +58,7 @@
       /* 窄滚动条 */
       scrollbar-width: thin;
       /* 滑块颜色 + 轨道透明 */
-      scrollbar-color: var(--my-neutral) transparent;
+      scrollbar-color: var(--color-text-soft) transparent;
     }
 
     html {
